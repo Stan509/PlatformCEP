@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cep
+      POSTGRES_USER: cep
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cep"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ../../backend/django-core
+    env_file:
+      - ../../backend/django-core/.env
+    environment:
+      DJANGO_DEBUG: "False"
+      POSTGRES_HOST: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+
+  gateway:
+    build:
+      context: ../../services/go-gateway
+    environment:
+      GATEWAY_ADDR: ":8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+
+  sync-service:
+    build:
+      context: ../../services/sync-service
+    environment:
+      SYNC_ADDR: ":8090"
+    ports:
+      - "8090:8090"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+

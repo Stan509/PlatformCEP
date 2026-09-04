@@ -1,0 +1,17 @@
+{
+  "_note": "Géographie de démonstration versionnée — identifiants FICTIFS. Le moteur est entièrement configurable ; ces valeurs ne sont pas des règles codées en dur.",
+  "geoVersion": {
+    "version": "2026.0",
+    "effectiveFrom": "2026-01-01T00:00:00Z",
+    "source": "demo-seed",
+    "author": "test.cep.admin",
+    "approver": "test.superadmin"
+  },
+  "nodes": [
+    { "id": "geo-ht",     "code": "HT",   "level": "country",         "label": { "ht": "Ayiti", "fr": "Haïti", "en": "Haiti" }, "geoVersion": "2026.0" },
+    { "id": "geo-ouest",  "code": "OU",   "level": "department",      "label": { "ht": "Lwès", "fr": "Ouest", "en": "West" }, "parentId": "geo-ht", "geoVersion": "2026.0" },
+    { "id": "geo-pap",    "code": "OU-1", "level": "commune",         "label": { "ht": "Pòtoprens", "fr": "Port-au-Prince", "en": "Port-au-Prince" }, "parentId": "geo-ouest", "geoVersion": "2026.0" },
+    { "id": "geo-centre", "code": "OU-1-C1", "level": "voting_center", "label": { "ht": "Sant 1", "fr": "Centre 1", "en": "Center 1" }, "parentId": "geo-pap", "geoVersion": "2026.0" },
+    { "id": "geo-bureau", "code": "OU-1-C1-B0042", "level": "polling_station", "label": { "ht": "Biro 0042", "fr": "Bureau 0042", "en": "Station 0042" }, "parentId": "geo-centre", "geoVersion": "2026.0" }
+  ]
+}

@@ -1,0 +1,40 @@
+# CEP — Reverse-proxy TLS (Caddy)
+#
+# Caddy gère automatiquement Let's Encrypt (HTTPS) et la rotation des certificats.
+# Variables injectées via l'environnement, jamais en dur.
+#
+#   SITE_ADDRESS  : votre domaine (ex. "elections.example.ht" ou "app.example.ht")
+#   API_UPSTREAM  : passerelle Django (ex. "api:8000")
+
+{$SITE_ADDRESS:localhost} {
+	encode gzip
+
+	# Sécurité des en-têtes
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+	}
+
+	# API (Django / DRF) — toutes les routes /api/*
+	handle /api/* {
+		reverse_proxy {$API_UPSTREAM:api:8000}
+	}
+
+	# Santé
+	handle /healthz {
+		reverse_proxy {$API_UPSTREAM:api:8000}
+	}
+
+	# Frontends statiques (PWA publique + admin) :
+	# soit servis par une Static Site (DO App Platform / Spaces), soit montés
+	# ici en file_server depuis un volume de build. Exemple minimal :
+	# handle {
+	#   root * /srv/apps/public
+	#   file_server
+	# }
+	respond 404
+}

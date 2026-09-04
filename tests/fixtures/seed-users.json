@@ -1,0 +1,19 @@
+{
+  "_note": "Comptes de démonstration CEP — données TOUT À FAIT FICTIVES. Aucune donnée citoyenne réelle. Ne jamais utiliser en production.",
+  "users": [
+    { "username": "test.superadmin", "role": "SUPERADMIN", "mfa": true,  "demo": true },
+    { "username": "test.dev",         "role": "DEV",         "mfa": false, "demo": true },
+    { "username": "test.cep.admin",   "role": "ADMIN_CEP",   "mfa": true,  "demo": true },
+    { "username": "test.cep.member",  "role": "MEMBER_CEP",  "mfa": true,  "demo": true },
+    { "username": "test.bed",         "role": "BED",         "mfa": true,  "demo": true },
+    { "username": "test.bec",         "role": "BEC",         "mfa": true,  "demo": true },
+    { "username": "test.field.agent", "role": "FIELD_AGENT", "mfa": false, "demo": true },
+    { "username": "test.polling.agent", "role": "POLLING_AGENT", "mfa": false, "demo": true },
+    { "username": "test.candidate",   "role": "CANDIDATE",   "mfa": false, "demo": true },
+    { "username": "test.party",       "role": "PARTY",       "mfa": false, "demo": true },
+    { "username": "test.auditor",     "role": "AUDITOR",     "mfa": true,  "demo": true },
+    { "username": "test.observer",    "role": "OBSERVER",    "mfa": false, "demo": true },
+    { "username": "test.citizen",     "role": "CITIZEN",     "mfa": false, "demo": true },
+    { "username": "test.diaspora",    "role": "DIASPORA",    "mfa": false, "demo": true }
+  ]
+}

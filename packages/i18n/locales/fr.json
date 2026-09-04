@@ -1,0 +1,158 @@
+{
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue.",
+    "retry": "Réessayer",
+    "offlineBanner": "Hors ligne — données conservées localement",
+    "onlineBanner": "En ligne — synchronisé",
+    "actions": {
+      "continue": "Continuer",
+      "confirm": "Confirmer",
+      "cancel": "Annuler",
+      "back": "Retour",
+      "submit": "Envoyer",
+      "search": "Rechercher",
+      "verify": "Vérifier",
+      "close": "Fermer",
+      "select": "Sélectionner"
+    },
+    "states": {
+      "empty": "Aucune donnée publiée.",
+      "loading": "Chargement...",
+      "errorTitle": "Un problème est survenu",
+      "emptyTitle": "Rien pour le moment",
+      "success": "L'opération a réussi."
+    },
+    "language": { "label": "Langue", "ht": "Kreyòl", "fr": "Français", "en": "English" }
+  },
+  "design_system": {
+    "sync": {
+      "offline": "Hors ligne",
+      "online": "En ligne",
+      "syncing": "Synchronisation...",
+      "synced": "Synchronisé",
+      "error": "Erreur de synchronisation",
+      "pending": "En attente",
+      "revoked": "Cet appareil n'est plus autorisé.",
+      "sessionExpired": "Votre session a expiré."
+    },
+    "status": {
+      "draft": "Brouillon",
+      "preparation": "Préparation",
+      "published": "Publiée",
+      "open": "Ouverte",
+      "closed": "Fermée",
+      "tabulation": "Tabulation",
+      "provisional": "Provisoire",
+      "consolidated": "Consolidée",
+      "final": "Définitive",
+      "archived": "Archivée"
+    },
+    "badge": {
+      "info": "Information",
+      "success": "Succès",
+      "warning": "Attention",
+      "danger": "Danger"
+    }
+  },
+  "public": {
+    "nav": { "home": "Accueil", "elections": "Élections", "electors": "Électeurs", "candidates": "Candidats", "results": "Résultats", "info": "Informations", "diaspora": "Diaspora", "help": "Aide" },
+    "hero": {
+      "title": "Votre voix compte. Votre participation est protégée.",
+      "subtitle": "Informations officielles, inscription et participation.",
+      "ctaVerify": "Vérifier mon statut",
+      "ctaRegister": "S'inscrire comme électeur",
+      "ctaUnderstand": "Comprendre le processus"
+    },
+    "cycle": {
+      "title": "Cycle électoral",
+      "step1": "Inscription",
+      "step2": "Vérification",
+      "step3": "Préparation",
+      "step4": "Vote",
+      "step5": "Dépouillement",
+      "step6": "Tabulation",
+      "step7": "Publication"
+    }
+  },
+  "pages": {
+    "status": {
+      "title": "Vérifier mon statut",
+      "fieldLabel": "Identifiant électoral",
+      "fieldPlaceholder": "Ex. CEP-0000-0000",
+      "submit": "Vérifier",
+      "loading": "Vérification...",
+      "registeredBadge": "Électeur enregistré",
+      "registeredBody": "Votre inscription est active. Voici les informations essentielles.",
+      "notFound": "Aucun enregistrement correspondant n'a été trouvé.",
+      "notFoundCta": "Commencer une inscription",
+      "errorTitle": "Un problème technique est survenu",
+      "supportCode": "Code de référence de support"
+    },
+    "register": {
+      "title": "Inscription citoyenne",
+      "subtitle": "Nous allons vous guider pas à pas.",
+      "welcomeTitle": "Bienvenue",
+      "welcomeBody": "Nous collectons uniquement les informations légalement nécessaires.",
+      "identityTitle": "Identité",
+      "verifyTitle": "Vérification",
+      "locationTitle": "Adresse électorale",
+      "summaryTitle": "Résumé",
+      "confirmTitle": "Confirmation",
+      "next": "Continuer",
+      "back": "Retour",
+      "stepLabel": "Étape",
+      "referenceNote": "Cette référence d'inscription n'est pas une preuve de vote.",
+      "doneTitle": "Votre demande est enregistrée",
+      "doneBody": "Voici votre référence. Conservez-la précieusement."
+    },
+    "candidates": {
+      "title": "Candidats",
+      "subtitle": "Liste officielle et neutre.",
+      "post": "Poste",
+      "party": "Parti",
+      "territory": "Territoire",
+      "viewProfile": "Voir le profil",
+      "empty": "Aucun candidat publié.",
+      "emptyDetail": "Les informations officielles seront publiées par le CEP lorsqu'elles seront disponibles."
+    },
+    "results": {
+      "title": "Résultats",
+      "subtitle": "Résultats officiels publiés par le CEP.",
+      "trustProvisional": "Provisoire",
+      "trustPartial": "Partiel",
+      "trustConsolidated": "Consolidé",
+      "trustFinal": "Définitif",
+      "lastUpdate": "Dernière mise à jour",
+      "coverage": "Bureaux reçus",
+      "blank": "Bulletins blancs",
+      "null": "Bulletins nuls",
+      "participation": "Participation",
+      "empty": "Aucun résultat publié.",
+      "emptyDetail": "Les résultats seront publiés par le CEP lorsqu'ils seront disponibles."
+    },
+    "info": {
+      "title": "Informations",
+      "communiques": "Communiqués",
+      "calendar": "Calendrier",
+      "documents": "Documents officiels",
+      "empty": "Aucune information publiée."
+    }
+  },
+  "admin": {
+    "nav": { "dashboard": "Tableau de bord", "commandCenter": "Centre de commandement", "elections": "Élections", "devices": "Appareils", "incidents": "Incidents", "audit": "Audit", "releases": "Versions APK", "settings": "Configuration" },
+    "topbar": { "activeElection": "Élection active", "systemStatus": "État du système", "notifications": "Notifications" },
+    "dashboard": { "title": "Tableau de bord", "electors": "Électeurs", "candidates": "Candidats", "stations": "Bureaux", "agents": "Agents", "devices": "Appareils", "sync": "Synchronisation", "incidents": "Incidents", "security": "Sécurité", "tabulation": "Tabulation" },
+    "commandCenter": { "title": "Centre de commandement", "operational": "Opérationnels", "attention": "Attention", "incidentLabel": "Incident", "online": "En ligne", "offline": "Hors ligne", "pending": "En attente", "pvReceived": "PV reçus", "pvValidated": "PV validés", "perDayTitle": "Progression de la journée" },
+    "elections": { "title": "Élections", "name": "Nom", "type": "Type", "date": "Date", "status": "Statut", "candidates": "Candidats", "stations": "Bureaux", "lastModified": "Dernière modification", "statusDraft": "Brouillon", "statusPublished": "Publiée", "statusOpen": "Ouverte", "statusClosed": "Fermée", "statusTabulation": "Tabulation", "statusFinal": "Définitive" },
+    "devices": { "title": "Appareils", "deviceId": "ID appareil", "version": "Version", "assignedUser": "Utilisateur", "status": "Statut", "lastSeen": "Dernière connexion", "lastSync": "Dernière synchronisation", "statusActive": "Actif", "statusRevoked": "Révoqué", "statusSuspended": "Suspendu", "actions": "Actions", "suspend": "Suspendre", "revoke": "Révoquer" },
+    "incidents": { "title": "Incidents", "category": "Catégorie", "severity": "Niveau", "status": "Statut", "reportedBy": "Signalé par", "reportedAt": "Date", "statusOpen": "Ouvert", "statusResolved": "Résolu" },
+    "audit": { "title": "Audit", "actor": "Acteur", "action": "Action", "object": "Objet", "outcome": "Résultat", "correlationId": "ID de corrélation", "occurredAt": "Date" },
+    "releases": { "title": "Versions APK", "version": "Version", "build": "Build", "hash": "Hash", "signature": "Signature", "status": "Statut", "publishPrivate": "Publier en privé" },
+    "settings": { "title": "Configuration", "configHint": "Le système est 100 % configurable : aucune règle électorale n'est codée en dur.", "separationHint": "La séparation stricte identité / vote est garantie par l'architecture." }
+  },
+  "apps": {
+    "field": { "mission": "Mission active", "registered": "Inscrits", "synced": "Synchronisés", "pending": "En attente", "newRegistration": "Nouvelle inscription", "search": "Rechercher un électeur", "sync": "Synchroniser", "incident": "Incident", "offlineNote": "Hors ligne — données conservées localement" },
+    "polling": { "bureau": "Bureau de vote", "ready": "Système prêt", "start": "Commencer le vote", "verify": "Vérifier l'électeur", "scan": "Scanner", "manual": "Entrer l'identifiant", "authorized": "Électeur autorisé", "notAuthorized": "Électeur non autorisé", "ballot": "Bulletin", "confirm": "Confirmer mon choix", "modify": "Modifier", "recorded": "Vote enregistré", "secret": "Le secret de votre choix est préservé.", "finish": "Terminer", "help": "Aide" }
+  }
+}

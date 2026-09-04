@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  typescript:
+    name: TypeScript (packages & apps)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install
+        run: pnpm install
+      - name: Typecheck
+        run: pnpm -r typecheck
+      - name: Build packages
+        run: pnpm -r build
+      - name: Unit tests (vitest)
+        run: pnpm --filter @cep/tests-unit test
+
+  rust:
+    name: Rust (crypto-core)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rust/crypto-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Test
+        run: cargo test
+      - name: Build CLI
+        run: cargo build --bin crypto-cli
+
+  django:
+    name: Django (backend)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/django-core
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: cep
+          POSTGRES_USER: cep
+          POSTGRES_PASSWORD: cep
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U cep"
+          --health-interval 5s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Django check
+        env:
+          DJANGO_SECRET_KEY: ci-test-key
+          DJANGO_DEBUG: "False"
+          DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: cep
+          POSTGRES_USER: cep
+          POSTGRES_PASSWORD: cep
+        run: python manage.py check
+      - name: Django tests
+        env:
+          DJANGO_SECRET_KEY: ci-test-key
+          DJANGO_DEBUG: "False"
+          DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: cep
+          POSTGRES_USER: cep
+          POSTGRES_PASSWORD: cep
+        run: python manage.py test
+
+  go:
+    name: Go (gateway & sync)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [go-gateway, sync-service]
+    defaults:
+      run:
+        working-directory: services/${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Build
+        run: go build ./...

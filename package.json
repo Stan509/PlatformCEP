@@ -1,0 +1,28 @@
+{
+  "name": "cep-election-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Écosystème numérique électoral du CEP d'Haïti — monorepo",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "build:packages": "pnpm -r --filter './packages/**' build",
+    "build:apk": "pnpm --filter @cep/field-app build && pnpm --filter @cep/polling-app build",
+    "dev:public": "pnpm --filter @cep/public-pwa dev",
+    "dev:admin": "pnpm --filter @cep/cep-admin dev",
+    "dev:field": "pnpm --filter @cep/field-app dev",
+    "dev:polling": "pnpm --filter @cep/polling-app dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  }
+}

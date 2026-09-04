@@ -1,0 +1,76 @@
+# CEP — Production Docker Compose
+#
+# ⚠️ Production : utilisez un PostgreSQL MANAGÉ (Recommandation DigitalOcean :
+# Managed Database) plutôt qu'un conteneur PostgreSQL pour la disponibilité,
+# la réplication et les sauvegardes. Si vous préférez l'auto-hébergé, le
+# service `postgres` ci-dessous fonctionne (chiffrement + volume).
+#
+# Les secrets proviennent d'un fichier `.env` NON committé (voir
+# `env.secrets.example`). Aucun secret en dur ici — et JAMAIS de jeton DO.
+#
+# Usage : docker compose -f infrastructure/docker/docker-compose.prod.yml up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    env_file:
+      - ../.env   # secrets NON committés (postgres y lit POSTGRES_*)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # Production managée : commentez ce service et pointez `api` vers
+    # l'hôte de votre base managée (voir deploy-digitalocean.md).
+
+  api:
+    build:
+      context: ../..
+      dockerfile: backend/django-core/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ../.env   # secrets NON committés
+    environment:
+      DJANGO_DEBUG: "False"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "8000"
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4
+
+  gateway:
+    build:
+      context: ../..
+      dockerfile: services/go-gateway/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    depends_on:
+      - api
+    expose:
+      - "8080"
+
+  sync:
+    build:
+      context: ../..
+      dockerfile: services/sync-service/Dockerfile.prod
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    depends_on:
+      - api
+    expose:
+      - "8090"
+
+volumes:
+  pgdata:

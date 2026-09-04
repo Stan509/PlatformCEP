@@ -1,0 +1,429 @@
+/* ============================================================================
+   CEP Design System — styles.css
+   Variables de tokens (source de vérité : src/tokens) + base + composants.
+   Préfixe `cep-` pour éviter toute collision entre applications.
+   ========================================================================== */
+
+:root {
+  --cep-color-cep-blue: #0a4a7a;
+  --cep-color-deep-blue: #073b61;
+  --cep-color-light-blue: #eaf4fb;
+  --cep-color-white: #ffffff;
+  --cep-color-background: #f5f7f9;
+  --cep-color-surface: #ffffff;
+  --cep-color-text: #111827;
+  --cep-color-text-secondary: #667085;
+  --cep-color-text-muted: #98a2b3;
+  --cep-color-border: #e4e7ec;
+
+  --cep-color-success: #168a5b;
+  --cep-color-success-surface: #e7f5ee;
+  --cep-color-success-text: #0e6b45;
+  --cep-color-warning: #d98a00;
+  --cep-color-warning-surface: #fdf3e3;
+  --cep-color-warning-text: #a56a00;
+  --cep-color-danger: #c93636;
+  --cep-color-danger-surface: #fbeaea;
+  --cep-color-danger-text: #a82a2a;
+
+  --cep-color-cep-blue-hover: #0e5e94;
+  --cep-color-cep-blue-active: #083a5e;
+  --cep-color-focus-ring: rgba(10, 74, 122, 0.35);
+  --cep-color-overlay: rgba(17, 24, 39, 0.45);
+
+  --cep-space-0: 0px;
+  --cep-space-1: 4px;
+  --cep-space-2: 8px;
+  --cep-space-3: 12px;
+  --cep-space-4: 16px;
+  --cep-space-5: 24px;
+  --cep-space-6: 32px;
+  --cep-space-7: 40px;
+  --cep-space-8: 48px;
+  --cep-space-9: 64px;
+  --cep-space-10: 80px;
+  --cep-space-11: 96px;
+
+  --cep-radius-sm: 8px;
+  --cep-radius-md: 12px;
+  --cep-radius-lg: 16px;
+  --cep-radius-xl: 20px;
+  --cep-radius-2xl: 24px;
+  --cep-radius-full: 9999px;
+
+  --cep-shadow-none: none;
+  --cep-shadow-xs: 0 1px 2px rgba(17, 24, 39, 0.05);
+  --cep-shadow-sm: 0 1px 3px rgba(17, 24, 39, 0.08);
+  --cep-shadow-md: 0 4px 12px rgba(17, 24, 39, 0.08);
+  --cep-shadow-lg: 0 10px 28px rgba(17, 24, 39, 0.12);
+  --cep-shadow-modal: 0 24px 60px rgba(17, 24, 39, 0.2);
+
+  --cep-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cep-font-size-caption: 0.75rem;
+  --cep-font-size-caption-lg: 0.8125rem;
+  --cep-font-size-small: 0.875rem;
+  --cep-font-size-body: 1rem;
+  --cep-font-size-body-lg: 1.125rem;
+  --cep-font-size-h3: 1.375rem;
+  --cep-font-size-h2: 1.75rem;
+  --cep-font-size-h2-lg: 2rem;
+  --cep-font-size-h1: 2.25rem;
+  --cep-font-size-display: 3rem;
+
+  --cep-font-weight-regular: 400;
+  --cep-font-weight-medium: 500;
+  --cep-font-weight-semibold: 600;
+  --cep-font-weight-bold: 700;
+
+  --cep-line-height-tight: 1.2;
+  --cep-line-height-snug: 1.35;
+  --cep-line-height-normal: 1.55;
+  --cep-line-height-relaxed: 1.7;
+
+  --cep-duration-fast: 150ms;
+  --cep-duration-normal: 250ms;
+  --cep-duration-slow: 400ms;
+  --cep-easing-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --cep-easing-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ----------------------------------------------------------------------------
+   Base / reset minimal
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--cep-font-family);
+  font-size: var(--cep-font-size-body);
+  line-height: var(--cep-line-height-normal);
+  color: var(--cep-color-text);
+  background: var(--cep-color-background);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  line-height: var(--cep-line-height-tight);
+  font-weight: var(--cep-font-weight-semibold);
+  color: var(--cep-color-deep-blue);
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--cep-color-cep-blue);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cep-color-cep-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Utilitaires sémantiques
+   -------------------------------------------------------------------------- */
+.cep-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.cep-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  clip: rect(1px, 1px, 1px, 1px) !important;
+  overflow: hidden !important;
+}
+
+/* ----------------------------------------------------------------------------
+   COMPOSANTS
+   -------------------------------------------------------------------------- */
+
+/* --- Button --------------------------------------------------------- */
+.cep-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cep-space-2);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--cep-font-size-body);
+  font-weight: var(--cep-font-weight-medium);
+  line-height: 1;
+  border-radius: var(--cep-radius-md);
+  padding: var(--cep-space-3) var(--cep-space-5);
+  border: 1px solid transparent;
+  min-height: 44px;
+  transition: background var(--cep-duration-fast) var(--cep-easing-ease-out),
+    color var(--cep-duration-fast) var(--cep-easing-ease-out),
+    border-color var(--cep-duration-fast) var(--cep-easing-ease-out),
+    box-shadow var(--cep-duration-fast) var(--cep-easing-ease-out);
+}
+
+.cep-btn--primary {
+  background: var(--cep-color-cep-blue);
+  color: var(--cep-color-white);
+}
+.cep-btn--primary:hover { background: var(--cep-color-cep-blue-hover); }
+.cep-btn--primary:active { background: var(--cep-color-cep-blue-active); }
+
+.cep-btn--secondary {
+  background: var(--cep-color-white);
+  color: var(--cep-color-cep-blue);
+  border-color: var(--cep-color-border);
+}
+.cep-btn--secondary:hover { border-color: var(--cep-color-cep-blue); background: var(--cep-color-light-blue); }
+
+.cep-btn--ghost {
+  background: transparent;
+  color: var(--cep-color-cep-blue);
+}
+.cep-btn--ghost:hover { background: var(--cep-color-light-blue); }
+
+.cep-btn--danger {
+  background: var(--cep-color-danger);
+  color: var(--cep-color-white);
+}
+.cep-btn--danger:hover { filter: brightness(1.05); }
+
+.cep-btn--loading,
+.cep-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cep-btn--block { width: 100%; }
+
+.cep-btn--lg {
+  font-size: var(--cep-font-size-body-lg);
+  padding: var(--cep-space-4) var(--cep-space-6);
+  min-height: 52px;
+}
+
+.cep-btn--xl {
+  font-size: 1.375rem;
+  padding: var(--cep-space-5) var(--cep-space-7);
+  min-height: 64px;
+  font-weight: var(--cep-font-weight-semibold);
+}
+
+/* --- Spinner interne ------------------------------------------------- */
+.cep-spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: cep-spin 0.8s linear infinite;
+}
+@keyframes cep-spin { to { transform: rotate(360deg); } }
+
+/* --- Input ----------------------------------------------------------- */
+.cep-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cep-space-1);
+}
+.cep-label {
+  font-size: var(--cep-font-size-small);
+  font-weight: var(--cep-font-weight-medium);
+  color: var(--cep-color-text);
+}
+.cep-input {
+  font-family: inherit;
+  font-size: var(--cep-font-size-body);
+  color: var(--cep-color-text);
+  background: var(--cep-color-white);
+  border: 1px solid var(--cep-color-border);
+  border-radius: var(--cep-radius-md);
+  padding: var(--cep-space-3) var(--cep-space-4);
+  min-height: 48px;
+  transition: border-color var(--cep-duration-fast) var(--cep-easing-ease-out),
+    box-shadow var(--cep-duration-fast) var(--cep-easing-ease-out);
+}
+.cep-input::placeholder { color: var(--cep-color-text-muted); }
+.cep-input:focus {
+  outline: none;
+  border-color: var(--cep-color-cep-blue);
+  box-shadow: 0 0 0 3px var(--cep-color-focus-ring);
+}
+.cep-input:disabled { background: var(--cep-color-background); cursor: not-allowed; }
+.cep-input--error { border-color: var(--cep-color-danger); }
+.cep-input--error:focus { box-shadow: 0 0 0 3px rgba(201, 54, 54, 0.2); }
+.cep-hint { font-size: var(--cep-font-size-caption-lg); color: var(--cep-color-text-secondary); }
+.cep-error-text { font-size: var(--cep-font-size-caption-lg); color: var(--cep-color-danger-text); }
+
+/* --- Card ------------------------------------------------------------ */
+.cep-card {
+  background: var(--cep-color-surface);
+  border: 1px solid var(--cep-color-border);
+  border-radius: var(--cep-radius-lg);
+  padding: var(--cep-space-5);
+  box-shadow: var(--cep-shadow-xs);
+}
+.cep-card__title {
+  font-size: var(--cep-font-size-h3);
+  color: var(--cep-color-deep-blue);
+  margin-bottom: var(--cep-space-3);
+}
+.cep-card__body { color: var(--cep-color-text-secondary); }
+.cep-card--interactive { cursor: pointer; transition: box-shadow var(--cep-duration-fast); }
+.cep-card--interactive:hover { box-shadow: var(--cep-shadow-md); }
+
+/* --- Modal ----------------------------------------------------------- */
+.cep-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--cep-color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--cep-space-4);
+  z-index: 1000;
+}
+.cep-modal {
+  background: var(--cep-color-surface);
+  border-radius: var(--cep-radius-lg);
+  box-shadow: var(--cep-shadow-modal);
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow: auto;
+}
+.cep-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cep-space-4);
+  padding: var(--cep-space-5);
+  border-bottom: 1px solid var(--cep-color-border);
+}
+.cep-modal__title { font-size: var(--cep-font-size-h3); color: var(--cep-color-deep-blue); }
+.cep-modal__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.25rem;
+  color: var(--cep-color-text-secondary);
+  padding: var(--cep-space-1);
+}
+.cep-modal__body { padding: var(--cep-space-5); }
+.cep-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--cep-space-3);
+  padding: var(--cep-space-4) var(--cep-space-5);
+  border-top: 1px solid var(--cep-color-border);
+}
+
+/* --- Table ----------------------------------------------------------- */
+.cep-table-wrap { overflow-x: auto; border: 1px solid var(--cep-color-border); border-radius: var(--cep-radius-md); background: var(--cep-color-surface); }
+.cep-table { width: 100%; border-collapse: collapse; font-size: var(--cep-font-size-small); }
+.cep-table th {
+  text-align: left;
+  font-weight: var(--cep-font-weight-semibold);
+  color: var(--cep-color-text-secondary);
+  background: var(--cep-color-background);
+  padding: var(--cep-space-3) var(--cep-space-4);
+  border-bottom: 1px solid var(--cep-color-border);
+  white-space: nowrap;
+}
+.cep-table td { padding: var(--cep-space-3) var(--cep-space-4); border-bottom: 1px solid var(--cep-color-border); color: var(--cep-color-text); }
+.cep-table tbody tr:last-child td { border-bottom: none; }
+.cep-table tbody tr:hover { background: var(--cep-color-light-blue); }
+.cep-table--dense th, .cep-table--dense td { padding: var(--cep-space-2) var(--cep-space-3); }
+
+/* --- StatusIndicator -------------------------------------------------- */
+.cep-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cep-space-2);
+  font-size: var(--cep-font-size-caption-lg);
+  font-weight: var(--cep-font-weight-medium);
+  padding: var(--cep-space-1) var(--cep-space-3);
+  border-radius: var(--cep-radius-full);
+}
+.cep-status__dot { width: 8px; height: 8px; border-radius: 50%; }
+.cep-status--info { color: var(--cep-color-cep-blue); background: var(--cep-color-light-blue); }
+.cep-status--info .cep-status__dot { background: var(--cep-color-cep-blue); }
+.cep-status--success { color: var(--cep-color-success-text); background: var(--cep-color-success-surface); }
+.cep-status--success .cep-status__dot { background: var(--cep-color-success); }
+.cep-status--warning { color: var(--cep-color-warning-text); background: var(--cep-color-warning-surface); }
+.cep-status--warning .cep-status__dot { background: var(--cep-color-warning); }
+.cep-status--danger { color: var(--cep-color-danger-text); background: var(--cep-color-danger-surface); }
+.cep-status--danger .cep-status__dot { background: var(--cep-color-danger); }
+.cep-status--neutral { color: var(--cep-color-text-secondary); background: var(--cep-color-background); }
+.cep-status--neutral .cep-status__dot { background: var(--cep-color-text-muted); }
+
+/* --- SyncIndicator ---------------------------------------------------- */
+.cep-sync {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cep-space-2);
+  font-size: var(--cep-font-size-caption-lg);
+  font-weight: var(--cep-font-weight-medium);
+  color: var(--cep-color-text-secondary);
+}
+.cep-sync__pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--cep-color-text-muted); }
+.cep-sync--ok .cep-sync__pulse { background: var(--cep-color-success); }
+.cep-sync--syncing .cep-sync__pulse { background: var(--cep-color-cep-blue); animation: cep-pulse 1s ease-in-out infinite; }
+.cep-sync--error .cep-sync__pulse { background: var(--cep-color-danger); }
+.cep-sync--pending .cep-sync__pulse { background: var(--cep-color-warning); }
+.cep-sync--revoked .cep-sync__pulse { background: var(--cep-color-danger); }
+@keyframes cep-pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* --- OfflineBanner ---------------------------------------------------- */
+.cep-offline-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--cep-space-3);
+  padding: var(--cep-space-3) var(--cep-space-4);
+  border-radius: var(--cep-radius-md);
+  font-weight: var(--cep-font-weight-medium);
+}
+.cep-offline-banner--offline { background: var(--cep-color-warning-surface); color: var(--cep-color-warning-text); }
+.cep-offline-banner--online { background: var(--cep-color-success-surface); color: var(--cep-color-success-text); }
+.cep-offline-banner--syncing { background: var(--cep-color-light-blue); color: var(--cep-color-cep-blue); }
+.cep-offline-banner--error { background: var(--cep-color-danger-surface); color: var(--cep-color-danger-text); }
+
+/* --- Skeleton / Loading ---------------------------------------------- */
+.cep-skeleton {
+  background: linear-gradient(90deg, var(--cep-color-border) 25%, var(--cep-color-light-blue) 37%, var(--cep-color-border) 63%);
+  background-size: 400% 100%;
+  border-radius: var(--cep-radius-sm);
+  min-height: 16px;
+  animation: cep-shimmer 1.4s ease infinite;
+}
+@keyframes cep-shimmer { 0% { background-position: 100% 50%; } 100% { background-position: 0 50%; } }

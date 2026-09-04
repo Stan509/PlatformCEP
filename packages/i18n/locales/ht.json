@@ -1,0 +1,158 @@
+{
+  "common": {
+    "loading": "Chaje...",
+    "error": "Yon erè ki fèt.",
+    "retry": "Eseye ankò",
+    "offlineBanner": "Hors ligne — done yo konsève lokalman",
+    "onlineBanner": "En ligne — senkronize",
+    "actions": {
+      "continue": "Kontinye",
+      "confirm": "Konfime",
+      "cancel": "Anile",
+      "back": "Retounen",
+      "submit": "Voye",
+      "search": "Chèche",
+      "verify": "Verifye",
+      "close": "Fèmen",
+      "select": "Chwazi"
+    },
+    "states": {
+      "empty": "Pa gen done ki pibliye.",
+      "loading": "Chajman...",
+      "errorTitle": "Gen yon pwoblèm",
+      "emptyTitle": "Anyen ankò",
+      "success": "Rezilta a reyisi."
+    },
+    "language": { "label": "Lang", "ht": "Kreyòl", "fr": "Français", "en": "English" }
+  },
+  "design_system": {
+    "sync": {
+      "offline": "Hors ligne",
+      "online": "En ligne",
+      "syncing": "Senkronizasyon...",
+      "synced": "Senkronize",
+      "error": "Erè senkronizasyon",
+      "pending": "An datant",
+      "revoked": "Aparèy la pa otorize ankò",
+      "sessionExpired": "Sesyon ou ekspire"
+    },
+    "status": {
+      "draft": "Brouyon",
+      "preparation": "Pare",
+      "published": "Pibliye",
+      "open": "Ouvè",
+      "closed": "Fèmen",
+      "tabulation": "Konpilasyon",
+      "provisional": "Pwovizwa",
+      "consolidated": "Konsolide",
+      "final": "Definitif",
+      "archived": "Achiv"
+    },
+    "badge": {
+      "info": "Enfòmasyon",
+      "success": "Siksè",
+      "warning": "Atansyon",
+      "danger": "Danje"
+    }
+  },
+  "public": {
+    "nav": { "home": "Akèy", "elections": "Eleksyon", "electors": "Elèktè", "candidates": "Kandida", "results": "Rezilta", "info": "Enfòmasyon", "diaspora": "Diyaspora", "help": "Èd" },
+    "hero": {
+      "title": "Vwa ou konte. Patisipasyon ou pwoteje.",
+      "subtitle": "Enfòmasyon ofisyèl, enskripsyon ak patisipasyon.",
+      "ctaVerify": "Tcheke estati mwen",
+      "ctaRegister": "Enskri kòm elèktè",
+      "ctaUnderstand": "Konprann pwosesis la"
+    },
+    "cycle": {
+      "title": "Sik elektoral la",
+      "step1": "Enskripsyon",
+      "step2": "Verifikasyon",
+      "step3": "Preparasyon",
+      "step4": "Vòt",
+      "step5": "Depouyman",
+      "step6": "Tabulation",
+      "step7": "Piblikasyon"
+    }
+  },
+  "pages": {
+    "status": {
+      "title": "Tcheke estati mwen",
+      "fieldLabel": "Idantifyan elektoral",
+      "fieldPlaceholder": "Eg. CEP-0000-0000",
+      "submit": "Verifye",
+      "loading": "Verifikasyon...",
+      "registeredBadge": "Elèktè enskri",
+      "registeredBody": "Enskripsyon ou aktif. Men enfòmasyon esansyèl yo.",
+      "notFound": "Pa gen okenn enskripsyon ki matche.",
+      "notFoundCta": "Kòmanse yon enskripsyon",
+      "errorTitle": "Gen yon pwoblèm teknik",
+      "supportCode": "Kòd referans sipò"
+    },
+    "register": {
+      "title": "Enskripsyon sitwayen",
+      "subtitle": "Nou pral gide ou etap pa etap.",
+      "welcomeTitle": "Byenveni",
+      "welcomeBody": "Nou pral kolekte sèlman enfòmasyon legalman nesesè.",
+      "identityTitle": "Idantite",
+      "verifyTitle": "Verifikasyon",
+      "locationTitle": "Adrès elektoral",
+      "summaryTitle": "Rezime",
+      "confirmTitle": "Konfimasyon",
+      "next": "Kontinye",
+      "back": "Retounen",
+      "stepLabel": "Etap",
+      "referenceNote": "Referans enskripsyon sa a SE PA yon prèv vòt.",
+      "doneTitle": "Demann ou anrejistre",
+      "doneBody": "Men referans ou. Konsève li byen."
+    },
+    "candidates": {
+      "title": "Kandida",
+      "subtitle": "Lis ofisyèl ak net.",
+      "post": "Pòs",
+      "party": "Patri",
+      "territory": "Teritwa",
+      "viewProfile": "Gade pwofil la",
+      "empty": "Pa gen kandida pibliye.",
+      "emptyDetail": "CEP p ap pibliye enfòmasyon ofisyèl yo jiskaske yo disponib."
+    },
+    "results": {
+      "title": "Rezilta",
+      "subtitle": "Rezilta ofisyèl yo pibliye pa CEP a.",
+      "trustProvisional": "Pwovizwa",
+      "trustPartial": "Pasye",
+      "trustConsolidated": "Konsolide",
+      "trustFinal": "Definitif",
+      "lastUpdate": "Dènye enstalasyon",
+      "coverage": "Biro konsène",
+      "blank": "Nòt blanch",
+      "null": "Nòt nil",
+      "participation": "Patisipasyon",
+      "empty": "Pa gen rezilta pibliye.",
+      "emptyDetail": "Rezilta yo pral pibliye pa CEP a lè yo disponib."
+    },
+    "info": {
+      "title": "Enfòmasyon",
+      "communiques": "Kominike",
+      "calendar": "Kalandriye",
+      "documents": "Dokiman ofisyèl",
+      "empty": "Pa gen enfòmasyon pibliye."
+    }
+  },
+  "admin": {
+    "nav": { "dashboard": "Tablo debò", "commandCenter": "Sant kòmand", "elections": "Eleksyon", "devices": "Aparèy", "incidents": "Enksidan", "audit": "Verifikasyon", "releases": "Vèsyon APK", "settings": "Konfigirasyon" },
+    "topbar": { "activeElection": "Eleksyon aktif", "systemStatus": "Estati sistèm", "notifications": "Notifikasyon" },
+    "dashboard": { "title": "Tablo debò", "electors": "Elèktè", "candidates": "Kandida", "stations": "Biro", "agents": "Ajan", "devices": "Aparèy", "sync": "Senkronizasyon", "incidents": "Enksidan", "security": "Sekirite", "tabulation": "Konpilasyon" },
+    "commandCenter": { "title": "Sant kòmand", "operational": "Operasyonèl", "attention": "Atansyon", "incidentLabel": "Enksidan", "online": "An liy", "offline": "Hors liy", "pending": "An datant", "pvReceived": "PV resevwa", "pvValidated": "PV valid", "perDayTitle": "Pwogrè jounen an" },
+    "elections": { "title": "Eleksyon", "name": "Non", "type": "Tip", "date": "Dat", "status": "Estati", "candidates": "Kandida", "stations": "Biro", "lastModified": "Dènye modifikasyon", "statusDraft": "Brouyon", "statusPublished": "Pibliye", "statusOpen": "Ouvè", "statusClosed": "Fèmen", "statusTabulation": "Konpilasyon", "statusFinal": "Definitif" },
+    "devices": { "title": "Aparèy", "deviceId": "ID aparèy", "version": "Vèsyon", "assignedUser": "Itilizatè", "status": "Estati", "lastSeen": "Dènye koneksyon", "lastSync": "Dènye senkronizasyon", "statusActive": "Aktif", "statusRevoked": "Révoqué", "statusSuspended": "Sispann", "actions": "Aksyon", "suspend": "Sispann", "revoke": "Révoquer" },
+    "incidents": { "title": "Enksidan", "category": "Kategori", "severity": "Nivo", "status": "Estati", "reportedBy": "Sijnalé pa", "reportedAt": "Dat", "statusOpen": "Ouvè", "statusResolved": "Rezoud" },
+    "audit": { "title": "Verifikasyon", "actor": "Aktè", "action": "Aksyon", "object": "Objè", "outcome": "Rezilta", "correlationId": "ID korelasyon", "occurredAt": "Dat" },
+    "releases": { "title": "Vèsyon APK", "version": "Vèsyon", "build": "Build", "hash": "Hash", "signature": "Siyati", "status": "Estati", "publishPrivate": "Pibliye privè" },
+    "settings": { "title": "Konfigirasyon", "configHint": "Sistèm nan se 100% konfigirab — pa gen règle elektoral ki kode nan di.", "separationHint": "Séparation estrèk idantite / vòt garantit pa achitekti a." }
+  },
+  "apps": {
+    "field": { "mission": "Misyon aktif", "registered": "Enskri", "synced": "Senkronize", "pending": "An datant", "newRegistration": "Nouvo enskripsyon", "search": "Chèche elektè", "sync": "Senkronize", "incident": "Enksidan", "offlineNote": "Hors ligne — done yo konsève lokalman" },
+    "polling": { "bureau": "Biro vòt", "ready": "Sistèm pare", "start": "Kòmanse vòt", "verify": "Verifye elektè", "scan": "Anrejistre (scan)", "manual": "Antre idantifyan", "authorized": "Elektè otorize", "notAuthorized": "Elektè PA otorize", "ballot": "Biletin", "confirm": "Konfime chwa mwen", "modify": "Modifye", "recorded": "Vòt anrejistre", "secret": "Sekrè chwa ou pwoteje.", "finish": "Fini", "help": "Èd" }
+  }
+}

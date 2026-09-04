@@ -1,0 +1,158 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred.",
+    "retry": "Try again",
+    "offlineBanner": "Offline — data saved locally",
+    "onlineBanner": "Online — synchronized",
+    "actions": {
+      "continue": "Continue",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "back": "Back",
+      "submit": "Submit",
+      "search": "Search",
+      "verify": "Verify",
+      "close": "Close",
+      "select": "Select"
+    },
+    "states": {
+      "empty": "No data published yet.",
+      "loading": "Loading...",
+      "errorTitle": "Something went wrong",
+      "emptyTitle": "Nothing yet",
+      "success": "Operation succeeded."
+    },
+    "language": { "label": "Language", "ht": "Kreyòl", "fr": "Français", "en": "English" }
+  },
+  "design_system": {
+    "sync": {
+      "offline": "Offline",
+      "online": "Online",
+      "syncing": "Synchronizing...",
+      "synced": "Synchronized",
+      "error": "Synchronization error",
+      "pending": "Pending",
+      "revoked": "This device is no longer authorized.",
+      "sessionExpired": "Your session has expired."
+    },
+    "status": {
+      "draft": "Draft",
+      "preparation": "Preparation",
+      "published": "Published",
+      "open": "Open",
+      "closed": "Closed",
+      "tabulation": "Tabulation",
+      "provisional": "Provisional",
+      "consolidated": "Consolidated",
+      "final": "Final",
+      "archived": "Archived"
+    },
+    "badge": {
+      "info": "Information",
+      "success": "Success",
+      "warning": "Warning",
+      "danger": "Danger"
+    }
+  },
+  "public": {
+    "nav": { "home": "Home", "elections": "Elections", "electors": "Voters", "candidates": "Candidates", "results": "Results", "info": "Information", "diaspora": "Diaspora", "help": "Help" },
+    "hero": {
+      "title": "Your voice counts. Your participation is protected.",
+      "subtitle": "Official information, registration and participation.",
+      "ctaVerify": "Check my status",
+      "ctaRegister": "Register as a voter",
+      "ctaUnderstand": "Understand the process"
+    },
+    "cycle": {
+      "title": "Electoral cycle",
+      "step1": "Registration",
+      "step2": "Verification",
+      "step3": "Preparation",
+      "step4": "Voting",
+      "step5": "Counting",
+      "step6": "Tabulation",
+      "step7": "Publication"
+    }
+  },
+  "pages": {
+    "status": {
+      "title": "Check my status",
+      "fieldLabel": "Voter ID",
+      "fieldPlaceholder": "e.g. CEP-0000-0000",
+      "submit": "Check",
+      "loading": "Checking...",
+      "registeredBadge": "Registered voter",
+      "registeredBody": "Your registration is active. Here are the essential details.",
+      "notFound": "No matching record was found.",
+      "notFoundCta": "Start a registration",
+      "errorTitle": "A technical problem occurred",
+      "supportCode": "Support reference code"
+    },
+    "register": {
+      "title": "Citizen registration",
+      "subtitle": "We will guide you step by step.",
+      "welcomeTitle": "Welcome",
+      "welcomeBody": "We only collect the legally required information.",
+      "identityTitle": "Identity",
+      "verifyTitle": "Verification",
+      "locationTitle": "Electoral address",
+      "summaryTitle": "Summary",
+      "confirmTitle": "Confirmation",
+      "next": "Continue",
+      "back": "Back",
+      "stepLabel": "Step",
+      "referenceNote": "This registration reference is not proof of a vote.",
+      "doneTitle": "Your request has been recorded",
+      "doneBody": "Here is your reference. Keep it safe."
+    },
+    "candidates": {
+      "title": "Candidates",
+      "subtitle": "Official and neutral list.",
+      "post": "Position",
+      "party": "Party",
+      "territory": "Territory",
+      "viewProfile": "View profile",
+      "empty": "No candidates published.",
+      "emptyDetail": "Official information will be published by the CEP when available."
+    },
+    "results": {
+      "title": "Results",
+      "subtitle": "Official results published by the CEP.",
+      "trustProvisional": "Provisional",
+      "trustPartial": "Partial",
+      "trustConsolidated": "Consolidated",
+      "trustFinal": "Final",
+      "lastUpdate": "Last update",
+      "coverage": "Stations received",
+      "blank": "Blank ballots",
+      "null": "Null ballots",
+      "participation": "Turnout",
+      "empty": "No results published.",
+      "emptyDetail": "Results will be published by the CEP when available."
+    },
+    "info": {
+      "title": "Information",
+      "communiques": "Press releases",
+      "calendar": "Calendar",
+      "documents": "Official documents",
+      "empty": "No information published."
+    }
+  },
+  "admin": {
+    "nav": { "dashboard": "Dashboard", "commandCenter": "Command Center", "elections": "Elections", "devices": "Devices", "incidents": "Incidents", "audit": "Audit", "releases": "APK Releases", "settings": "Configuration" },
+    "topbar": { "activeElection": "Active election", "systemStatus": "System status", "notifications": "Notifications" },
+    "dashboard": { "title": "Dashboard", "electors": "Voters", "candidates": "Candidates", "stations": "Stations", "agents": "Agents", "devices": "Devices", "sync": "Sync", "incidents": "Incidents", "security": "Security", "tabulation": "Tabulation" },
+    "commandCenter": { "title": "Command Center", "operational": "Operational", "attention": "Attention", "incidentLabel": "Incident", "online": "Online", "offline": "Offline", "pending": "Pending", "pvReceived": "PV received", "pvValidated": "PV validated", "perDayTitle": "Day progress" },
+    "elections": { "title": "Elections", "name": "Name", "type": "Type", "date": "Date", "status": "Status", "candidates": "Candidates", "stations": "Stations", "lastModified": "Last modified", "statusDraft": "Draft", "statusPublished": "Published", "statusOpen": "Open", "statusClosed": "Closed", "statusTabulation": "Tabulation", "statusFinal": "Final" },
+    "devices": { "title": "Devices", "deviceId": "Device ID", "version": "Version", "assignedUser": "Assigned user", "status": "Status", "lastSeen": "Last seen", "lastSync": "Last sync", "statusActive": "Active", "statusRevoked": "Revoked", "statusSuspended": "Suspended", "actions": "Actions", "suspend": "Suspend", "revoke": "Revoke" },
+    "incidents": { "title": "Incidents", "category": "Category", "severity": "Severity", "status": "Status", "reportedBy": "Reported by", "reportedAt": "Date", "statusOpen": "Open", "statusResolved": "Resolved" },
+    "audit": { "title": "Audit", "actor": "Actor", "action": "Action", "object": "Object", "outcome": "Outcome", "correlationId": "Correlation ID", "occurredAt": "Date" },
+    "releases": { "title": "APK Releases", "version": "Version", "build": "Build", "hash": "Hash", "signature": "Signature", "status": "Status", "publishPrivate": "Publish privately" },
+    "settings": { "title": "Configuration", "configHint": "The system is 100% configurable: no electoral rule is hard-coded.", "separationHint": "Strict identity/vote separation is guaranteed by the architecture." }
+  },
+  "apps": {
+    "field": { "mission": "Active mission", "registered": "Registered", "synced": "Synchronized", "pending": "Pending", "newRegistration": "New registration", "search": "Search a voter", "sync": "Synchronize", "incident": "Incident", "offlineNote": "Offline — data saved locally" },
+    "polling": { "bureau": "Polling station", "ready": "System ready", "start": "Start voting", "verify": "Verify the voter", "scan": "Scan", "manual": "Enter Voter ID", "authorized": "Voter authorized", "notAuthorized": "Voter not authorized", "ballot": "Ballot", "confirm": "Confirm my choice", "modify": "Modify", "recorded": "Vote recorded", "secret": "The secrecy of your choice is preserved.", "finish": "Finish", "help": "Help" }
+  }
+}

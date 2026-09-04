@@ -1,0 +1,63 @@
+# Dépendances
+node_modules/
+.pnpm-store/
+
+# Caches / outillage local (jamais committés)
+.cache/
+.tooling/
+
+# Builds
+dist/
+build/
+*.tsbuildinfo
+.next/
+
+# Environnements & secrets — ne jamais committer
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+keystore/
+security/keys/*.pem
+security/keys/*.key
+security/keys/*.private
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.db.sqlite3
+staticfiles/
+media/
+
+# Go
+*.exe
+*.test
+*.out
+vendor/
+
+# Rust
+target/
+
+# Android
+*.apk
+*.aab
+/build
+/local.properties
+.gradle/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Couverture
+coverage/
+coverage-*.xml
+.nyc_output/
