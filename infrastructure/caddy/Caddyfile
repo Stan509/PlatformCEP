@@ -1,54 +1,46 @@
-# CEP — Reverse-proxy TLS (Caddy)
+# CEP — Reverse-proxy & Static Web Server (Caddy)
 #
-# Caddy délivre automatiquement Let's Encrypt pour un DOMAINE.
-#
-# ⚠️ IMPORTANT : pour un serveur joignable et sécurisé, utilisez un DOMAINE
-# (ex. "elections.example.ht") pointé vers l'IP du droplet — un ADRESSE IP nue
-# ne peut PAS obtenir de certificat Let's Encrypt, donc HTTPS échouera
-# (ERR_TIMED_OUT / erreur de certificat). Pour un test HTTP provisoire,
-# utilisez le bloc `http://` en bas de ce fichier.
-#
-# Variables (env, jamais en dur) :
-#   SITE_ADDRESS       : domaine public (ex. "elections.example.ht")
-#   API_UPSTREAM       : passerelle Django (ex. "api:8000")
-#   PUBLIC_WEB_ROOT    : dossier du build PWA (doit contenir le dossier `assets/`)
-#
-# NOTE : `try_files {path} /index.html` sert le VRAI fichier si présent (les
-# bundlers /assets/*.js|*.css), et ne renvoie index.html que pour les routes
-# SPA inconnues. C'est ce qui évite la « page blanche ».
+# Gère le routage HTTPS/HTTP, la distribution des PWA et le reverse-proxy vers les API.
 
-{$SITE_ADDRESS:localhost} {
+http://147.182.161.220, https://147.182.161.220, :80, :443 {
+	tls internal
+
 	encode gzip
 
-	# Sécurité des en-têtes
 	header {
-		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'"
 		X-Content-Type-Options nosniff
 		X-Frame-Options DENY
 		Referrer-Policy strict-origin-when-cross-origin
-		Permissions-Policy "camera=(), microphone=(), geolocation=()"
 	}
 
-	# API Django / DRF — conserve le préfixe /api (pas de strip)
+	# API Django Core (Port 8000)
 	handle /api/* {
-		reverse_proxy {$API_UPSTREAM:api:8000}
+		reverse_proxy 127.0.0.1:8000 {
+			header_up X-Forwarded-Proto https
+		}
 	}
 
-	# Santé
-	handle /healthz {
-		reverse_proxy {$API_UPSTREAM:api:8000}
+	# Go Gateway (Port 8080)
+	handle /gateway/* {
+		reverse_proxy 127.0.0.1:8080
 	}
 
-	# PWA statique — sert les vrais assets, fallback SPA pour les routes seules
-	root * {$PUBLIC_WEB_ROOT:/srv/apps/public-pwa}
-	try_files {path} /index.html
-	file_server
+	# Go/Rust Sync Service (Port 8090)
+	handle /sync/* {
+		reverse_proxy 127.0.0.1:8090
+	}
+
+	# Administration Portal SPA
+	handle /admin* {
+		root * /opt/cep/apps/cep-admin/dist
+		try_files {path} {path}/ /index.html
+		file_server
+	}
+
+	# Public Voter PWA SPA (Racine par défaut)
+	handle {
+		root * /opt/cep/apps/public-pwa/dist
+		try_files {path} {path}/ /index.html
+		file_server
+	}
 }
-
-# --- Uniquement pour un test HTTP temporaire (pas de TLS) ---
-# http://147.182.161.220 {
-# 	root * /srv/apps/public-pwa
-# 	try_files {path} /index.html
-# 	file_server
-# }
