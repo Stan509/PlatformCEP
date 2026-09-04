@@ -1,4 +1,11 @@
+from django.contrib import admin
+from django.urls import path, include
 from django.http import JsonResponse
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 def root_api_index(request):
     return JsonResponse({

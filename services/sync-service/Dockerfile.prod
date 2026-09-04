@@ -6,7 +6,7 @@
 # Go, puis les assemble. Contexte de build = racine du monorepo.
 
 # ---- Stage 1 : crypto-cli (Rust) ----
-FROM rust:1.82-alpine AS crypto
+FROM rust:alpine AS crypto
 WORKDIR /build
 COPY rust/crypto-core ./rust/crypto-core
 WORKDIR /build/rust/crypto-core
