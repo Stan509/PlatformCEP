@@ -1,0 +1,14 @@
+# Normalisation des fins de ligne (CRLF/LF) pour un dépôt multi-OS
+* text=auto eol=lf
+
+# Binaires / artefacts
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.apk binary
+*.aab binary
+*.pem binary
+*.key binary
