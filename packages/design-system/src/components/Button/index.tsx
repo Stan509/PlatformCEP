@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes, JSX, ReactNode } from 'react';
 import { useI18n } from '@cep/i18n';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
-export type ButtonSize = 'md' | 'lg' | 'xl';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 type ButtonState = 'default' | 'loading' | 'disabled';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

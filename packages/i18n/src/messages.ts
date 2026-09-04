@@ -1,4 +1,4 @@
-import { LanguageCode } from '@cep/shared-types';
+import type { LanguageCode } from '@cep/shared-types';
 import ht from '../locales/ht.json';
 import fr from '../locales/fr.json';
 import en from '../locales/en.json';

@@ -3,6 +3,9 @@ packages:
   - "packages/*"
   - "tests/unit"
 
+allowBuilds:
+  esbuild: set this to true or false
+
 onlyBuiltDependencies:
   - esbuild
   - "@swc/core"

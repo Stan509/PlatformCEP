@@ -1,6 +1,6 @@
 import type { HTMLAttributes, JSX, ReactNode } from 'react';
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: ReactNode;
   body?: ReactNode;
   footer?: ReactNode;

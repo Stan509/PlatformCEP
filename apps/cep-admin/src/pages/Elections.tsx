@@ -10,7 +10,7 @@ export function Elections(): JSX.Element {
   const { t } = useI18n();
   const state = useAsync(() => adminApi.elections(), []);
 
-  const tone: Record<string, 'info' | 'success' | 'warning' | 'danger'> = {
+  const tone: Record<string, 'info' | 'success' | 'warning' | 'danger' | 'neutral'> = {
     statusOpen: 'success',
     statusFinal: 'info',
     statusDraft: 'neutral',
