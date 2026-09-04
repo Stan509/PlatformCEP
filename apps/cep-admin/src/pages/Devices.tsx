@@ -17,12 +17,12 @@ export function Devices(): JSX.Element {
   };
 
   const columns: TableColumn<AdminDevice>[] = [
-    { key: 'deviceId', header: t('admin.devices.deviceId'), accessor: (r) => r.deviceId },
-    { key: 'version', header: t('admin.devices.version'), accessor: (r) => r.version },
-    { key: 'assignedUser', header: t('admin.devices.assignedUser'), accessor: (r) => r.assignedUser },
-    { key: 'status', header: t('admin.devices.status'), accessor: (r) => <StatusIndicator tone={tone[r.status]} label={t(`admin.devices.status${r.status.charAt(0)}${r.status.slice(1).toLowerCase()}`)} /> },
-    { key: 'lastSeen', header: t('admin.devices.lastSeen'), accessor: (r) => r.lastSeen },
-    { key: 'lastSync', header: t('admin.devices.lastSync'), accessor: (r) => r.lastSync },
+    { key: 'deviceId', header: t('admin.devices.deviceId'), accessor: (r: AdminDevice) => r.deviceId },
+    { key: 'version', header: t('admin.devices.version'), accessor: (r: AdminDevice) => r.version },
+    { key: 'assignedUser', header: t('admin.devices.assignedUser'), accessor: (r: AdminDevice) => r.assignedUser },
+    { key: 'status', header: t('admin.devices.status'), accessor: (r: AdminDevice) => <StatusIndicator tone={tone[r.status]} label={t(`admin.devices.status${r.status.charAt(0)}${r.status.slice(1).toLowerCase()}`)} /> },
+    { key: 'lastSeen', header: t('admin.devices.lastSeen'), accessor: (r: AdminDevice) => r.lastSeen },
+    { key: 'lastSync', header: t('admin.devices.lastSync'), accessor: (r: AdminDevice) => r.lastSync },
     { key: 'actions', header: t('admin.devices.actions'), accessor: () => (
       <div style={{ display: 'flex', gap: 'var(--cep-space-2)' }}>
         <Button size="sm" variant="secondary">{t('admin.devices.suspend')}</Button>
@@ -36,7 +36,7 @@ export function Devices(): JSX.Element {
       state.state === 'loading' ? <StateView state="loading" /> :
       state.state === 'empty' ? <StateView state="empty" /> :
       state.state === 'error' ? <StateView state="error" /> :
-      <Table columns={columns} data={state.data} keyField={(r) => r.id} />
+      <Table columns={columns} data={state.data} keyField={(r: AdminDevice) => r.id} />
     } />
   );
 }

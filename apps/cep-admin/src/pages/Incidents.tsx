@@ -22,11 +22,11 @@ export function Incidents(): JSX.Element {
   };
 
   const columns: TableColumn<AdminIncident>[] = [
-    { key: 'category', header: t('admin.incidents.category'), accessor: (r) => r.category },
-    { key: 'severity', header: t('admin.incidents.severity'), accessor: (r) => <StatusIndicator tone={sevTone[r.severity]} label={r.severity} /> },
-    { key: 'status', header: t('admin.incidents.status'), accessor: (r) => <StatusIndicator tone={statusTone[r.status]} label={t(`admin.incidents.status${r.status === 'OPEN' ? 'Open' : 'Resolved'}`)} /> },
-    { key: 'reportedBy', header: t('admin.incidents.reportedBy'), accessor: (r) => r.reportedBy },
-    { key: 'reportedAt', header: t('admin.incidents.reportedAt'), accessor: (r) => r.reportedAt },
+    { key: 'category', header: t('admin.incidents.category'), accessor: (r: AdminIncident) => r.category },
+    { key: 'severity', header: t('admin.incidents.severity'), accessor: (r: AdminIncident) => <StatusIndicator tone={sevTone[r.severity]} label={r.severity} /> },
+    { key: 'status', header: t('admin.incidents.status'), accessor: (r: AdminIncident) => <StatusIndicator tone={statusTone[r.status]} label={t(`admin.incidents.status${r.status === 'OPEN' ? 'Open' : 'Resolved'}`)} /> },
+    { key: 'reportedBy', header: t('admin.incidents.reportedBy'), accessor: (r: AdminIncident) => r.reportedBy },
+    { key: 'reportedAt', header: t('admin.incidents.reportedAt'), accessor: (r: AdminIncident) => r.reportedAt },
   ];
 
   return (
@@ -34,7 +34,7 @@ export function Incidents(): JSX.Element {
       state.state === 'loading' ? <StateView state="loading" /> :
       state.state === 'empty' ? <StateView state="empty" /> :
       state.state === 'error' ? <StateView state="error" /> :
-      <Table columns={columns} data={state.data} keyField={(r) => r.id} />
+      <Table columns={columns} data={state.data} keyField={(r: AdminIncident) => r.id} />
     } />
   );
 }

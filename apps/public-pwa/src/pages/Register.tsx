@@ -84,7 +84,7 @@ export function Register(): JSX.Element {
               <select
                 className="cep-input"
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setLocation(e.target.value)}
                 style={{ appearance: 'auto' }}
               >
                 {GEO_DEMO.map((g) => (

@@ -42,7 +42,7 @@ class AuditEvent(models.Model):
         indexes = [models.Index(fields=["actor_ref", "occurred_at"])]
 
     def save(self, *args, **kwargs) -> None:
-        if self.pk:
+        if not self._state.adding:
             raise ValidationError("AuditEvent is immutable and cannot be modified.")
         super().save(*args, **kwargs)
 

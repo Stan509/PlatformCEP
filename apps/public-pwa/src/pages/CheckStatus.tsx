@@ -42,7 +42,7 @@ export function CheckStatus(): JSX.Element {
             label={t('pages.status.fieldLabel')}
             examplePlaceholder={t('pages.status.fieldPlaceholder')}
             value={ref}
-            onChange={(e) => setRef(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRef(e.target.value)}
             loading={phase === 'submitting'}
           />
           <Button

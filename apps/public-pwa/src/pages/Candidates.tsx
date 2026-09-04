@@ -41,7 +41,7 @@ export function Candidates(): JSX.Element {
                       {t('pages.candidates.post')} : {candidate.post}
                     </span>
                     <span style={{ color: 'var(--cep-color-text-secondary)', fontSize: 'var(--cep-font-size-small)' }}>
-                      {t('pages.candidates.party')} : {party ? party.name[lang] : '—'}
+                      {t('pages.candidates.party')} : {party ? party.name[lang as keyof typeof party.name] ?? '—' : '—'}
                     </span>
                     <span style={{ color: 'var(--cep-color-text-secondary)', fontSize: 'var(--cep-font-size-small)' }}>
                       {t('pages.candidates.territory')} : {candidate.territory}
