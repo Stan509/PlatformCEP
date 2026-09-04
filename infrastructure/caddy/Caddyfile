@@ -30,8 +30,10 @@ http://147.182.161.220, https://147.182.161.220, :80, :443 {
 		reverse_proxy 127.0.0.1:8090
 	}
 
+	# Redirection /admin vers /admin/
+	redir /admin /admin/ permanent
+
 	# Administration Portal SPA (base '/admin/' -> assets sous /admin/assets/)
-	# handle_path enlève le préfixe /admin pour servir depuis dist/ (SPA fallback).
 	handle_path /admin/* {
 		root * /opt/cep/apps/cep-admin/dist
 		try_files {path} {path}/ /index.html
