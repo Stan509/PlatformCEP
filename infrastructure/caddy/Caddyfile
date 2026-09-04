@@ -1,10 +1,21 @@
 # CEP — Reverse-proxy TLS (Caddy)
 #
-# Caddy gère automatiquement Let's Encrypt (HTTPS) et la rotation des certificats.
-# Variables injectées via l'environnement, jamais en dur.
+# Caddy délivre automatiquement Let's Encrypt pour un DOMAINE.
 #
-#   SITE_ADDRESS  : votre domaine (ex. "elections.example.ht" ou "app.example.ht")
-#   API_UPSTREAM  : passerelle Django (ex. "api:8000")
+# ⚠️ IMPORTANT : pour un serveur joignable et sécurisé, utilisez un DOMAINE
+# (ex. "elections.example.ht") pointé vers l'IP du droplet — un ADRESSE IP nue
+# ne peut PAS obtenir de certificat Let's Encrypt, donc HTTPS échouera
+# (ERR_TIMED_OUT / erreur de certificat). Pour un test HTTP provisoire,
+# utilisez le bloc `http://` en bas de ce fichier.
+#
+# Variables (env, jamais en dur) :
+#   SITE_ADDRESS       : domaine public (ex. "elections.example.ht")
+#   API_UPSTREAM       : passerelle Django (ex. "api:8000")
+#   PUBLIC_WEB_ROOT    : dossier du build PWA (doit contenir le dossier `assets/`)
+#
+# NOTE : `try_files {path} /index.html` sert le VRAI fichier si présent (les
+# bundlers /assets/*.js|*.css), et ne renvoie index.html que pour les routes
+# SPA inconnues. C'est ce qui évite la « page blanche ».
 
 {$SITE_ADDRESS:localhost} {
 	encode gzip
@@ -19,7 +30,7 @@
 		Permissions-Policy "camera=(), microphone=(), geolocation=()"
 	}
 
-	# API (Django / DRF) — toutes les routes /api/*
+	# API Django / DRF — conserve le préfixe /api (pas de strip)
 	handle /api/* {
 		reverse_proxy {$API_UPSTREAM:api:8000}
 	}
@@ -29,12 +40,15 @@
 		reverse_proxy {$API_UPSTREAM:api:8000}
 	}
 
-	# Frontends statiques (PWA publique + admin) :
-	# soit servis par une Static Site (DO App Platform / Spaces), soit montés
-	# ici en file_server depuis un volume de build. Exemple minimal :
-	# handle {
-	#   root * /srv/apps/public
-	#   file_server
-	# }
-	respond 404
+	# PWA statique — sert les vrais assets, fallback SPA pour les routes seules
+	root * {$PUBLIC_WEB_ROOT:/srv/apps/public-pwa}
+	try_files {path} /index.html
+	file_server
 }
+
+# --- Uniquement pour un test HTTP temporaire (pas de TLS) ---
+# http://147.182.161.220 {
+# 	root * /srv/apps/public-pwa
+# 	try_files {path} /index.html
+# 	file_server
+# }
