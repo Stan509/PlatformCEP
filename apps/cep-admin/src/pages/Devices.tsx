@@ -1,14 +1,35 @@
+import { useEffect, useState } from 'react';
 import type { JSX } from 'react';
 import { useI18n } from '@cep/i18n';
-import { Button, Card, StateView, StatusIndicator, Table, useAsync } from '@cep/design-system';
-import type { TableColumn } from '@cep/design-system';
+import { Button, StatusIndicator } from '@cep/design-system';
 import type { AdminDevice } from '../lib/mockData';
 import { adminApi } from '../lib/api';
 
-/** Gestion des appareils — statut, dernière connexion/sync, actions (spec §31). */
 export function Devices(): JSX.Element {
   const { t } = useI18n();
-  const state = useAsync(() => adminApi.devices(), []);
+  const [devices, setDevices] = useState<AdminDevice[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadDevices = async () => {
+    setLoading(true);
+    try {
+      const data = await adminApi.devices();
+      setDevices(data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDevices();
+  }, []);
+
+  const handleStatusChange = async (id: string, newStatus: AdminDevice['status'], compromised = false, reason?: string) => {
+    const updated = await adminApi.updateDeviceStatus(id, newStatus, compromised, reason);
+    setDevices(updated);
+  };
+
+  const compromisedDevice = devices.find((d) => d.compromised);
 
   const tone: Record<AdminDevice['status'], 'success' | 'danger' | 'warning'> = {
     ACTIVE: 'success',
@@ -16,27 +37,154 @@ export function Devices(): JSX.Element {
     SUSPENDED: 'warning',
   };
 
-  const columns: TableColumn<AdminDevice>[] = [
-    { key: 'deviceId', header: t('admin.devices.deviceId'), accessor: (r: AdminDevice) => r.deviceId },
-    { key: 'version', header: t('admin.devices.version'), accessor: (r: AdminDevice) => r.version },
-    { key: 'assignedUser', header: t('admin.devices.assignedUser'), accessor: (r: AdminDevice) => r.assignedUser },
-    { key: 'status', header: t('admin.devices.status'), accessor: (r: AdminDevice) => <StatusIndicator tone={tone[r.status]} label={t(`admin.devices.status${r.status.charAt(0)}${r.status.slice(1).toLowerCase()}`)} /> },
-    { key: 'lastSeen', header: t('admin.devices.lastSeen'), accessor: (r: AdminDevice) => r.lastSeen },
-    { key: 'lastSync', header: t('admin.devices.lastSync'), accessor: (r: AdminDevice) => r.lastSync },
-    { key: 'actions', header: t('admin.devices.actions'), accessor: () => (
-      <div style={{ display: 'flex', gap: 'var(--cep-space-2)' }}>
-        <Button size="sm" variant="secondary">{t('admin.devices.suspend')}</Button>
-        <Button size="sm" variant="danger">{t('admin.devices.revoke')}</Button>
-      </div>
-    ) },
-  ];
-
   return (
-    <Card title={t('admin.devices.title')} body={
-      state.state === 'loading' ? <StateView state="loading" /> :
-      state.state === 'empty' ? <StateView state="empty" /> :
-      state.state === 'error' ? <StateView state="error" /> :
-      <Table columns={columns} data={state.data} keyField={(r: AdminDevice) => r.id} />
-    } />
+    <div style={{ padding: 'var(--cep-space-4)', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Header */}
+      <div>
+        <h1 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--cep-color-deep-blue)' }}>
+          Gestion & Télémétrie de Sécurité des Appareils
+        </h1>
+        <p style={{ margin: '4px 0 0', color: 'var(--cep-color-text-muted)', fontSize: '0.9rem' }}>
+          Surveillance en temps réel des 7 420 Biopads et tablettes d'émargement : Localisation, enclaves matérielles TPM 2.0 et détection d'intrusions.
+        </p>
+      </div>
+
+      {/* Red Alert Banner if a device is compromised */}
+      {compromisedDevice && (
+        <div
+          style={{
+            background: '#fce8e6',
+            border: '2px solid #c5221f',
+            borderRadius: 'var(--cep-radius-lg)',
+            padding: '1.25rem 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                background: '#c5221f',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+                flexShrink: 0,
+              }}
+            >
+              🚨
+            </div>
+            <div>
+              <h3 style={{ margin: 0, color: '#c5221f', fontSize: '1.15rem' }}>
+                ALERTE SÉCURITÉ CRITIQUE : Appareil Compromis ({compromisedDevice.deviceId})
+              </h3>
+              <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: '#5f2120' }}>
+                <strong>Motif :</strong> {compromisedDevice.compromiseReason} ({compromisedDevice.department}, Commune de {compromisedDevice.commune}, Code BV: {compromisedDevice.pollingStationCode})
+              </p>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <Button
+              size="sm"
+              variant="danger"
+              onClick={() => handleStatusChange(compromisedDevice.id, 'REVOKED', true, compromisedDevice.compromiseReason)}
+            >
+              🔒 Révocation Certificat Immédiate
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Devices List Table */}
+      <div style={{ background: 'white', borderRadius: 'var(--cep-radius-lg)', border: '1px solid var(--cep-color-border)', padding: '1.5rem' }}>
+        <h3 style={{ margin: '0 0 1rem', color: 'var(--cep-color-deep-blue)', fontSize: '1.15rem' }}>
+          Registre des Appareils Biométriques Déployés
+        </h3>
+
+        {loading ? (
+          <div>{t('common.loading')}</div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <thead>
+                <tr style={{ background: '#f8f9fa', borderBottom: '2px solid var(--cep-color-border)', textAlign: 'left' }}>
+                  <th style={{ padding: '0.75rem 1rem' }}>ID Appareil</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Localisation & Bureau</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Chiffrement & TPM</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Utilisateur Assigné</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Intégrité / Statut</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Actions de Sécurité</th>
+                </tr>
+              </thead>
+              <tbody>
+                {devices.map((d) => (
+                  <tr
+                    key={d.id}
+                    style={{
+                      borderBottom: '1px solid #eee',
+                      background: d.compromised ? '#fff8f7' : 'transparent',
+                    }}
+                  >
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <strong style={{ color: 'var(--cep-color-deep-blue)', display: 'block' }}>{d.deviceId}</strong>
+                      <span style={{ fontSize: '0.75rem', color: 'gray' }}>Version {d.version}</span>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div>{d.department} — {d.commune}</div>
+                      <code style={{ fontSize: '0.75rem', color: '#0d6efd' }}>{d.pollingStationCode}</code>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 600, color: d.encryption.includes('TPM 2.0') ? '#137333' : '#b06000' }}>
+                        {d.encryption}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: 'gray' }}>Cert: {d.certExpiry}</span>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <code>{d.assignedUser}</code>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      {d.compromised ? (
+                        <span style={{ background: '#fce8e6', color: '#c5221f', padding: '2px 8px', borderRadius: 4, fontWeight: 700, fontSize: '0.75rem' }}>
+                          🚨 COMPROMIS ({d.tamperCount} altérations)
+                        </span>
+                      ) : (
+                        <StatusIndicator tone={tone[d.status]} label={d.status} />
+                      )}
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {d.status === 'ACTIVE' ? (
+                          <Button size="sm" variant="secondary" onClick={() => handleStatusChange(d.id, 'SUSPENDED')}>
+                            Suspendre
+                          </Button>
+                        ) : (
+                          <Button size="sm" variant="secondary" onClick={() => handleStatusChange(d.id, 'ACTIVE')}>
+                            Réactiver
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleStatusChange(d.id, 'REVOKED', true, 'Révoqué manuellement par sécurité')}
+                        >
+                          Révoquer
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

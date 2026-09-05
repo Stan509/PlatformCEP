@@ -173,6 +173,7 @@
       "incidents": "Incidents",
       "audit": "Audit",
       "releases": "Versions APK",
+      "users": "Utilisateurs & Rôles",
       "settings": "Configuration"
     },
     "topbar": { "activeElection": "Élection active", "systemStatus": "État du système", "notifications": "Notifications" },

@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import type { JSX } from 'react';
 import { useI18n } from '@cep/i18n';
 import { LanguageSwitcher, StatusIndicator } from '@cep/design-system';
 import type { AdminRoute } from '../../router';
+import { adminApi } from '../../lib/api';
 
 const ROUTE_LABEL: Record<AdminRoute, string> = {
   dashboard: 'admin.nav.dashboard',
@@ -12,12 +14,15 @@ const ROUTE_LABEL: Record<AdminRoute, string> = {
   incidents: 'admin.nav.incidents',
   audit: 'admin.nav.audit',
   releases: 'admin.nav.releases',
+  users: 'admin.nav.users',
   settings: 'admin.nav.settings',
 };
 
-/** Topbar admin — élection active, état système, notifications, langue. */
+/** Topbar admin — élection active, état système, session RBAC active, langue. */
 export function Topbar({ route }: { route: AdminRoute }): JSX.Element {
   const { t } = useI18n();
+  const [activeUser] = useState(() => adminApi.getActiveUser());
+
   return (
     <header
       style={{
@@ -36,8 +41,23 @@ export function Topbar({ route }: { route: AdminRoute }): JSX.Element {
         <StatusIndicator tone="success" label={t('admin.topbar.systemStatus')} />
       </div>
       <div style={{ display: 'flex', gap: 'var(--cep-space-3)', alignItems: 'center' }}>
+        <div
+          style={{
+            background: 'var(--cep-color-deep-blue)',
+            color: 'white',
+            padding: '4px 10px',
+            borderRadius: 'var(--cep-radius-md)',
+            fontSize: '0.78rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <span>👤 {activeUser.fullName}</span>
+          <span style={{ opacity: 0.7 }}>({activeUser.role})</span>
+        </div>
         <span style={{ color: 'var(--cep-color-text-secondary)', fontSize: 'var(--cep-font-size-small)' }}>
-          {t('admin.topbar.activeElection')} : Demo 2026
+          Générales Haïti 2026
         </span>
         <LanguageSwitcher />
       </div>

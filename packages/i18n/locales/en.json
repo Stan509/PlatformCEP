@@ -164,7 +164,7 @@
     }
   },
   "admin": {
-    "nav": { "dashboard": "Dashboard", "commandCenter": "Command Center", "elections": "Elections", "candidates": "Candidates", "devices": "Devices", "incidents": "Incidents", "audit": "Audit", "releases": "APK Releases", "settings": "Settings" },
+    "nav": { "dashboard": "Dashboard", "commandCenter": "Command Center", "elections": "Elections", "candidates": "Candidates", "devices": "Devices", "incidents": "Incidents", "audit": "Audit", "releases": "APK Releases", "users": "Users & Roles", "settings": "Settings" },
     "topbar": { "activeElection": "Active Election", "systemStatus": "System Status", "notifications": "Notifications" },
     "dashboard": { "title": "Dashboard", "electors": "Voters", "candidates": "Candidates", "stations": "Stations", "agents": "Agents", "devices": "Devices", "sync": "Sync", "incidents": "Incidents", "security": "Security", "tabulation": "Tabulation" },
     "commandCenter": { "title": "Command Center", "operational": "Operational", "attention": "Attention", "incidentLabel": "Incident", "online": "Online", "offline": "Offline", "pending": "Pending", "pvReceived": "PV Received", "pvValidated": "PV Validated", "perDayTitle": "Daily Progress" },

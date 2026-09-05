@@ -10,6 +10,7 @@ export type AdminRoute =
   | 'incidents'
   | 'audit'
   | 'releases'
+  | 'users'
   | 'settings';
 
 const VALID: AdminRoute[] = [
@@ -21,6 +22,7 @@ const VALID: AdminRoute[] = [
   'incidents',
   'audit',
   'releases',
+  'users',
   'settings',
 ];
 

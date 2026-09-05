@@ -12,6 +12,7 @@ const NAV: { key: AdminRoute; labelKey: string }[] = [
   { key: 'incidents', labelKey: 'admin.nav.incidents' },
   { key: 'audit', labelKey: 'admin.nav.audit' },
   { key: 'releases', labelKey: 'admin.nav.releases' },
+  { key: 'users', labelKey: 'admin.nav.users' },
   { key: 'settings', labelKey: 'admin.nav.settings' },
 ];
 

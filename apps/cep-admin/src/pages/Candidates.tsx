@@ -3,8 +3,9 @@ import type { JSX } from 'react';
 import { useI18n } from '@cep/i18n';
 import { adminApi } from '../lib/api';
 import type { AdminCandidate, AdminElection } from '../lib/mockData';
+import { HAITI_DEPARTMENTS, getCommunesByDepartmentName, getSectionsCommunales } from '../lib/haitiGeo';
 
-const POST_OPTIONS = ['Président', 'Sénateur', 'Député', 'Maire'];
+const POST_OPTIONS = ['Président', 'Sénateur', 'Député', 'Maire', 'ASEC/DSEC'];
 const STATUS_OPTIONS: Array<'APPROVED' | 'PENDING' | 'REJECTED'> = ['APPROVED', 'PENDING', 'REJECTED'];
 
 export function Candidates(): JSX.Element {
@@ -20,11 +21,15 @@ export function Candidates(): JSX.Element {
   const [editingCandidate, setEditingCandidate] = useState<AdminCandidate | null>(null);
 
   // Form fields
+  const [number, setNumber] = useState('#10');
   const [name, setName] = useState('');
   const [party, setParty] = useState('');
   const [post, setPost] = useState('Président');
-  const [territory, setTerritory] = useState('National');
+  const [selectedDept, setSelectedDept] = useState('Ouest');
+  const [selectedCommune, setSelectedCommune] = useState('Port-au-Prince');
+  const [selectedSection, setSelectedSection] = useState('');
   const [slogan, setSlogan] = useState('');
+  const [policySummary, setPolicySummary] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
   const [electionId, setElectionId] = useState('e1');
   const [status, setStatus] = useState<'APPROVED' | 'PENDING' | 'REJECTED'>('APPROVED');
@@ -46,11 +51,15 @@ export function Candidates(): JSX.Element {
 
   const openCreateModal = () => {
     setEditingCandidate(null);
+    setNumber(`#${Math.floor(Math.random() * 80 + 10)}`);
     setName('');
     setParty('');
     setPost('Président');
-    setTerritory('National');
+    setSelectedDept('Ouest');
+    setSelectedCommune('Port-au-Prince');
+    setSelectedSection('');
     setSlogan('');
+    setPolicySummary('');
     setPhotoUrl('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80');
     setElectionId(elections[0]?.id || 'e1');
     setStatus('APPROVED');
@@ -59,26 +68,43 @@ export function Candidates(): JSX.Element {
 
   const openEditModal = (c: AdminCandidate) => {
     setEditingCandidate(c);
+    setNumber(c.number || `#${Math.floor(Math.random() * 80 + 10)}`);
     setName(c.name);
     setParty(c.party);
     setPost(c.post);
-    setTerritory(c.territory);
+    setSelectedDept(c.department || 'Ouest');
+    setSelectedCommune(c.commune || 'Port-au-Prince');
+    setSelectedSection(c.sectionCommunale || '');
     setSlogan(c.slogan);
+    setPolicySummary(c.policySummary || '');
     setPhotoUrl(c.photoUrl);
     setElectionId(c.electionId);
     setStatus(c.status);
     setModalOpen(true);
   };
 
+  const computeTerritoryLabel = () => {
+    if (post === 'Président') return 'National (Haïti)';
+    if (post === 'Sénateur') return `Département du ${selectedDept}`;
+    if (post === 'Député') return `Circonscription de ${selectedCommune} (${selectedDept})`;
+    if (post === 'Maire') return `Commune de ${selectedCommune} (${selectedDept})`;
+    return `Section ${selectedSection || 'Communale'} (${selectedCommune})`;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const candidateData: AdminCandidate = {
       id: editingCandidate ? editingCandidate.id : `c-${Date.now()}`,
+      number,
       name,
       party,
       post,
-      territory,
+      territory: computeTerritoryLabel(),
+      department: post === 'Président' ? undefined : selectedDept,
+      commune: ['Président', 'Sénateur'].includes(post) ? undefined : selectedCommune,
+      sectionCommunale: selectedSection || undefined,
       slogan,
+      policySummary,
       photoUrl: photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
       electionId,
       status,
@@ -100,10 +126,14 @@ export function Candidates(): JSX.Element {
     const matchesSearch =
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.party.toLowerCase().includes(search.toLowerCase()) ||
-      c.territory.toLowerCase().includes(search.toLowerCase());
+      c.territory.toLowerCase().includes(search.toLowerCase()) ||
+      (c.number && c.number.toLowerCase().includes(search.toLowerCase()));
     const matchesPost = postFilter === 'ALL' || c.post === postFilter;
     return matchesSearch && matchesPost;
   });
+
+  const currentCommunes = getCommunesByDepartmentName(selectedDept);
+  const currentSections = getSectionsCommunales(selectedDept, selectedCommune);
 
   return (
     <div style={{ padding: 'var(--cep-space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-4)' }}>
@@ -111,10 +141,10 @@ export function Candidates(): JSX.Element {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--cep-color-deep-blue)' }}>
-            Gestion des Candidats
+            Gestion des Candidats & Programmes Politiques
           </h1>
           <p style={{ margin: '4px 0 0', color: 'var(--cep-color-text-muted)', fontSize: '0.9rem' }}>
-            Enregistrement et validation officielle des candidatures par poste et circonscription.
+            Numérotation officielle sur bulletin, enregistrement géographique et synthèse des lignes politiques.
           </p>
         </div>
         <button
@@ -131,7 +161,7 @@ export function Candidates(): JSX.Element {
             boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}
         >
-          + Ajouter un Candidat
+          + Enregistrer un Candidat
         </button>
       </div>
 
@@ -150,7 +180,7 @@ export function Candidates(): JSX.Element {
       >
         <input
           type="text"
-          placeholder="Rechercher par nom, parti, circonscription..."
+          placeholder="Rechercher par nom, numéro #14, parti, circonscription..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={{
@@ -190,7 +220,7 @@ export function Candidates(): JSX.Element {
           Aucun candidat ne correspond aux critères.
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.2rem' }}>
           {filteredCandidates.map((c) => (
             <div
               key={c.id}
@@ -198,22 +228,41 @@ export function Candidates(): JSX.Element {
                 background: 'white',
                 borderRadius: 'var(--cep-radius-md)',
                 border: '1px solid var(--cep-color-border)',
-                padding: 'var(--cep-space-3)',
+                padding: 'var(--cep-space-4)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.75rem',
+                gap: '0.85rem',
                 position: 'relative',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
               }}
             >
+              {/* Top Banner with Number & Photo */}
               <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <img
-                  src={c.photoUrl}
-                  alt={c.name}
-                  style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--cep-color-cep-blue)' }}
-                />
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={c.photoUrl}
+                    alt={c.name}
+                    style={{ width: 68, height: 68, borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--cep-color-cep-blue)' }}
+                  />
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: -4,
+                      right: -4,
+                      background: 'var(--cep-color-deep-blue)',
+                      color: 'white',
+                      fontWeight: 800,
+                      fontSize: '0.75rem',
+                      padding: '2px 6px',
+                      borderRadius: 10,
+                      border: '2px solid white',
+                    }}
+                  >
+                    {c.number || '#--'}
+                  </span>
+                </div>
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--cep-color-deep-blue)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--cep-color-deep-blue)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {c.name}
                   </h3>
                   <span
@@ -223,7 +272,7 @@ export function Candidates(): JSX.Element {
                       color: 'var(--cep-color-cep-blue)',
                       padding: '2px 8px',
                       borderRadius: 12,
-                      fontSize: '0.75rem',
+                      fontSize: '0.78rem',
                       fontWeight: 600,
                       marginTop: 4,
                     }}
@@ -233,21 +282,29 @@ export function Candidates(): JSX.Element {
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div>
-                  <strong>Poste:</strong> {c.post}
-                </div>
-                <div>
-                  <strong>Territoire:</strong> {c.territory}
-                </div>
+              {/* Territory & Post */}
+              <div style={{ fontSize: '0.85rem', display: 'flex', flexDirection: 'column', gap: 4, background: '#f8f9fa', padding: '0.6rem 0.8rem', borderRadius: 6 }}>
+                <div><strong>Poste Visé:</strong> {c.post}</div>
+                <div><strong>Circonscription:</strong> {c.territory}</div>
                 {c.slogan && (
-                  <div style={{ fontStyle: 'italic', color: 'var(--cep-color-text-muted)' }}>
+                  <div style={{ fontStyle: 'italic', color: 'var(--cep-color-text-muted)', marginTop: 2 }}>
                     "{c.slogan}"
                   </div>
                 )}
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.5rem', borderTop: '1px solid #eee' }}>
+              {/* Policy Platform Summary */}
+              {c.policySummary && (
+                <div style={{ fontSize: '0.82rem', color: '#333', lineHeight: 1.4, borderLeft: '3px solid var(--cep-color-cep-blue)', paddingLeft: '0.6rem' }}>
+                  <strong>Ligne Politique & Programme:</strong>
+                  <p style={{ margin: '2px 0 0', color: 'var(--cep-color-text-secondary)' }}>
+                    {c.policySummary}
+                  </p>
+                </div>
+              )}
+
+              {/* Footer status & Actions */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.6rem', borderTop: '1px solid #eee', marginTop: 'auto' }}>
                 <span
                   style={{
                     fontSize: '0.75rem',
@@ -258,7 +315,7 @@ export function Candidates(): JSX.Element {
                     color: c.status === 'APPROVED' ? '#137333' : c.status === 'PENDING' ? '#b06000' : '#c5221f',
                   }}
                 >
-                  {c.status === 'APPROVED' ? 'Approuvé' : c.status === 'PENDING' ? 'En attente' : 'Rejeté'}
+                  {c.status === 'APPROVED' ? 'Dossier Validé' : c.status === 'PENDING' ? 'En Examen' : 'Rejeté'}
                 </span>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                   <button
@@ -297,7 +354,7 @@ export function Candidates(): JSX.Element {
         </div>
       )}
 
-      {/* Modal CRUD Candidat */}
+      {/* Modal CRUD Candidat avec Sélection Géographique Haïti */}
       {modalOpen && (
         <div
           style={{
@@ -316,7 +373,9 @@ export function Candidates(): JSX.Element {
               background: 'white',
               borderRadius: 'var(--cep-radius-lg)',
               width: '100%',
-              maxWidth: 540,
+              maxWidth: 600,
+              maxHeight: '90vh',
+              overflowY: 'auto',
               padding: '1.5rem',
               display: 'flex',
               flexDirection: 'column',
@@ -325,23 +384,37 @@ export function Candidates(): JSX.Element {
             }}
           >
             <h2 style={{ margin: 0, fontSize: '1.3rem', color: 'var(--cep-color-deep-blue)' }}>
-              {editingCandidate ? 'Modifier le candidat' : 'Ajouter un nouveau candidat'}
+              {editingCandidate ? 'Modifier le dossier du candidat' : 'Enregistrer un nouveau candidat'}
             </h2>
+
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Nom complet</label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.8rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Numéro Bulletin</label>
+                  <input
+                    type="text"
+                    required
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                    placeholder="ex: #14"
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)', fontWeight: 700 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Nom & Prénom</label>
+                  <input
+                    type="text"
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
+                  />
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Parti / Rassemblement</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Parti Politique</label>
                   <input
                     type="text"
                     required
@@ -351,7 +424,7 @@ export function Candidates(): JSX.Element {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Poste</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Poste Convoité</label>
                   <select
                     value={post}
                     onChange={(e) => setPost(e.target.value)}
@@ -366,19 +439,72 @@ export function Candidates(): JSX.Element {
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Territoire / Circonscription</label>
-                <input
-                  type="text"
-                  required
-                  value={territory}
-                  onChange={(e) => setTerritory(e.target.value)}
-                  style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
-                />
-              </div>
+              {/* Geographical Selection in Cascade based on post */}
+              {post !== 'Président' && (
+                <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: 6, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--cep-color-deep-blue)' }}>
+                    🎯 Ciblage Géographique d'Haïti
+                  </span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: 2 }}>Département</label>
+                      <select
+                        value={selectedDept}
+                        onChange={(e) => setSelectedDept(e.target.value)}
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
+                      >
+                        {HAITI_DEPARTMENTS.map((d) => (
+                          <option key={d.code} value={d.name}>
+                            {d.name} (Chef-lieu: {d.chefLieu})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {['Député', 'Maire', 'ASEC/DSEC'].includes(post) && (
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: 2 }}>Commune</label>
+                        <select
+                          value={selectedCommune}
+                          onChange={(e) => setSelectedCommune(e.target.value)}
+                          style={{ width: '100%', padding: '0.4rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
+                        >
+                          {currentCommunes.map((c) => (
+                            <option key={c.code} value={c.name}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
+                  {post === 'ASEC/DSEC' && currentSections.length > 0 && (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: 2 }}>Section Communale</label>
+                      <select
+                        value={selectedSection}
+                        onChange={(e) => setSelectedSection(e.target.value)}
+                        style={{ width: '100%', padding: '0.4rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
+                      >
+                        <option value="">Sélectionner une section</option>
+                        {currentSections.map((s) => (
+                          <option key={s} value={s}>
+                            {s}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div style={{ fontSize: '0.78rem', color: 'gray', fontStyle: 'italic' }}>
+                    Portée résultante : <strong>{computeTerritoryLabel()}</strong>
+                  </div>
+                </div>
+              )}
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Slogan de campagne</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Slogan de Campagne</label>
                 <input
                   type="text"
                   value={slogan}
@@ -388,7 +514,18 @@ export function Candidates(): JSX.Element {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>URL Photo officielle</label>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Synthèse du Programme Politique</label>
+                <textarea
+                  rows={3}
+                  value={policySummary}
+                  onChange={(e) => setPolicySummary(e.target.value)}
+                  placeholder="Grandes lignes politiques, réformes économiques, sécurité..."
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)', fontFamily: 'inherit' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>URL Photo Officielle</label>
                 <input
                   type="url"
                   value={photoUrl}
@@ -399,7 +536,7 @@ export function Candidates(): JSX.Element {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Élection associée</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Élection</label>
                   <select
                     value={electionId}
                     onChange={(e) => setElectionId(e.target.value)}

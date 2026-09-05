@@ -11,6 +11,7 @@ import { Devices } from './pages/Devices';
 import { Incidents } from './pages/Incidents';
 import { Audit } from './pages/Audit';
 import { Releases } from './pages/Releases';
+import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
 
 function renderPage(route: AdminRoute): JSX.Element {
@@ -29,6 +30,8 @@ function renderPage(route: AdminRoute): JSX.Element {
       return <Audit />;
     case 'releases':
       return <Releases />;
+    case 'users':
+      return <Users />;
     case 'settings':
       return <Settings />;
     case 'dashboard':
