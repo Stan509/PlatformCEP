@@ -6,6 +6,8 @@ export type AdminRoute =
   | 'command-center'
   | 'elections'
   | 'candidates'
+  | 'parties'
+  | 'apk-users'
   | 'devices'
   | 'incidents'
   | 'audit'
@@ -18,6 +20,8 @@ const VALID: AdminRoute[] = [
   'command-center',
   'elections',
   'candidates',
+  'parties',
+  'apk-users',
   'devices',
   'incidents',
   'audit',

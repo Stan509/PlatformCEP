@@ -6,12 +6,22 @@ import {
   ADMIN_INCIDENTS,
   ADMIN_RELEASES,
   ADMIN_USERS,
+  APK_AGENT_USERS,
+  ELECTORAL_MANDATAIRES,
+  MANDATAIRE_REMARKS,
+  POLITICAL_PARTIES,
+  USER_ACCOUNTS,
 } from './mockData';
 import type {
   AdminCandidate,
   AdminDevice,
   AdminElection,
   AdminUser,
+  ApkAgentUser,
+  ElectoralMandataire,
+  MandataireRemark,
+  PoliticalParty,
+  UserAccount,
 } from './mockData';
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -20,145 +30,211 @@ const STORAGE_KEY_ELECTIONS = 'cep_admin_elections_v1';
 const STORAGE_KEY_CANDIDATES = 'cep_admin_candidates_v1';
 const STORAGE_KEY_DEVICES = 'cep_admin_devices_v1';
 const STORAGE_KEY_USERS = 'cep_admin_users_v1';
-const STORAGE_KEY_ACTIVE_USER = 'cep_admin_active_user_v1';
+const STORAGE_KEY_PARTIES = 'cep_admin_parties_v1';
+const STORAGE_KEY_MANDATAIRES = 'cep_admin_mandataires_v1';
+const STORAGE_KEY_REMARKS = 'cep_admin_remarks_v1';
+const STORAGE_KEY_APK_AGENTS = 'cep_admin_apk_agents_v1';
+const STORAGE_KEY_CURRENT_SESSION = 'cep_admin_auth_session_v1';
 
-function getStoredElections(): AdminElection[] {
+function getStored<T>(key: string, fallback: T): T {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_ELECTIONS);
+    const raw = localStorage.getItem(key);
     if (raw) return JSON.parse(raw);
   } catch {}
-  return ADMIN_ELECTIONS;
+  return fallback;
 }
 
-function saveElections(elections: AdminElection[]): void {
+function setStored<T>(key: string, data: T): void {
   try {
-    localStorage.setItem(STORAGE_KEY_ELECTIONS, JSON.stringify(elections));
+    localStorage.setItem(key, JSON.stringify(data));
   } catch {}
 }
 
-function getStoredCandidates(): AdminCandidate[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_CANDIDATES);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return ADMIN_CANDIDATES;
-}
-
-function saveCandidates(candidates: AdminCandidate[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY_CANDIDATES, JSON.stringify(candidates));
-  } catch {}
-}
-
-function getStoredDevices(): AdminDevice[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_DEVICES);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return ADMIN_DEVICES;
-}
-
-function saveDevices(devices: AdminDevice[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY_DEVICES, JSON.stringify(devices));
-  } catch {}
-}
-
-function getStoredUsers(): AdminUser[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_USERS);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return ADMIN_USERS;
-}
-
-/** Client API admin simulé (démo). En production : appels DRF avec JWT/RBAC. */
+/** Client API admin simulé. En production : appels DRF JWT/RBAC. */
 export const adminApi = {
+  // Authentication & Session
+  async login(username: string, password: string): Promise<{ success: boolean; user?: UserAccount; message?: string }> {
+    await delay(300);
+    const u = USER_ACCOUNTS.find(
+      (acc) => acc.username.toLowerCase() === username.trim().toLowerCase() && acc.password === password
+    );
+    if (u) {
+      setStored(STORAGE_KEY_CURRENT_SESSION, u);
+      return { success: true, user: u };
+    }
+    return { success: false, message: 'Identifiants ou mot de passe incorrects.' };
+  },
+
+  logout(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEY_CURRENT_SESSION);
+    } catch {}
+  },
+
+  getCurrentSession(): UserAccount | null {
+    return getStored<UserAccount | null>(STORAGE_KEY_CURRENT_SESSION, null);
+  },
+
+  // Elections
   async elections(): Promise<AdminElection[]> {
     await delay(150);
-    return getStoredElections();
+    return getStored(STORAGE_KEY_ELECTIONS, ADMIN_ELECTIONS);
   },
 
   async saveElection(election: AdminElection): Promise<AdminElection[]> {
     await delay(150);
-    const elections = getStoredElections();
-    const existingIndex = elections.findIndex((e) => e.id === election.id);
-    if (existingIndex >= 0) {
-      elections[existingIndex] = election;
-    } else {
-      elections.unshift(election);
-    }
-    saveElections(elections);
+    const elections = getStored(STORAGE_KEY_ELECTIONS, ADMIN_ELECTIONS);
+    const idx = elections.findIndex((e) => e.id === election.id);
+    if (idx >= 0) elections[idx] = election;
+    else elections.unshift(election);
+    setStored(STORAGE_KEY_ELECTIONS, elections);
     return elections;
   },
 
   async deleteElection(id: string): Promise<AdminElection[]> {
     await delay(150);
-    const elections = getStoredElections().filter((e) => e.id !== id);
-    saveElections(elections);
+    const elections = getStored<AdminElection[]>(STORAGE_KEY_ELECTIONS, ADMIN_ELECTIONS).filter((e) => e.id !== id);
+    setStored(STORAGE_KEY_ELECTIONS, elections);
     return elections;
   },
 
+  // Candidates
   async candidates(): Promise<AdminCandidate[]> {
     await delay(150);
-    return getStoredCandidates();
+    return getStored(STORAGE_KEY_CANDIDATES, ADMIN_CANDIDATES);
   },
 
   async saveCandidate(candidate: AdminCandidate): Promise<AdminCandidate[]> {
     await delay(150);
-    const candidates = getStoredCandidates();
-    const existingIndex = candidates.findIndex((c) => c.id === candidate.id);
-    if (existingIndex >= 0) {
-      candidates[existingIndex] = candidate;
-    } else {
-      candidates.unshift(candidate);
-    }
-    saveCandidates(candidates);
+    const candidates = getStored(STORAGE_KEY_CANDIDATES, ADMIN_CANDIDATES);
+    const idx = candidates.findIndex((c) => c.id === candidate.id);
+    if (idx >= 0) candidates[idx] = candidate;
+    else candidates.unshift(candidate);
+    setStored(STORAGE_KEY_CANDIDATES, candidates);
     return candidates;
   },
 
   async deleteCandidate(id: string): Promise<AdminCandidate[]> {
     await delay(150);
-    const candidates = getStoredCandidates().filter((c) => c.id !== id);
-    saveCandidates(candidates);
+    const candidates = getStored<AdminCandidate[]>(STORAGE_KEY_CANDIDATES, ADMIN_CANDIDATES).filter((c) => c.id !== id);
+    setStored(STORAGE_KEY_CANDIDATES, candidates);
     return candidates;
   },
 
+  // Political Parties
+  async parties(): Promise<PoliticalParty[]> {
+    await delay(150);
+    return getStored(STORAGE_KEY_PARTIES, POLITICAL_PARTIES);
+  },
+
+  async saveParty(party: PoliticalParty): Promise<PoliticalParty[]> {
+    await delay(150);
+    const parties = getStored(STORAGE_KEY_PARTIES, POLITICAL_PARTIES);
+    const idx = parties.findIndex((p) => p.id === party.id);
+    if (idx >= 0) parties[idx] = party;
+    else parties.unshift(party);
+    setStored(STORAGE_KEY_PARTIES, parties);
+    return parties;
+  },
+
+  async deleteParty(id: string): Promise<PoliticalParty[]> {
+    await delay(150);
+    const parties = getStored<PoliticalParty[]>(STORAGE_KEY_PARTIES, POLITICAL_PARTIES).filter((p) => p.id !== id);
+    setStored(STORAGE_KEY_PARTIES, parties);
+    return parties;
+  },
+
+  // Mandataires
+  async mandataires(): Promise<ElectoralMandataire[]> {
+    await delay(150);
+    return getStored(STORAGE_KEY_MANDATAIRES, ELECTORAL_MANDATAIRES);
+  },
+
+  async saveMandataire(mandataire: ElectoralMandataire): Promise<ElectoralMandataire[]> {
+    await delay(150);
+    const mandataires = getStored(STORAGE_KEY_MANDATAIRES, ELECTORAL_MANDATAIRES);
+    const idx = mandataires.findIndex((m) => m.id === mandataire.id);
+    if (idx >= 0) mandataires[idx] = mandataire;
+    else mandataires.unshift(mandataire);
+    setStored(STORAGE_KEY_MANDATAIRES, mandataires);
+    return mandataires;
+  },
+
+  async deleteMandataire(id: string): Promise<ElectoralMandataire[]> {
+    await delay(150);
+    const mandataires = getStored<ElectoralMandataire[]>(STORAGE_KEY_MANDATAIRES, ELECTORAL_MANDATAIRES).filter((m) => m.id !== id);
+    setStored(STORAGE_KEY_MANDATAIRES, mandataires);
+    return mandataires;
+  },
+
+  // Mandataire Remarks & Tally
+  async remarks(): Promise<MandataireRemark[]> {
+    await delay(150);
+    return getStored(STORAGE_KEY_REMARKS, MANDATAIRE_REMARKS);
+  },
+
+  async addRemark(remark: MandataireRemark): Promise<MandataireRemark[]> {
+    await delay(150);
+    const remarks = getStored(STORAGE_KEY_REMARKS, MANDATAIRE_REMARKS);
+    remarks.unshift(remark);
+    setStored(STORAGE_KEY_REMARKS, remarks);
+    return remarks;
+  },
+
+  // APK Agents
+  async apkAgents(): Promise<ApkAgentUser[]> {
+    await delay(150);
+    return getStored(STORAGE_KEY_APK_AGENTS, APK_AGENT_USERS);
+  },
+
+  async saveApkAgent(agent: ApkAgentUser): Promise<ApkAgentUser[]> {
+    await delay(150);
+    const agents = getStored(STORAGE_KEY_APK_AGENTS, APK_AGENT_USERS);
+    const idx = agents.findIndex((a) => a.id === agent.id);
+    if (idx >= 0) agents[idx] = agent;
+    else agents.unshift(agent);
+    setStored(STORAGE_KEY_APK_AGENTS, agents);
+    return agents;
+  },
+
+  async deleteApkAgent(id: string): Promise<ApkAgentUser[]> {
+    await delay(150);
+    const agents = getStored<ApkAgentUser[]>(STORAGE_KEY_APK_AGENTS, APK_AGENT_USERS).filter((a) => a.id !== id);
+    setStored(STORAGE_KEY_APK_AGENTS, agents);
+    return agents;
+  },
+
+  // Devices
   async devices(): Promise<AdminDevice[]> {
     await delay(150);
-    return getStoredDevices();
+    return getStored(STORAGE_KEY_DEVICES, ADMIN_DEVICES);
   },
 
   async updateDeviceStatus(id: string, status: AdminDevice['status'], compromised = false, reason?: string): Promise<AdminDevice[]> {
     await delay(150);
-    const devices = getStoredDevices();
+    const devices = getStored(STORAGE_KEY_DEVICES, ADMIN_DEVICES);
     const dev = devices.find((d) => d.id === id);
     if (dev) {
       dev.status = status;
       dev.compromised = compromised;
       if (reason) dev.compromiseReason = reason;
-      saveDevices(devices);
+      setStored(STORAGE_KEY_DEVICES, devices);
     }
     return devices;
   },
 
+  // CEP Admin Users
   async users(): Promise<AdminUser[]> {
     await delay(150);
-    return getStoredUsers();
+    return getStored(STORAGE_KEY_USERS, ADMIN_USERS);
   },
 
   getActiveUser(): AdminUser {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY_ACTIVE_USER);
-      if (raw) return JSON.parse(raw);
-    } catch {}
-    return ADMIN_USERS[0]!;
+    return getStored<AdminUser>(STORAGE_KEY_USERS, ADMIN_USERS[0]!);
   },
 
   setActiveUser(user: AdminUser): void {
-    try {
-      localStorage.setItem(STORAGE_KEY_ACTIVE_USER, JSON.stringify(user));
-    } catch {}
+    setStored(STORAGE_KEY_USERS, user);
   },
 
   async incidents() { await delay(150); return ADMIN_INCIDENTS; },

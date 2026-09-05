@@ -19,6 +19,7 @@ export interface AdminCandidate {
   number: string; // Numéro officiel sur le bulletin (ex: #14, #07)
   name: string;
   party: string;
+  partyId?: string;
   post: string; // 'Président', 'Sénateur', 'Député', 'Maire', 'ASEC/DSEC'
   territory: string;
   department?: string;
@@ -29,6 +30,80 @@ export interface AdminCandidate {
   photoUrl: string;
   electionId: string;
   status: 'APPROVED' | 'PENDING' | 'REJECTED';
+}
+
+export interface PoliticalParty {
+  id: string;
+  name: string;
+  acronym: string;
+  logoUrl: string;
+  leaderName: string;
+  legalStatus: 'RECOGNIZED' | 'PENDING' | 'SUSPENDED';
+  address: string;
+  mandatairesCount: number;
+  candidatesCount: number;
+}
+
+export interface ElectoralMandataire {
+  id: string;
+  fullName: string;
+  partyId: string;
+  partyName: string;
+  candidateId?: string;
+  candidateName?: string;
+  department: string;
+  commune: string;
+  pollingStationCode: string;
+  pollingStationName: string;
+  phone: string;
+  status: 'ACTIVE' | 'REVOKED';
+  remarksCount: number;
+}
+
+export interface MandataireRemark {
+  id: string;
+  mandataireId: string;
+  mandataireName: string;
+  partyName: string;
+  pollingStationCode: string;
+  category: 'REGULARITY' | 'ANOMALY' | 'DISPUTE' | 'TALLY_CHECK';
+  title: string;
+  description: string;
+  tallyVotes: number;
+  reportedAt: string;
+  status: 'SUBMITTED' | 'UNDER_REVIEW' | 'VALIDATED' | 'REJECTED';
+}
+
+export interface ApkAgentUser {
+  id: string;
+  type: 'FIELD' | 'POLLING_STATION';
+  agentCode: string;
+  fullName: string;
+  phone: string;
+  department: string;
+  commune: string;
+  coveredSections?: string; // For field agents
+  pollingStationCode?: string; // For polling agents
+  pollingStationName?: string;
+  address?: string; // Physical address
+  deviceId?: string;
+  status: 'ACTIVE' | 'SUSPENDED';
+}
+
+export interface UserAccount {
+  id: string;
+  username: string;
+  password: string;
+  fullName: string;
+  role: 'ADMIN_CEP' | 'MEMBER_CEP' | 'CANDIDATE' | 'PARTY' | 'MANDATAIRE' | 'APK_AGENT';
+  roleTitle: string;
+  candidateId?: string;
+  partyId?: string;
+  mandataireId?: string;
+  agentId?: string;
+  department?: string;
+  commune?: string;
+  pollingStationCode?: string;
 }
 
 export interface AdminDevice {
@@ -106,12 +181,71 @@ export const ADMIN_ELECTIONS: AdminElection[] = [
   { id: 'e2', name: 'Élection Municipale et Locales 2024 (Archivée)', type: 'local', date: '2024-01-15', status: 'statusFinal', candidates: 412, stations: 8940, lastModified: '2024-01-20T18:00' },
 ];
 
+export const POLITICAL_PARTIES: PoliticalParty[] = [
+  {
+    id: 'p1',
+    name: 'Pitit Desalin',
+    acronym: 'PITIT',
+    logoUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=120&auto=format&fit=crop&q=80',
+    leaderName: 'Jean-Charles Moïse',
+    legalStatus: 'RECOGNIZED',
+    address: 'Delmas 33, Rue Poupelard #45, Port-au-Prince',
+    mandatairesCount: 1420,
+    candidatesCount: 42,
+  },
+  {
+    id: 'p2',
+    name: 'Rassemblement des Démocrates Nationaux Progressistes',
+    acronym: 'RDNP',
+    logoUrl: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=120&auto=format&fit=crop&q=80',
+    leaderName: 'Mirlande Manigat',
+    legalStatus: 'RECOGNIZED',
+    address: 'Pétion-Ville, Rue Clerveaux #12, Port-au-Prince',
+    mandatairesCount: 980,
+    candidatesCount: 38,
+  },
+  {
+    id: 'p3',
+    name: 'Ligue Alternative pour le Progrès et l\'Émancipation Haïtienne',
+    acronym: 'LAPEH',
+    logoUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=120&auto=format&fit=crop&q=80',
+    leaderName: 'Steven Benoît',
+    legalStatus: 'RECOGNIZED',
+    address: 'Bourdon, Avenue Martin Luther King #88, Port-au-Prince',
+    mandatairesCount: 650,
+    candidatesCount: 24,
+  },
+  {
+    id: 'p4',
+    name: 'En Avant',
+    acronym: 'EA',
+    logoUrl: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=120&auto=format&fit=crop&q=80',
+    leaderName: 'Jerry Tardieu',
+    legalStatus: 'RECOGNIZED',
+    address: 'Pétion-Ville, Rue Moïse #19, Port-au-Prince',
+    mandatairesCount: 410,
+    candidatesCount: 18,
+  },
+  {
+    id: 'p5',
+    name: 'Candidats Indépendants d\'Haïti',
+    acronym: 'INDEP',
+    logoUrl: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=120&auto=format&fit=crop&q=80',
+    leaderName: 'Collectif des Indépendants',
+    legalStatus: 'RECOGNIZED',
+    address: 'Avenue Charles Sumner #104, Port-au-Prince',
+    mandatairesCount: 320,
+    candidatesCount: 62,
+  },
+];
+
 export const ADMIN_CANDIDATES: AdminCandidate[] = [
   {
     id: 'c1',
     number: '#14',
     name: 'Jean-Charles Moïse',
     party: 'Pitit Desalin',
+    partyId: 'p1',
     post: 'Président',
     territory: 'National (Haïti)',
     slogan: 'Pou yon Ayiti Souvren ak Djanm',
@@ -125,6 +259,7 @@ export const ADMIN_CANDIDATES: AdminCandidate[] = [
     number: '#07',
     name: 'Mirlande Manigat',
     party: 'RDNP',
+    partyId: 'p2',
     post: 'Président',
     territory: 'National (Haïti)',
     slogan: 'Ansanm pou Rekonstriksyon ak Leta de Dwa',
@@ -138,6 +273,7 @@ export const ADMIN_CANDIDATES: AdminCandidate[] = [
     number: '#22',
     name: 'Steven Benoît',
     party: 'LAPEH',
+    partyId: 'p3',
     post: 'Sénateur',
     territory: 'Département de l\'Ouest',
     department: 'Ouest',
@@ -152,6 +288,7 @@ export const ADMIN_CANDIDATES: AdminCandidate[] = [
     number: '#03',
     name: 'Jerry Tardieu',
     party: 'En Avant',
+    partyId: 'p4',
     post: 'Député',
     territory: 'Circonscription de Pétion-Ville',
     department: 'Ouest',
@@ -166,7 +303,8 @@ export const ADMIN_CANDIDATES: AdminCandidate[] = [
     id: 'c5',
     number: '#18',
     name: 'Marie-Antoinette Duclaire',
-    party: 'Rassemblement Démocratique',
+    party: 'Candidats Indépendants d\'Haïti',
+    partyId: 'p5',
     post: 'Maire',
     territory: 'Commune de Cap-Haïtien',
     department: 'Nord',
@@ -176,6 +314,199 @@ export const ADMIN_CANDIDATES: AdminCandidate[] = [
     photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     electionId: 'e1',
     status: 'APPROVED',
+  },
+];
+
+export const ELECTORAL_MANDATAIRES: ElectoralMandataire[] = [
+  {
+    id: 'm1',
+    fullName: 'Pierre-Richard Alexis',
+    partyId: 'p1',
+    partyName: 'Pitit Desalin',
+    candidateId: 'c1',
+    candidateName: 'Jean-Charles Moïse #14',
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
+    pollingStationCode: 'BV-PAP-012',
+    pollingStationName: 'Lycée Alexandre Pétion',
+    phone: '+509 3712-4490',
+    status: 'ACTIVE',
+    remarksCount: 1,
+  },
+  {
+    id: 'm2',
+    fullName: 'Claudette Saint-Germain',
+    partyId: 'p2',
+    partyName: 'RDNP',
+    candidateId: 'c2',
+    candidateName: 'Mirlande Manigat #07',
+    department: 'Nord',
+    commune: 'Cap-Haïtien',
+    pollingStationCode: 'BV-CAP-004',
+    pollingStationName: 'École Nationale de la Citadelle',
+    phone: '+509 3844-9011',
+    status: 'ACTIVE',
+    remarksCount: 0,
+  },
+  {
+    id: 'm3',
+    fullName: 'Jean-Yves Théodore',
+    partyId: 'p5',
+    partyName: 'Candidat Indépendant Marie-Antoinette Duclaire',
+    candidateId: 'c5',
+    candidateName: 'Marie-Antoinette Duclaire #18',
+    department: 'Nord',
+    commune: 'Cap-Haïtien',
+    pollingStationCode: 'BV-CAP-004',
+    pollingStationName: 'École Nationale de la Citadelle',
+    phone: '+509 3690-1122',
+    status: 'ACTIVE',
+    remarksCount: 2,
+  },
+];
+
+export const MANDATAIRE_REMARKS: MandataireRemark[] = [
+  {
+    id: 'mr1',
+    mandataireId: 'm1',
+    mandataireName: 'Pierre-Richard Alexis',
+    partyName: 'Pitit Desalin',
+    pollingStationCode: 'BV-PAP-012',
+    category: 'REGULARITY',
+    title: 'Ouverture régulière du bureau et scellement d\'urne',
+    description: 'Procès-verbal d\'ouverture vérifié et scellé à 06h00 précises en présence des observateurs.',
+    tallyVotes: 420,
+    reportedAt: '2026-09-05T06:15',
+    status: 'VALIDATED',
+  },
+  {
+    id: 'mr2',
+    mandataireId: 'm3',
+    mandataireName: 'Jean-Yves Théodore',
+    partyName: 'Candidat Indépendant Marie-Antoinette Duclaire',
+    pollingStationCode: 'BV-CAP-004',
+    category: 'TALLY_CHECK',
+    title: 'Comptage contradictoire final et dépouillement des bulletins',
+    description: 'Le décompte parallèle donne 184 votes pour le candidat #18 contre 182 enregistrés initialement. Réserve portée au procès-verbal.',
+    tallyVotes: 184,
+    reportedAt: '2026-09-05T05:40',
+    status: 'UNDER_REVIEW',
+  },
+];
+
+export const APK_AGENT_USERS: ApkAgentUser[] = [
+  {
+    id: 'a1',
+    type: 'FIELD',
+    agentCode: 'AGT-FLD-OU-041',
+    fullName: 'Marc-Antoine Toussaint',
+    phone: '+509 3788-1200',
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
+    coveredSections: 'Turgeau, Morne l\'Hôpital, Martissant',
+    deviceId: 'BIOPAD-OU-PAP-0142',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'a2',
+    type: 'POLLING_STATION',
+    agentCode: 'AGT-POL-BV-012',
+    fullName: 'Magalie Saint-Juste',
+    phone: '+509 3611-9988',
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
+    pollingStationCode: 'BV-PAP-012',
+    pollingStationName: 'Lycée Alexandre Pétion (Bureau #012)',
+    address: 'Rue Monseigneur Guilloux, Port-au-Prince, Département de l\'Ouest',
+    deviceId: 'BIOPAD-OU-PAP-0142',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'a3',
+    type: 'POLLING_STATION',
+    agentCode: 'AGT-POL-BV-004',
+    fullName: 'Emmanuel Hyppolite',
+    phone: '+509 3922-3344',
+    department: 'Nord',
+    commune: 'Cap-Haïtien',
+    pollingStationCode: 'BV-CAP-004',
+    pollingStationName: 'École Nationale de la Citadelle (Bureau #004)',
+    address: 'Rue 18-B, Cap-Haïtien, Département du Nord',
+    deviceId: 'BIOPAD-ND-CAP-0089',
+    status: 'ACTIVE',
+  },
+];
+
+export const USER_ACCOUNTS: UserAccount[] = [
+  {
+    id: 'u-cep-1',
+    username: 'm.mathurin.cep',
+    password: 'CepPassword2026!',
+    fullName: 'Me. Max Mathurin',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Président du Conseil Électoral Provisoire (CEP)',
+  },
+  {
+    id: 'u-cep-2',
+    username: 'y.mengual.cep',
+    password: 'CepPassword2026!',
+    fullName: 'Dr. Yolette Mengual',
+    role: 'MEMBER_CEP',
+    roleTitle: 'Conseillère Électorale — Responsable Opérations',
+  },
+  {
+    id: 'u-cand-1',
+    username: 'cand.moise.14',
+    password: 'Candidate2026!',
+    fullName: 'Jean-Charles Moïse #14',
+    role: 'CANDIDATE',
+    roleTitle: 'Candidat Présidentiel — Pitit Desalin #14',
+    candidateId: 'c1',
+    partyId: 'p1',
+  },
+  {
+    id: 'u-cand-2',
+    username: 'cand.manigat.07',
+    password: 'Candidate2026!',
+    fullName: 'Mirlande Manigat #07',
+    role: 'CANDIDATE',
+    roleTitle: 'Candidat Présidentiel — RDNP #07',
+    candidateId: 'c2',
+    partyId: 'p2',
+  },
+  {
+    id: 'u-party-1',
+    username: 'party.pititdesalin',
+    password: 'Party2026!',
+    fullName: 'Direction Politique Pitit Desalin',
+    role: 'PARTY',
+    roleTitle: 'Parti Politique Officiel (Pitit Desalin)',
+    partyId: 'p1',
+  },
+  {
+    id: 'u-mandat-1',
+    username: 'mandat.ouest.01',
+    password: 'Mandat2026!',
+    fullName: 'Pierre-Richard Alexis',
+    role: 'MANDATAIRE',
+    roleTitle: 'Mandataire Électoral — Bureau BV-PAP-012',
+    mandataireId: 'm1',
+    partyId: 'p1',
+    candidateId: 'c1',
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
+    pollingStationCode: 'BV-PAP-012',
+  },
+  {
+    id: 'u-agent-1',
+    username: 'agent.field.pap01',
+    password: 'Agent2026!',
+    fullName: 'Marc-Antoine Toussaint',
+    role: 'APK_AGENT',
+    roleTitle: 'Agent de Terrain APK (Recensement)',
+    agentId: 'a1',
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
   },
 ];
 

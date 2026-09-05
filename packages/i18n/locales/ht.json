@@ -164,7 +164,7 @@
     }
   },
   "admin": {
-    "nav": { "dashboard": "Tablo debò", "commandCenter": "Sant kòmand", "elections": "Eleksyon", "candidates": "Kandida", "devices": "Aparèy", "incidents": "Enksidan", "audit": "Verifikasyon", "releases": "Vèsyon APK", "users": "Itilizatè ak Wòl", "settings": "Konfigirasyon" },
+    "nav": { "dashboard": "Tablo debò", "commandCenter": "Sant kòmand", "elections": "Eleksyon", "candidates": "Kandida", "parties": "Pati Politik", "apkUsers": "Itilizatè APK", "devices": "Aparèy", "incidents": "Enksidan", "audit": "Verifikasyon", "releases": "Vèsyon APK", "users": "Itilizatè ak Wòl", "settings": "Konfigirasyon" },
     "topbar": { "activeElection": "Eleksyon aktif", "systemStatus": "Estati sistèm", "notifications": "Notifikasyon" },
     "dashboard": { "title": "Tablo debò", "electors": "Elèktè", "candidates": "Kandida", "stations": "Biro", "agents": "Ajan", "devices": "Aparèy", "sync": "Senkronizasyon", "incidents": "Enksidan", "security": "Sekirite", "tabulation": "Konpilasyon" },
     "commandCenter": { "title": "Sant kòmand", "operational": "Operasyonèl", "attention": "Atansyon", "incidentLabel": "Enksidan", "online": "An liy", "offline": "Hors liy", "pending": "An datant", "pvReceived": "PV resevwa", "pvValidated": "PV valid", "perDayTitle": "Pwogrè jounen an" },

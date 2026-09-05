@@ -8,6 +8,8 @@ const NAV: { key: AdminRoute; labelKey: string }[] = [
   { key: 'command-center', labelKey: 'admin.nav.commandCenter' },
   { key: 'elections', labelKey: 'admin.nav.elections' },
   { key: 'candidates', labelKey: 'admin.nav.candidates' },
+  { key: 'parties', labelKey: 'admin.nav.parties' },
+  { key: 'apk-users', labelKey: 'admin.nav.apkUsers' },
   { key: 'devices', labelKey: 'admin.nav.devices' },
   { key: 'incidents', labelKey: 'admin.nav.incidents' },
   { key: 'audit', labelKey: 'admin.nav.audit' },
@@ -16,8 +18,13 @@ const NAV: { key: AdminRoute; labelKey: string }[] = [
   { key: 'settings', labelKey: 'admin.nav.settings' },
 ];
 
+interface SidebarProps {
+  route: AdminRoute;
+  onLogout?: () => void;
+}
+
 /** Sidebar de l'admin — cockpit institutionnel (spec §19). */
-export function Sidebar({ route }: { route: AdminRoute }): JSX.Element {
+export function Sidebar({ route, onLogout }: SidebarProps): JSX.Element {
   const { t } = useI18n();
   return (
     <aside
@@ -55,7 +62,29 @@ export function Sidebar({ route }: { route: AdminRoute }): JSX.Element {
           {t(item.labelKey)}
         </button>
       ))}
-      <p style={{ marginTop: 'auto', color: 'var(--cep-color-text-muted)', fontSize: 'var(--cep-font-size-caption)', padding: '0 var(--cep-space-3)' }}>
+
+      {onLogout && (
+        <button
+          type="button"
+          onClick={onLogout}
+          style={{
+            marginTop: 'auto',
+            background: '#c5221f',
+            color: 'white',
+            border: 'none',
+            padding: 'var(--cep-space-2) var(--cep-space-3)',
+            borderRadius: 'var(--cep-radius-md)',
+            fontSize: '0.82rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            textAlign: 'left',
+          }}
+        >
+          🚪 Se Déconnecter
+        </button>
+      )}
+
+      <p style={{ marginTop: onLogout ? 'var(--cep-space-2)' : 'auto', color: 'var(--cep-color-text-muted)', fontSize: 'var(--cep-font-size-caption)', padding: '0 var(--cep-space-3)' }}>
         {t('admin.settings.separationHint')}
       </p>
     </aside>

@@ -10,6 +10,8 @@ const ROUTE_LABEL: Record<AdminRoute, string> = {
   'command-center': 'admin.nav.commandCenter',
   elections: 'admin.nav.elections',
   candidates: 'admin.nav.candidates',
+  parties: 'admin.nav.parties',
+  'apk-users': 'admin.nav.apkUsers',
   devices: 'admin.nav.devices',
   incidents: 'admin.nav.incidents',
   audit: 'admin.nav.audit',
@@ -18,10 +20,15 @@ const ROUTE_LABEL: Record<AdminRoute, string> = {
   settings: 'admin.nav.settings',
 };
 
+interface TopbarProps {
+  route: AdminRoute;
+  onLogout?: () => void;
+}
+
 /** Topbar admin — élection active, état système, session RBAC active, langue. */
-export function Topbar({ route }: { route: AdminRoute }): JSX.Element {
+export function Topbar({ route, onLogout }: TopbarProps): JSX.Element {
   const { t } = useI18n();
-  const [activeUser] = useState(() => adminApi.getActiveUser());
+  const [activeUser] = useState(() => adminApi.getCurrentSession() || adminApi.getActiveUser());
 
   return (
     <header
@@ -60,6 +67,24 @@ export function Topbar({ route }: { route: AdminRoute }): JSX.Element {
           Générales Haïti 2026
         </span>
         <LanguageSwitcher />
+        {onLogout && (
+          <button
+            type="button"
+            onClick={onLogout}
+            style={{
+              background: '#fce8e6',
+              color: '#c5221f',
+              border: 'none',
+              padding: '4px 10px',
+              borderRadius: 4,
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            Déconnexion
+          </button>
+        )}
       </div>
     </header>
   );
