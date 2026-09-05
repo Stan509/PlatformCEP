@@ -321,3 +321,106 @@ export interface CastVotePayload {
   electionId: string;
   selections: Record<string, string>;
 }
+
+// ---------------------------------------------------------------------------
+// Modèles d'affectation électorale & Bureaux (FIXED, NOMADIC, VIRTUAL)
+// ---------------------------------------------------------------------------
+
+export type VotingStationType = 'FIXED' | 'NOMADIC' | 'VIRTUAL';
+
+export interface VotingZone {
+  zoneId: string;
+  name: string;
+  department: string;
+  commune: string;
+  centerLatitude?: number;
+  centerLongitude?: number;
+  radiusMeters?: number;
+  polygonGeoJSON?: string;
+  isActive: boolean;
+}
+
+export interface VotingStationDomain {
+  stationId: string;
+  code: string;
+  name: Record<LanguageCode, string>;
+  type: VotingStationType;
+  department: string;
+  commune: string;
+  votingCenterId?: string;
+  capacity?: number;
+  assignedElectorsCount: number;
+  participatedElectorsCount: number;
+  votingZone?: VotingZone;
+  status: 'PREPARED' | 'OPEN' | 'CLOSED' | 'TABULATED';
+}
+
+export interface ElectionAssignment {
+  assignmentId: string;
+  electionId: string;
+  electorRef: string;
+  stationId: string;
+  stationType: VotingStationType;
+  assignedAt: string;
+  isActive: boolean;
+}
+
+export interface AssignmentTransferPayload {
+  electorRef: string;
+  electionId: string;
+  sourceStationId: string;
+  targetStationId: string;
+  targetStationType: VotingStationType;
+  reason: string;
+  operatorUserId: string;
+  deviceGpsLocation?: {
+    latitude: number;
+    longitude: number;
+    accuracy: number;
+  };
+}
+
+export interface AssignmentTransferResult {
+  success: boolean;
+  assignment: ElectionAssignment;
+  sourceStationCount: number;
+  targetStationCount: number;
+  auditRef: string;
+}
+
+// ---------------------------------------------------------------------------
+// Procès-Verbal & Dispositifs (Devices)
+// ---------------------------------------------------------------------------
+
+export interface ProcèsVerbal {
+  pvId: string;
+  electionId: string;
+  stationId: string;
+  receivedAt: string;
+  payloadHash: string;
+  signature: string;
+  validated: boolean;
+  ballotsCast: number;
+  blankBallots: number;
+  nullBallots: number;
+  candidateVotes: Record<string, number>;
+  anomalyFlags: string[];
+}
+
+export type DeviceStatus = 'REGISTERED' | 'ACTIVE' | 'OFFLINE' | 'REVOKED' | 'SUSPICIOUS';
+
+export interface Device {
+  deviceId: string;
+  deviceModel: string;
+  serialNumber: string;
+  assignedStationId?: string;
+  deviceType: 'POLLING' | 'FIELD' | 'ADMIN';
+  status: DeviceStatus;
+  lastSeenAt: string;
+  batteryLevel?: number;
+  gpsStatus?: 'LOCATION_VALID' | 'LOCATION_INVALID' | 'LOCATION_UNKNOWN' | 'LOCATION_SUSPICIOUS';
+  lastLatitude?: number;
+  lastLongitude?: number;
+  appVersion: string;
+}
+

@@ -244,6 +244,24 @@ export function Elections(): JSX.Element {
               </div>
 
               <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Modalités de vote autorisées</label>
+                <div style={{ display: 'flex', gap: '1rem', fontSize: '0.85rem' }}>
+                  <label><input type="checkbox" defaultChecked /> Bureaux Fixes</label>
+                  <label><input type="checkbox" defaultChecked /> Bureaux Nomades</label>
+                  <label><input type="checkbox" defaultChecked /> Bureau Virtuel Online-Z</label>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Politique Diaspora</label>
+                <select style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}>
+                  <option value="CONSULAR_AND_ONLINE">Vote Consulaire + Vote en Ligne PWA</option>
+                  <option value="CONSULAR_ONLY">Vote Consulaire Uniquement</option>
+                  <option value="REGISTRATION_ONLY">Enregistrement Uniquement (Sans Vote)</option>
+                </select>
+              </div>
+
+              <div>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Statut du scrutin</label>
                 <select
                   value={status}
@@ -273,3 +291,4 @@ export function Elections(): JSX.Element {
     </div>
   );
 }
+
