@@ -18,6 +18,7 @@ import { Users } from './pages/Users';
 import { Settings } from './pages/Settings';
 import { LoginPage } from './pages/LoginPage';
 import { CandidatePortal } from './pages/CandidatePortal';
+import { PartyPortal } from './pages/PartyPortal';
 import { MandatairePortal } from './pages/MandatairePortal';
 import { adminApi } from './lib/api';
 import type { UserAccount } from './lib/mockData';
@@ -52,7 +53,7 @@ function renderPage(route: AdminRoute): JSX.Element {
   }
 }
 
-/** Back-office CEP — cockpit institutionnel + routage d'authentification unifiée. */
+/** Back-office CEP — routage d'authentification unifiée & séparation stricte des rôles. */
 export function App(): JSX.Element {
   const route = useAdminRoute();
   const [session, setSession] = useState<UserAccount | null>(() => adminApi.getCurrentSession());
@@ -67,16 +68,22 @@ export function App(): JSX.Element {
     return <LoginPage onLoginSuccess={(u) => setSession(u)} />;
   }
 
-  // Role-specific Portal Redirection
+  // Strict Role Isolation: Candidate Portal
   if (session.role === 'CANDIDATE') {
     return <CandidatePortal user={session} onLogout={handleLogout} />;
   }
 
+  // Strict Role Isolation: Political Party Portal
+  if (session.role === 'PARTY') {
+    return <PartyPortal user={session} onLogout={handleLogout} />;
+  }
+
+  // Strict Role Isolation: Mandataire Portal
   if (session.role === 'MANDATAIRE') {
     return <MandatairePortal user={session} onLogout={handleLogout} />;
   }
 
-  // Full CEP Admin Back-office for CEP Members, Admins, Parties & APK Agents
+  // Full CEP Admin Back-office reserved exclusively for CEP Council Members & Admins
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       <Sidebar route={route} onLogout={handleLogout} />

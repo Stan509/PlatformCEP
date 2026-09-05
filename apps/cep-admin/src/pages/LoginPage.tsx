@@ -22,7 +22,12 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps): JSX.Element {
     try {
       const res = await adminApi.login(username, password);
       if (res.success && res.user) {
-        onLoginSuccess(res.user);
+        if (res.user.role === 'APK_AGENT') {
+          setError('🛑 Accès Refusé : Les identifiants d\'agent APK sont réservés exclusivement aux applications mobiles Android (Biopads). Connexion au Dashboard web non autorisée.');
+          adminApi.logout();
+        } else {
+          onLoginSuccess(res.user);
+        }
       } else {
         setError(res.message || 'Identifiants invalides.');
       }
@@ -40,7 +45,12 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps): JSX.Element {
     setError(null);
     const res = await adminApi.login(acc.username, acc.password);
     if (res.success && res.user) {
-      onLoginSuccess(res.user);
+      if (res.user.role === 'APK_AGENT') {
+        setError('🛑 Accès Refusé : Les identifiants d\'agent APK sont réservés exclusivement aux applications mobiles Android (Biopads). Connexion au Dashboard web non autorisée.');
+        adminApi.logout();
+      } else {
+        onLoginSuccess(res.user);
+      }
     } else {
       setError('Échec de la connexion démo.');
     }
