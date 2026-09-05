@@ -113,6 +113,9 @@ export function CheckStatus(): JSX.Element {
                     )}
                   </div>
 
+                  {/* Transfer & Online Vote Request Section */}
+                  <TransferRequestBlock voter={voter} />
+
                   <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
                     <Button block onClick={() => navigate('vote')}>
                       Accéder à l'Isoloir pour Voter →
@@ -146,3 +149,192 @@ export function CheckStatus(): JSX.Element {
     </section>
   );
 }
+
+function TransferRequestBlock({ voter }: { voter: DermalogVoter }): JSX.Element {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [targetModality, setTargetModality] = useState<'ONLINE_Z' | 'NOMADIC' | 'OTHER_FIXED'>('ONLINE_Z');
+  const [reason, setReason] = useState('Déplacement professionnel / Mission');
+  const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [requests, setRequests] = useState<Array<{
+    requestId: string;
+    targetModality: string;
+    reason: string;
+    status: string;
+    submittedAt: string;
+  }>>([]);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  const handleOpenModal = async () => {
+    const existing = await api.getTransferRequestsByNin(voter.nin);
+    setRequests(existing);
+    setModalOpen(true);
+  };
+
+  const handleSubmitRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await api.submitTransferRequest({
+        electorNin: voter.nin,
+        electorName: voter.fullName || `${voter.firstName} ${voter.lastName}`,
+        targetModality,
+        reason,
+        justificationNotes: notes,
+      });
+
+      if (res.success) {
+        setSuccessMsg(`✅ Demande enregistrée avec succès sous le N° ${res.request.requestId}. Transmise aux analystes du CEP.`);
+        const updated = await api.getTransferRequestsByNin(voter.nin);
+        setRequests(updated);
+        setNotes('');
+      }
+    } catch {
+      alert('Erreur lors de la soumission de la demande de transfert.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div style={{ borderTop: '2px dashed #E2E8F0', paddingTop: '16px', marginTop: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+        <div>
+          <h4 style={{ margin: 0, color: 'var(--cep-color-deep-blue)' }}>
+            ⇄ Changement de Bureau ou Option Vote en Ligne (Online-Z)
+          </h4>
+          <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#666' }}>
+            Besoin de voter à distance ou dans un bureau nomade ? Soumettez une demande soumise à l'analyse du CEP.
+          </p>
+        </div>
+        <Button size="sm" variant="secondary" onClick={handleOpenModal}>
+          Demander un Transfert →
+        </Button>
+      </div>
+
+      {/* Transfer Modal / Form */}
+      {modalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '8px',
+              maxWidth: 520,
+              width: '100%',
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '14px',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, color: 'var(--cep-color-deep-blue)', fontSize: '1.2rem' }}>
+                Demande de Transfert & Vote en Ligne
+              </h3>
+              <button
+                onClick={() => { setModalOpen(false); setSuccessMsg(null); }}
+                style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Existing requests list if any */}
+            {requests.length > 0 && (
+              <div style={{ background: '#F8F9FA', padding: '12px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <h5 style={{ margin: '0 0 8px 0', color: 'var(--cep-color-deep-blue)' }}>Vos demandes soumises :</h5>
+                {requests.map((r) => (
+                  <div key={r.requestId} style={{ fontSize: '0.82rem', padding: '6px 0', borderBottom: '1px solid #EEE' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <strong>{r.requestId}</strong>
+                      <span style={{ color: '#B45309', fontWeight: 600 }}>
+                        {r.status === 'PENDING_ANALYSIS' ? '🟡 EN COURS D\'ANALYSE' : r.status === 'APPROVED' ? '🟢 APPROUVÉE' : '🔴 REJETÉE'}
+                      </span>
+                    </div>
+                    <div style={{ color: '#555' }}>Cible : {r.targetModality === 'ONLINE_Z' ? 'Vote en Ligne (Online-Z)' : r.targetModality} | Motif : {r.reason}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {successMsg ? (
+              <div style={{ background: '#F0FDF4', color: '#166534', padding: '14px', borderRadius: '6px', fontSize: '0.9rem' }}>
+                {successMsg}
+              </div>
+            ) : (
+              <form onSubmit={handleSubmitRequest} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>
+                    Mode de vote / Bureau désiré :
+                  </label>
+                  <select
+                    value={targetModality}
+                    onChange={(e) => setTargetModality(e.target.value as any)}
+                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #CCC' }}
+                  >
+                    <option value="ONLINE_Z">🌐 Vote en Ligne PWA (Bureau Virtuel ONLINE-Z)</option>
+                    <option value="NOMADIC">🚐 Bureau Nomade Mobile</option>
+                    <option value="OTHER_FIXED">🏫 Autre Bureau Fixe de Commune</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>
+                    Motif principal du transfert :
+                  </label>
+                  <select
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #CCC' }}
+                  >
+                    <option value="Déplacement professionnel / Mission">Déplacement professionnel / Mission</option>
+                    <option value="Changement de domicile temporaire">Changement de domicile temporaire</option>
+                    <option value="Diaspora / Séjour à l'Étranger">Diaspora / Séjour à l'Étranger</option>
+                    <option value="Raison de sécurité / Zone difficile d'accès">Raison de sécurité / Zone difficile d'accès</option>
+                    <option value="Handicap / Mobilité réduite">Handicap / Mobilité réduite</option>
+                    <option value="Autre raison légitime">Autre raison légitime</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>
+                    Notes explicatives & Justificatifs :
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Précisez votre adresse temporaire ou toute information utile pour l'analyse par la Commission du CEP..."
+                    style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #CCC' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+                  <Button variant="secondary" onClick={() => setModalOpen(false)}>
+                    Fermer
+                  </Button>
+                  <Button variant="primary" type="submit" isLoading={submitting} loadingText="Envoi en cours...">
+                    Envoyer pour Analyse par le CEP →
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+

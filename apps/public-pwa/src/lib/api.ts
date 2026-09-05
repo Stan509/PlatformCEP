@@ -276,5 +276,49 @@ export const api = {
     if (foundByPass) return { found: true, voter: foundByPass };
 
     return { found: false };
+  },
+
+  // Demandes de transfert de bureau et choix de vote en ligne
+  transferRequestsRegistry: [] as Array<{
+    requestId: string;
+    electorNin: string;
+    electorName: string;
+    targetModality: 'ONLINE_Z' | 'NOMADIC' | 'OTHER_FIXED';
+    reason: string;
+    justificationNotes?: string;
+    status: 'PENDING_ANALYSIS' | 'APPROVED' | 'REJECTED';
+    submittedAt: string;
+  }>,
+
+  async submitTransferRequest(data: {
+    electorNin: string;
+    electorName: string;
+    targetModality: 'ONLINE_Z' | 'NOMADIC' | 'OTHER_FIXED';
+    reason: string;
+    justificationNotes?: string;
+  }) {
+    await delay(600);
+    const requestId = `TRF-REQ-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+    const newReq = {
+      requestId,
+      electorNin: data.electorNin,
+      electorName: data.electorName,
+      targetModality: data.targetModality,
+      reason: data.reason,
+      justificationNotes: data.justificationNotes || '',
+      status: 'PENDING_ANALYSIS' as const,
+      submittedAt: new Date().toISOString()
+    };
+    this.transferRequestsRegistry.unshift(newReq);
+    return { success: true, request: newReq };
+  },
+
+  async getTransferRequestsByNin(nin: string) {
+    await delay(300);
+    const clean = nin.trim().replace(/[- ]/g, '');
+    return this.transferRequestsRegistry.filter(
+      (r) => r.electorNin.trim().replace(/[- ]/g, '') === clean
+    );
   }
 };
+
