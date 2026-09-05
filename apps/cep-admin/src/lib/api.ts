@@ -8,6 +8,7 @@ import {
   ADMIN_USERS,
   APK_AGENT_USERS,
   ELECTORAL_MANDATAIRES,
+  ELECTORAL_MANDATES,
   INITIAL_ADMIN_ROLES,
   MANDATAIRE_REMARKS,
   POLITICAL_PARTIES,
@@ -21,6 +22,7 @@ import type {
   AdminUser,
   ApkAgentUser,
   ElectoralMandataire,
+  ElectoralMandate,
   MandataireRemark,
   PoliticalParty,
   UserAccount,
@@ -35,9 +37,11 @@ const STORAGE_KEY_USERS = 'cep_admin_users_v1';
 const STORAGE_KEY_ROLES = 'cep_admin_roles_v1';
 const STORAGE_KEY_PARTIES = 'cep_admin_parties_v1';
 const STORAGE_KEY_MANDATAIRES = 'cep_admin_mandataires_v1';
+const STORAGE_KEY_MANDATES = 'cep_admin_mandates_v1';
 const STORAGE_KEY_REMARKS = 'cep_admin_remarks_v1';
 const STORAGE_KEY_APK_AGENTS = 'cep_admin_apk_agents_v1';
 const STORAGE_KEY_CURRENT_SESSION = 'cep_admin_auth_session_v1';
+
 
 function getStored<T>(key: string, fallback: T): T {
   try {
@@ -169,6 +173,31 @@ export const adminApi = {
     setStored(STORAGE_KEY_MANDATAIRES, mandataires);
     return mandataires;
   },
+
+  // Mandates V2
+  async mandates(): Promise<ElectoralMandate[]> {
+    await delay(150);
+    return getStored(STORAGE_KEY_MANDATES, ELECTORAL_MANDATES);
+  },
+
+  async getMandateForUser(mandataireId?: string, partyId?: string, candidateId?: string): Promise<ElectoralMandate | null> {
+    await delay(150);
+    const list = getStored(STORAGE_KEY_MANDATES, ELECTORAL_MANDATES);
+    if (mandataireId) {
+      const found = list.find((m) => m.mandataireId === mandataireId || m.id === mandataireId);
+      if (found) return found;
+    }
+    if (candidateId) {
+      const found = list.find((m) => m.representedEntityId === candidateId);
+      if (found) return found;
+    }
+    if (partyId) {
+      const found = list.find((m) => m.representedEntityId === partyId);
+      if (found) return found;
+    }
+    return list[0] || null;
+  },
+
 
   // Mandataire Remarks & Tally
   async remarks(): Promise<MandataireRemark[]> {

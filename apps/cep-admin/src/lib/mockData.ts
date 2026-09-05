@@ -44,6 +44,57 @@ export interface PoliticalParty {
   candidatesCount: number;
 }
 
+export type MandateModality = 'FIXED' | 'NOMADIC' | 'ONLINE' | 'BOTH';
+export type MandateStatus = 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'REVOKED' | 'EXPIRED';
+export type MandateEntityType = 'CANDIDATE' | 'PARTY';
+
+export interface MandatePermissions {
+  canViewParticipation: boolean;
+  canViewResults: boolean;
+  canReportIncident: boolean;
+  canSubmitObservation: boolean;
+  canViewPv: boolean;
+  canSignPv: boolean;
+  canTallyVotes: boolean;
+}
+
+export interface StationScopeItem {
+  code: string;
+  name: string;
+  type: 'FIXED' | 'NOMADIC' | 'VIRTUAL';
+  location: string;
+  electorsCount: number;
+  participantsCount: number;
+  incidentsCount: number;
+  pvStatus: 'AVAILABLE' | 'PENDING' | 'NOT_STARTED';
+  geofenceStatus?: 'VALID' | 'INVALID' | 'UNKNOWN' | 'LOW_ACCURACY' | 'SUSPICIOUS';
+  devices?: { id: string; status: 'OPERATIONAL' | 'OFFLINE' | 'ALERT' }[];
+}
+
+export interface ElectoralMandate {
+  id: string;
+  mandataireId: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  entityType: MandateEntityType;
+  representedEntityId: string;
+  representedEntityName: string;
+  representedEntityPhotoOrLogo?: string;
+  electionId: string;
+  electionName: string;
+  electionType: string;
+  department: string;
+  commune: string;
+  electoralZone: string;
+  authorizedStations: StationScopeItem[];
+  modalities: MandateModality[];
+  permissions: MandatePermissions;
+  validFrom: string;
+  validTo: string;
+  status: MandateStatus;
+}
+
 export interface ElectoralMandataire {
   id: string;
   fullName: string;
@@ -58,6 +109,7 @@ export interface ElectoralMandataire {
   phone: string;
   status: 'ACTIVE' | 'REVOKED';
   remarksCount: number;
+  mandateId?: string;
 }
 
 export interface MandataireRemark {
@@ -73,6 +125,7 @@ export interface MandataireRemark {
   reportedAt: string;
   status: 'SUBMITTED' | 'UNDER_REVIEW' | 'VALIDATED' | 'REJECTED';
 }
+
 
 export interface ApkAgentUser {
   id: string;
@@ -407,6 +460,7 @@ export const ELECTORAL_MANDATAIRES: ElectoralMandataire[] = [
     phone: '+509 3712-4490',
     status: 'ACTIVE',
     remarksCount: 1,
+    mandateId: 'mandate-1',
   },
   {
     id: 'm2',
@@ -422,6 +476,7 @@ export const ELECTORAL_MANDATAIRES: ElectoralMandataire[] = [
     phone: '+509 3844-9011',
     status: 'ACTIVE',
     remarksCount: 0,
+    mandateId: 'mandate-2',
   },
   {
     id: 'm3',
@@ -437,8 +492,178 @@ export const ELECTORAL_MANDATAIRES: ElectoralMandataire[] = [
     phone: '+509 3690-1122',
     status: 'ACTIVE',
     remarksCount: 2,
+    mandateId: 'mandate-3',
   },
 ];
+
+export const ELECTORAL_MANDATES: ElectoralMandate[] = [
+  {
+    id: 'mandate-1',
+    mandataireId: 'm1',
+    fullName: 'Pierre-Richard Alexis',
+    phone: '+509 3712-4490',
+    email: 'p.alexis.mandat@pititdesalin.ht',
+    entityType: 'CANDIDATE',
+    representedEntityId: 'c1',
+    representedEntityName: 'Jean-Charles Moïse #14',
+    representedEntityPhotoOrLogo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    electionName: 'Élections Générales d\'Haïti 2026',
+    electionType: 'Présidentielle & Parlementaire',
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
+    electoralZone: 'Section Turgeau & Centre-Ville',
+    authorizedStations: [
+      {
+        code: 'BV-PAP-012',
+        name: 'Lycée Alexandre Pétion (Bureau 012)',
+        type: 'FIXED',
+        location: 'Rue Monseigneur Guilloux, Port-au-Prince',
+        electorsCount: 450,
+        participantsCount: 312,
+        incidentsCount: 0,
+        pvStatus: 'AVAILABLE',
+        devices: [
+          { id: 'BIOPAD-OU-PAP-0142', status: 'OPERATIONAL' },
+          { id: 'BIOPAD-OU-PAP-0143', status: 'OPERATIONAL' },
+        ],
+      },
+      {
+        code: 'BV-PAP-013',
+        name: 'Bureau Nomade Pétion-Ville (Carrefour Clercine)',
+        type: 'NOMADIC',
+        location: 'Unité Mobile 03 - Polygone GPS Pétion-Ville Norte',
+        electorsCount: 380,
+        participantsCount: 245,
+        incidentsCount: 1,
+        pvStatus: 'AVAILABLE',
+        geofenceStatus: 'VALID',
+        devices: [{ id: 'BIOPAD-OU-PET-0881', status: 'OPERATIONAL' }],
+      },
+      {
+        code: 'BV-PAP-014',
+        name: 'École Nationale de la République du Chili',
+        type: 'FIXED',
+        location: 'Avenue Jean-Paul II, Port-au-Prince',
+        electorsCount: 500,
+        participantsCount: 340,
+        incidentsCount: 0,
+        pvStatus: 'PENDING',
+        devices: [{ id: 'BIOPAD-OU-PAP-0201', status: 'OPERATIONAL' }],
+      },
+    ],
+    modalities: ['FIXED', 'NOMADIC'],
+    permissions: {
+      canViewParticipation: true,
+      canViewResults: true,
+      canReportIncident: true,
+      canSubmitObservation: true,
+      canViewPv: true,
+      canSignPv: true,
+      canTallyVotes: true,
+    },
+    validFrom: '2026-09-01T00:00:00Z',
+    validTo: '2026-12-31T23:59:59Z',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'mandate-2',
+    mandataireId: 'm2',
+    fullName: 'Claudette Saint-Germain',
+    phone: '+509 3844-9011',
+    email: 'c.saintgermain@rdnp.ht',
+    entityType: 'PARTY',
+    representedEntityId: 'p2',
+    representedEntityName: 'Rassemblement des Démocrates Nationaux Progressistes (RDNP)',
+    representedEntityPhotoOrLogo: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=120&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    electionName: 'Élections Générales d\'Haïti 2026',
+    electionType: 'Présidentielle & Législatives',
+    department: 'Nord',
+    commune: 'Cap-Haïtien',
+    electoralZone: 'Zone Métropolitaine du Cap',
+    authorizedStations: [
+      {
+        code: 'BV-CAP-004',
+        name: 'École Nationale de la Citadelle (Bureau 004)',
+        type: 'FIXED',
+        location: 'Rue 18-B, Cap-Haïtien',
+        electorsCount: 480,
+        participantsCount: 301,
+        incidentsCount: 0,
+        pvStatus: 'AVAILABLE',
+        devices: [{ id: 'BIOPAD-ND-CAP-0089', status: 'OPERATIONAL' }],
+      },
+      {
+        code: 'BV-ONLINE-Z',
+        name: 'Circonspection Virtuelle Online-Z (Diaspora & Vote Web)',
+        type: 'VIRTUAL',
+        location: 'Serveur Souverain Cloud Enclave CEP',
+        electorsCount: 5000,
+        participantsCount: 3410,
+        incidentsCount: 0,
+        pvStatus: 'AVAILABLE',
+      },
+    ],
+    modalities: ['BOTH'],
+    permissions: {
+      canViewParticipation: true,
+      canViewResults: true,
+      canReportIncident: true,
+      canSubmitObservation: true,
+      canViewPv: true,
+      canSignPv: false,
+      canTallyVotes: true,
+    },
+    validFrom: '2026-09-01T00:00:00Z',
+    validTo: '2026-12-31T23:59:59Z',
+    status: 'ACTIVE',
+  },
+  {
+    id: 'mandate-3',
+    mandataireId: 'm3',
+    fullName: 'Jean-Yves Théodore',
+    phone: '+509 3690-1122',
+    email: 'jy.theodore@indep-duclaire.ht',
+    entityType: 'CANDIDATE',
+    representedEntityId: 'c5',
+    representedEntityName: 'Marie-Antoinette Duclaire #18',
+    representedEntityPhotoOrLogo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    electionName: 'Élections Générales d\'Haïti 2026',
+    electionType: 'Municipale Cap-Haïtien',
+    department: 'Nord',
+    commune: 'Cap-Haïtien',
+    electoralZone: 'Cap-Haïtien Ouest',
+    authorizedStations: [
+      {
+        code: 'BV-CAP-004',
+        name: 'École Nationale de la Citadelle (Bureau 004)',
+        type: 'FIXED',
+        location: 'Rue 18-B, Cap-Haïtien',
+        electorsCount: 480,
+        participantsCount: 301,
+        incidentsCount: 1,
+        pvStatus: 'AVAILABLE',
+        devices: [{ id: 'BIOPAD-ND-CAP-0089', status: 'OPERATIONAL' }],
+      },
+    ],
+    modalities: ['FIXED'],
+    permissions: {
+      canViewParticipation: true,
+      canViewResults: true,
+      canReportIncident: true,
+      canSubmitObservation: true,
+      canViewPv: true,
+      canSignPv: true,
+      canTallyVotes: true,
+    },
+    validFrom: '2026-09-01T00:00:00Z',
+    validTo: '2026-12-31T23:59:59Z',
+    status: 'ACTIVE',
+  },
+];
+
 
 export const MANDATAIRE_REMARKS: MandataireRemark[] = [
   {
