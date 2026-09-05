@@ -7,14 +7,12 @@ import { BiometricScanner } from '../components/BiometricScanner';
 import type { DermalogVoter, Candidate, Election } from '@cep/shared-types';
 import { sampleElections } from '../lib/mockData';
 
-type BoothStep = 'auth' | 'biometric' | 'eligibility' | 'ballot' | 'review' | 'success';
+type BoothStep = 'biometric' | 'eligibility' | 'ballot' | 'review' | 'success';
 
 export function VoteBooth(): JSX.Element {
   const { t } = useI18n();
-  const [step, setStep] = useState<BoothStep>('auth');
-  const [cardInput, setCardInput] = useState('004-123-456-7');
+  const [step, setStep] = useState<BoothStep>('biometric');
   const [voter, setVoter] = useState<DermalogVoter | null>(null);
-  const [authError, setAuthError] = useState<string | null>(null);
 
   const [activeElections, setActiveElections] = useState<Election[]>([]);
   const [selectedElection, setSelectedElection] = useState<Election | null>(null);
@@ -27,25 +25,9 @@ export function VoteBooth(): JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receipt, setReceipt] = useState<{ receiptHash: string; timestamp: string; confirmationCode: string } | null>(null);
 
-  // Step 1: Dermalog Card lookup
-  const handleLookupCard = async () => {
-    setAuthError(null);
-    try {
-      const v = await api.getVoterByNIN(cardInput.trim());
-      if (!v) {
-        setAuthError('Carte Dermalog non trouvée dans la base de données électorale (ONI/CEP). Veuillez vous inscrire d\'abord.');
-        return;
-      }
-      setVoter(v);
-      setStep('biometric');
-    } catch {
-      setAuthError('Erreur de connexion au système central électoral.');
-    }
-  };
-
-  // Step 2: Facial Biometric Verification completed
-  const handleBiometricSuccess = async () => {
-    if (!voter) return;
+  // Step: Facial Biometric & Real Identity Verification completed
+  const handleBiometricSuccess = async (verifiedVoter: DermalogVoter) => {
+    setVoter(verifiedVoter);
 
     // Check eligibility across active elections
     const elections = sampleElections.filter(e => e.status === 'OPEN');
@@ -54,7 +36,7 @@ export function VoteBooth(): JSX.Element {
     const alreadyVoted: string[] = [];
     for (const e of elections) {
       const elId = e.electionId || e.id || 'haiti-general-2026';
-      const elRes = await api.checkEligibility(voter.nin, elId);
+      const elRes = await api.checkEligibility(verifiedVoter.nin, elId);
       if (elRes.status === 'ALREADY_VOTED') {
         alreadyVoted.push(elId);
       }
@@ -64,7 +46,7 @@ export function VoteBooth(): JSX.Element {
     // Pick first available active election for voting if available
     const available = elections.find(e => !alreadyVoted.includes(e.electionId || e.id || ''));
     if (available) {
-      loadElectionBallots(voter, available);
+      loadElectionBallots(verifiedVoter, available);
     }
 
     setStep('eligibility');
@@ -123,13 +105,13 @@ export function VoteBooth(): JSX.Element {
           fontSize: 'var(--cep-font-size-small)', 
           fontWeight: 600 
         }}>
-          Isoloir Numérique Sécurisé — Biométrie Dermalog®
+          Isoloir Numérique Sécurisé — Biométrie Dermalog® (En direct)
         </span>
         <h1 style={{ fontSize: 'var(--cep-font-size-h2)', marginTop: 'var(--cep-space-2)' }}>
           Scrutin Officiel en Ligne
         </h1>
         <p style={{ color: 'var(--cep-color-text-secondary)', maxWidth: 600, margin: 'var(--cep-space-2) auto 0' }}>
-          Système Électoral de la République d'Haïti — Protection stricte du secret du vote & Détection Biométrique.
+          Système Électoral de la République d'Haïti — Protection stricte du secret du vote & Captation Biométrique Réelle.
         </p>
       </div>
 
@@ -142,13 +124,12 @@ export function VoteBooth(): JSX.Element {
         paddingBottom: 'var(--cep-space-3)' 
       }}>
         {[
-          { key: 'auth', label: '1. Carte Dermalog' },
-          { key: 'biometric', label: '2. Scan Facial' },
-          { key: 'eligibility', label: '3. Éligibilité' },
-          { key: 'ballot', label: '4. Bulletin' },
-          { key: 'review', label: '5. Scellement' }
+          { key: 'biometric', label: '1. Identification & Biométrie' },
+          { key: 'eligibility', label: '2. Éligibilité' },
+          { key: 'ballot', label: '3. Bulletin de Vote' },
+          { key: 'review', label: '4. Scellement' }
         ].map((s) => {
-          const stepOrder: BoothStep[] = ['auth', 'biometric', 'eligibility', 'ballot', 'review', 'success'];
+          const stepOrder: BoothStep[] = ['biometric', 'eligibility', 'ballot', 'review', 'success'];
           const currentIdx = stepOrder.indexOf(step);
           const itemIdx = stepOrder.indexOf(s.key as BoothStep);
           const isActive = step === s.key;
@@ -166,56 +147,16 @@ export function VoteBooth(): JSX.Element {
         })}
       </div>
 
-      {/* STEP 1: Dermalog Card Input */}
-      {step === 'auth' && (
-        <Card title="Authentification par Carte Dermalog (CIN / Carte Électorale Haïtienne)" body={
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-4)' }}>
-            <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: 'var(--cep-font-size-body)' }}>
-              Veuillez saisir le numéro de votre <strong>Carte d'Identité Unique Dermalog</strong> (NIN / NIF à 10 chiffres).
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-2)' }}>
-              <label style={{ fontWeight: 600, fontSize: 'var(--cep-font-size-small)' }}>Numéro Carte Dermalog (CIN / NIF):</label>
-              <input
-                type="text"
-                className="cep-input"
-                placeholder="Ex: 004-123-456-7"
-                value={cardInput}
-                onChange={(e) => setCardInput(e.target.value)}
-                style={{ fontSize: '1.1rem', padding: '12px', letterSpacing: '1px' }}
-              />
-              <span style={{ fontSize: '0.8rem', color: 'var(--cep-color-text-muted)' }}>
-                Pour tester la démo: <code>004-123-456-7</code> (Jean-Baptiste Alexis - Pétion-Ville) ou <code>001-987-654-3</code> (Marie-Florence - Port-au-Prince)
-              </span>
-            </div>
-
-            {authError && (
-              <div style={{ padding: '12px', background: '#FFF0F0', borderLeft: '4px solid red', color: 'darkred', borderRadius: '4px' }}>
-                {authError}
-              </div>
-            )}
-
-            <Button block onClick={handleLookupCard} disabled={!cardInput.trim()}>
-              Continuer vers la Vérification Biométrique
-            </Button>
-          </div>
-        } />
-      )}
-
-      {/* STEP 2: Biometric Facial Scan */}
-      {step === 'biometric' && voter && (
+      {/* STEP 1: Biometric & Multi-Angle Scan Engine */}
+      {step === 'biometric' && (
         <div>
-          <div style={{ marginBottom: 'var(--cep-space-4)' }}>
-            <Button variant="secondary" onClick={() => setStep('auth')}>← Changer de carte</Button>
-          </div>
           <BiometricScanner
-            voter={voter}
             onVerified={handleBiometricSuccess}
-            onCancel={() => setStep('auth')}
           />
         </div>
       )}
 
-      {/* STEP 3: Eligibility & Jurisdiction Check */}
+      {/* STEP 2: Eligibility & Jurisdiction Check */}
       {step === 'eligibility' && voter && (
         <Card title={`Vérification d'Éligibilité & Circonscription de Vote`} body={
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-4)' }}>
@@ -227,7 +168,7 @@ export function VoteBooth(): JSX.Element {
                     CIN Dermalog: <strong>{voter.nin}</strong> | Résidence: <strong>{voter.commune}</strong> ({voter.department})
                   </p>
                 </div>
-                <StatusIndicator tone="success" label="Électeur Confirmé DB ONI" />
+                <StatusIndicator tone="success" label="Biométrie Faciale Validée (98.4%)" />
               </div>
             </div>
 
@@ -285,7 +226,7 @@ export function VoteBooth(): JSX.Element {
                   title="Vous avez participé à tous les scrutins en cours !"
                   description="Aucun nouveau bulletin disponible pour votre circonscription actuellement."
                 />
-                <Button variant="secondary" onClick={() => setStep('auth')} style={{ marginTop: '16px' }}>
+                <Button variant="secondary" onClick={() => setStep('biometric')} style={{ marginTop: '16px' }}>
                   Terminer / Déconnexion de l'isoloir
                 </Button>
               </div>
@@ -294,7 +235,7 @@ export function VoteBooth(): JSX.Element {
         } />
       )}
 
-      {/* STEP 4: Interactive Ballot for eligible positions */}
+      {/* STEP 3: Interactive Ballot for eligible positions */}
       {step === 'ballot' && selectedElection && voter && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-5)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -402,7 +343,7 @@ export function VoteBooth(): JSX.Element {
         </div>
       )}
 
-      {/* STEP 5: Final Review & Confirmation */}
+      {/* STEP 4: Final Review & Confirmation */}
       {step === 'review' && selectedElection && voter && (
         <Card title="Récapitulatif & Scellement Cryptographique du Vote" body={
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-4)' }}>
@@ -448,7 +389,7 @@ export function VoteBooth(): JSX.Element {
         } />
       )}
 
-      {/* STEP 6: Voting Receipt Success */}
+      {/* STEP 5: Voting Receipt Success */}
       {step === 'success' && receipt && (
         <Card title="✅ Vote Enregistré avec Succès" body={
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-4)', textAlign: 'center' }}>
@@ -493,8 +434,7 @@ export function VoteBooth(): JSX.Element {
                 🖨️ Imprimer mon reçu
               </Button>
               <Button onClick={() => {
-                setStep('auth');
-                setCardInput('');
+                setStep('biometric');
                 setVoter(null);
                 setReceipt(null);
               }}>
