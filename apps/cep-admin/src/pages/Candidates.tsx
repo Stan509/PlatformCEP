@@ -12,6 +12,7 @@ export function Candidates(): JSX.Element {
   const { t } = useI18n();
   const [candidates, setCandidates] = useState<AdminCandidate[]>([]);
   const [elections, setElections] = useState<AdminElection[]>([]);
+  const [registeredParties, setRegisteredParties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [postFilter, setPostFilter] = useState('ALL');
@@ -23,6 +24,8 @@ export function Candidates(): JSX.Element {
   // Form fields
   const [number, setNumber] = useState('#10');
   const [name, setName] = useState('');
+  const [isIndependent, setIsIndependent] = useState(false);
+  const [selectedPartyId, setSelectedPartyId] = useState('');
   const [party, setParty] = useState('');
   const [post, setPost] = useState('Président');
   const [selectedDept, setSelectedDept] = useState('Ouest');
@@ -37,9 +40,14 @@ export function Candidates(): JSX.Element {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [cList, eList] = await Promise.all([adminApi.candidates(), adminApi.elections()]);
+      const [cList, eList, pList] = await Promise.all([
+        adminApi.candidates(),
+        adminApi.elections(),
+        adminApi.parties(),
+      ]);
       setCandidates(cList);
       setElections(eList);
+      setRegisteredParties(pList);
     } finally {
       setLoading(false);
     }
@@ -53,7 +61,10 @@ export function Candidates(): JSX.Element {
     setEditingCandidate(null);
     setNumber(`#${Math.floor(Math.random() * 80 + 10)}`);
     setName('');
-    setParty('');
+    setIsIndependent(false);
+    const defaultParty = registeredParties[0];
+    setSelectedPartyId(defaultParty?.id || '');
+    setParty(defaultParty ? `${defaultParty.name} (${defaultParty.acronym})` : 'Candidat Indépendant');
     setPost('Président');
     setSelectedDept('Ouest');
     setSelectedCommune('Port-au-Prince');
@@ -70,7 +81,10 @@ export function Candidates(): JSX.Element {
     setEditingCandidate(c);
     setNumber(c.number || `#${Math.floor(Math.random() * 80 + 10)}`);
     setName(c.name);
+    const isInd = c.party.includes('Indépendant') || c.partyId === 'INDENT';
+    setIsIndependent(isInd);
     setParty(c.party);
+    setSelectedPartyId(c.partyId || '');
     setPost(c.post);
     setSelectedDept(c.department || 'Ouest');
     setSelectedCommune(c.commune || 'Port-au-Prince');
@@ -83,6 +97,14 @@ export function Candidates(): JSX.Element {
     setModalOpen(true);
   };
 
+  const handlePartySelect = (partyId: string) => {
+    setSelectedPartyId(partyId);
+    const found = registeredParties.find((p) => p.id === partyId);
+    if (found) {
+      setParty(`${found.name} (${found.acronym})`);
+    }
+  };
+
   const computeTerritoryLabel = () => {
     if (post === 'Président') return 'National (Haïti)';
     if (post === 'Sénateur') return `Département du ${selectedDept}`;
@@ -93,11 +115,15 @@ export function Candidates(): JSX.Element {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const finalPartyName = isIndependent ? 'Candidat Indépendant' : party || 'Candidat Indépendant';
+    const finalPartyId = isIndependent ? 'INDENT' : selectedPartyId;
+
     const candidateData: AdminCandidate = {
       id: editingCandidate ? editingCandidate.id : `c-${Date.now()}`,
       number,
       name,
-      party,
+      party: finalPartyName,
+      partyId: finalPartyId,
       post,
       territory: computeTerritoryLabel(),
       department: post === 'Président' ? undefined : selectedDept,
@@ -114,6 +140,7 @@ export function Candidates(): JSX.Element {
     setCandidates(updated);
     setModalOpen(false);
   };
+
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce candidat ?')) {
@@ -412,32 +439,76 @@ export function Candidates(): JSX.Element {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.8rem' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Parti Politique</label>
-                  <input
-                    type="text"
-                    required
-                    value={party}
-                    onChange={(e) => setParty(e.target.value)}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
-                  />
+              <div style={{ background: '#f8f9fa', padding: '0.8rem', borderRadius: 6, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: 'var(--cep-color-deep-blue)' }}>
+                  🏛️ Affiliation Politique
+                </label>
+                <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.85rem' }}>
+                  <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <input
+                      type="radio"
+                      name="affiliation"
+                      checked={!isIndependent}
+                      onChange={() => {
+                        setIsIndependent(false);
+                        const firstP = registeredParties[0];
+                        if (firstP) handlePartySelect(firstP.id);
+                      }}
+                    />
+                    Parti Politique Enregistré
+                  </label>
+                  <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <input
+                      type="radio"
+                      name="affiliation"
+                      checked={isIndependent}
+                      onChange={() => {
+                        setIsIndependent(true);
+                        setParty('Candidat Indépendant');
+                        setSelectedPartyId('INDENT');
+                      }}
+                    />
+                    Candidat Indépendant
+                  </label>
                 </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Poste Convoité</label>
-                  <select
-                    value={post}
-                    onChange={(e) => setPost(e.target.value)}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
-                  >
-                    {POST_OPTIONS.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+
+                {!isIndependent ? (
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, marginBottom: 2 }}>Sélectionner le Parti Officiel *</label>
+                    <select
+                      value={selectedPartyId}
+                      onChange={(e) => handlePartySelect(e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
+                    >
+                      {registeredParties.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} ({p.acronym})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <div style={{ padding: '6px 10px', background: '#eef4ff', color: 'var(--cep-color-deep-blue)', borderRadius: 4, fontSize: '0.82rem', fontWeight: 600 }}>
+                    ℹ️ Ce candidat sera enregistré sous le statut de <strong>"Candidat Indépendant"</strong> (Sans parti rattaché).
+                  </div>
+                )}
               </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Poste Convoité</label>
+                <select
+                  value={post}
+                  onChange={(e) => setPost(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid var(--cep-color-border)' }}
+                >
+                  {POST_OPTIONS.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
 
               {/* Geographical Selection in Cascade based on post */}
               {post !== 'Président' && (
