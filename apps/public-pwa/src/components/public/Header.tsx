@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { JSX } from 'react';
 import { useI18n } from '@cep/i18n';
 import { LanguageSwitcher } from '@cep/design-system';
@@ -17,15 +16,9 @@ const PRIMARY_NAV: { key: string; route: Route; highlight?: boolean }[] = [
   { key: 'diaspora', route: 'diaspora' },
 ];
 
-/** En-tête institutionnel CEP — Logo, navigation simplifiée & responsive, sélecteur de langue. */
+/** En-tête institutionnel CEP — Logo compact, navigation desktop & sélecteur de langue compact. */
 export function Header({ route }: HeaderProps): JSX.Element {
   const { t } = useI18n();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleNav = (r: Route) => {
-    navigate(r);
-    setMobileMenuOpen(false);
-  };
 
   return (
     <header
@@ -39,28 +32,29 @@ export function Header({ route }: HeaderProps): JSX.Element {
       }}
     >
       <div
+        className="cep-header-container"
         style={{
           maxWidth: 1200,
           margin: '0 auto',
-          padding: 'var(--cep-space-3) var(--cep-space-5)',
+          padding: 'var(--cep-space-2) var(--cep-space-5)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 'var(--cep-space-4)',
+          gap: 'var(--cep-space-3)',
         }}
       >
-        {/* Brand / Logo CEP */}
+        {/* Brand / Logo CEP — Ultra-compact sur Mobile */}
         <button
           type="button"
           aria-label={t('public.nav.home')}
-          onClick={() => handleNav('home')}
+          onClick={() => navigate('home')}
           style={{
             border: 'none',
             background: 'none',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            gap: 'var(--cep-space-3)',
+            gap: 'var(--cep-space-2)',
             padding: 0,
           }}
         >
@@ -69,27 +63,28 @@ export function Header({ route }: HeaderProps): JSX.Element {
               background: 'var(--cep-color-cep-blue)',
               color: 'var(--cep-color-white)',
               fontWeight: 800,
-              fontSize: '1.1rem',
-              padding: '6px 12px',
+              fontSize: '0.95rem',
+              padding: '4px 8px',
               borderRadius: 'var(--cep-radius-sm)',
               letterSpacing: '1px',
               boxShadow: 'var(--cep-shadow-xs)',
+              lineHeight: 1,
             }}
           >
             CEP
           </div>
-          <div style={{ textAlign: 'left', lineHeight: 1.25 }}>
+          <div style={{ textAlign: 'left', lineHeight: 1.15 }}>
             <strong
               style={{
                 color: 'var(--cep-color-deep-blue)',
-                fontSize: '1.05rem',
+                fontSize: '0.95rem',
                 display: 'block',
                 fontWeight: 700,
               }}
             >
               Conseil Électoral Provisoire
             </strong>
-            <span style={{ fontSize: '0.75rem', color: 'var(--cep-color-text-secondary)' }}>
+            <span className="cep-header-sub" style={{ fontSize: '0.7rem', color: 'var(--cep-color-text-secondary)' }}>
               République d'Haïti
             </span>
           </div>
@@ -113,7 +108,7 @@ export function Header({ route }: HeaderProps): JSX.Element {
                 <button
                   key={item.key}
                   type="button"
-                  onClick={() => handleNav(item.route)}
+                  onClick={() => navigate(item.route)}
                   style={{
                     background: isActive ? 'var(--cep-color-cep-blue-active)' : 'var(--cep-color-cep-blue)',
                     color: 'var(--cep-color-white)',
@@ -122,7 +117,7 @@ export function Header({ route }: HeaderProps): JSX.Element {
                     cursor: 'pointer',
                     fontSize: 'var(--cep-font-size-small)',
                     fontWeight: 700,
-                    padding: '8px 18px',
+                    padding: '6px 16px',
                     boxShadow: 'var(--cep-shadow-sm)',
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -139,7 +134,7 @@ export function Header({ route }: HeaderProps): JSX.Element {
               <button
                 key={item.key}
                 type="button"
-                onClick={() => handleNav(item.route)}
+                onClick={() => navigate(item.route)}
                 style={{
                   background: isActive ? 'var(--cep-color-light-blue)' : 'transparent',
                   border: 'none',
@@ -148,7 +143,7 @@ export function Header({ route }: HeaderProps): JSX.Element {
                   fontSize: 'var(--cep-font-size-small)',
                   color: isActive ? 'var(--cep-color-cep-blue)' : 'var(--cep-color-text)',
                   fontWeight: isActive ? 600 : 500,
-                  padding: '8px 14px',
+                  padding: '6px 12px',
                   transition: 'all 0.15s ease',
                 }}
               >
@@ -158,104 +153,23 @@ export function Header({ route }: HeaderProps): JSX.Element {
           })}
         </nav>
 
-        {/* Language & Mobile Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cep-space-3)' }}>
+        {/* Compact Language Selector Component */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <LanguageSwitcher />
-
-          {/* Mobile Hamburger Button */}
-          <button
-            type="button"
-            className="cep-mobile-toggle"
-            aria-label={t('public.nav.menu')}
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            style={{
-              background: 'var(--cep-color-background)',
-              border: '1px solid var(--cep-color-border)',
-              borderRadius: 'var(--cep-radius-sm)',
-              padding: '6px 12px',
-              fontSize: '1rem',
-              cursor: 'pointer',
-              color: 'var(--cep-color-text)',
-              display: 'none', // Controlled via CSS media queries
-            }}
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
         </div>
       </div>
 
-      {/* Mobile Collapsible Menu */}
-      {mobileMenuOpen && (
-        <div
-          className="cep-mobile-drawer"
-          style={{
-            background: 'var(--cep-color-surface)',
-            borderTop: '1px solid var(--cep-color-border)',
-            padding: 'var(--cep-space-4) var(--cep-space-5)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--cep-space-2)',
-          }}
-        >
-          {PRIMARY_NAV.map((item) => {
-            const isActive = route === item.route;
-
-            if (item.highlight) {
-              return (
-                <button
-                  key={item.key}
-                  type="button"
-                  onClick={() => handleNav(item.route)}
-                  style={{
-                    background: 'var(--cep-color-cep-blue)',
-                    color: 'var(--cep-color-white)',
-                    border: 'none',
-                    borderRadius: 'var(--cep-radius-md)',
-                    padding: '12px',
-                    fontWeight: 700,
-                    fontSize: '1rem',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    marginTop: 'var(--cep-space-2)',
-                  }}
-                >
-                  🗳️ {t('public.nav.vote')}
-                </button>
-              );
-            }
-
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => handleNav(item.route)}
-                style={{
-                  background: isActive ? 'var(--cep-color-light-blue)' : 'transparent',
-                  border: 'none',
-                  borderRadius: 'var(--cep-radius-sm)',
-                  padding: '10px 14px',
-                  textAlign: 'left',
-                  fontSize: '0.95rem',
-                  fontWeight: isActive ? 600 : 400,
-                  color: isActive ? 'var(--cep-color-cep-blue)' : 'var(--cep-color-text)',
-                  cursor: 'pointer',
-                }}
-              >
-                {t(`public.nav.${item.key}`)}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Embedded CSS for responsive breakpoint */}
+      {/* Embedded Responsive CSS Rules */}
       <style>{`
         @media (max-width: 768px) {
           .cep-desktop-nav {
             display: none !important;
           }
-          .cep-mobile-toggle {
-            display: inline-block !important;
+          .cep-header-sub {
+            display: none !important;
+          }
+          .cep-header-container {
+            padding: 8px 12px !important;
           }
         }
       `}</style>
