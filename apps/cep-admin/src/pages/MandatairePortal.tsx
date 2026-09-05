@@ -281,16 +281,16 @@ export function MandatairePortal({ user, onLogout }: MandatairePortalProps): JSX
           }
           .mandataire-desktop-sidebar {
             display: flex;
-            width: 250px;
+            width: 230px;
             flex-shrink: 0;
             flex-direction: column;
-            background: linear-gradient(180deg, #002d62 0%, #001a3a 100%);
+            background: linear-gradient(180deg, #002d62 0%, #001430 100%);
             color: white;
-            padding: 1.5rem 1rem;
+            padding: 0.8rem 0.5rem;
             position: sticky;
             top: 0;
             height: 100vh;
-            overflow-y: auto;
+            overflow-y: hidden;
             box-shadow: 2px 0 8px rgba(0,0,0,0.1);
           }
           .mandataire-mobile-bottom-nav {
@@ -305,30 +305,14 @@ export function MandatairePortal({ user, onLogout }: MandatairePortalProps): JSX
       <div className="mandataire-container">
         {/* ==================== DESKTOP & TABLET SIDEBAR ==================== */}
         <aside className="mandataire-desktop-sidebar">
-          {/* Header Brand */}
-          <div style={{ borderBottom: '1px solid rgba(255,255,255,0.15)', paddingBottom: '1rem', marginBottom: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <span style={{ fontSize: '1.6rem' }}>⚖️</span>
-              <div>
-                <strong style={{ display: 'block', fontSize: '1rem', color: 'white', letterSpacing: '0.5px' }}>CEP MANDATAIRE</strong>
-                <span style={{ fontSize: '0.72rem', color: '#a2c4ec', textTransform: 'uppercase' }}>V2 — PORTAIL PRO</span>
-              </div>
-            </div>
-
-            {/* Represented Entity Mini Badge */}
-            {mandate && (
-              <div style={{ marginTop: '0.8rem', background: 'rgba(255,255,255,0.08)', padding: '0.6rem', borderRadius: 6, fontSize: '0.78rem' }}>
-                <span style={{ fontSize: '0.68rem', color: '#a2c4ec', textTransform: 'uppercase', display: 'block' }}>REPRÉSENTE :</span>
-                <strong style={{ color: 'white', display: 'block', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {mandate.representedEntityName}
-                </strong>
-                <span style={{ fontSize: '0.7rem', color: '#137333', fontWeight: 800 }}>✓ MANDAT {mandate.status}</span>
-              </div>
-            )}
+          {/* Minimal Brand Identifier */}
+          <div style={{ padding: '0.4rem 0.6rem 0.6rem', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '1.2rem' }}>⚖️</span>
+            <strong style={{ fontSize: '0.9rem', color: 'white', letterSpacing: '0.5px' }}>CEP MANDATAIRE</strong>
           </div>
 
-          {/* Navigation Links List */}
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
+          {/* Navigation Links List (Zero scroll, compact height) */}
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: 2, flex: 1, justifyContent: 'flex-start' }}>
             {navItems.map((item) => {
               const isActive = activeView === item.id;
               return (
@@ -341,9 +325,9 @@ export function MandatairePortal({ user, onLogout }: MandatairePortalProps): JSX
                     border: 'none',
                     background: isActive ? '#003893' : 'transparent',
                     color: isActive ? 'white' : '#a2c4ec',
-                    padding: '0.6rem 0.8rem',
-                    borderRadius: 6,
-                    fontSize: '0.85rem',
+                    padding: '0.42rem 0.6rem',
+                    borderRadius: 5,
+                    fontSize: '0.82rem',
                     fontWeight: isActive ? 700 : 500,
                     cursor: 'pointer',
                     display: 'flex',
@@ -351,12 +335,12 @@ export function MandatairePortal({ user, onLogout }: MandatairePortalProps): JSX
                     justifyContent: 'space-between',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    <span>{item.icon}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '0.95rem' }}>{item.icon}</span>
                     <span>{item.label}</span>
                   </div>
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span style={{ background: item.id === 'incidents' ? '#c5221f' : '#003893', color: 'white', fontSize: '0.7rem', fontWeight: 800, padding: '1px 6px', borderRadius: 10 }}>
+                    <span style={{ background: item.id === 'incidents' ? '#c5221f' : '#003893', color: 'white', fontSize: '0.68rem', fontWeight: 800, padding: '1px 6px', borderRadius: 10 }}>
                       {item.badge}
                     </span>
                   )}
@@ -365,68 +349,76 @@ export function MandatairePortal({ user, onLogout }: MandatairePortalProps): JSX
             })}
           </nav>
 
-          {/* Language & Logout Footer */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '1rem', marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.1)', borderRadius: 6, padding: 2, justifyContent: 'space-between' }}>
-              {(['ht', 'fr', 'en'] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  style={{
-                    flex: 1,
-                    border: 'none',
-                    background: lang === l ? '#003893' : 'transparent',
-                    color: 'white',
-                    padding: '3px 0',
-                    borderRadius: 4,
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {l === 'ht' ? 'Kreyòl' : l}
-                </button>
-              ))}
-            </div>
-
+          {/* Compact Logout Footer */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: '0.4rem', marginTop: 'auto' }}>
             <button
               type="button"
               onClick={onLogout}
               style={{
-                background: '#c5221f',
-                color: 'white',
-                border: 'none',
-                padding: '0.5rem',
+                width: '100%',
+                background: 'rgba(197,34,31,0.15)',
+                border: '1px solid #c5221f',
+                color: '#ff8080',
+                padding: '0.45rem 0.6rem',
                 borderRadius: 6,
-                fontSize: '0.82rem',
-                fontWeight: 700,
+                fontSize: '0.8rem',
+                fontWeight: 600,
                 cursor: 'pointer',
                 textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
               }}
             >
-              🚪 Se Déconnecter
+              <span>🚪</span>
+              <span>Se Déconnecter</span>
             </button>
           </div>
         </aside>
 
         {/* ==================== MAIN CONTENT AREA ==================== */}
         <div className="mandataire-main-area" style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          {/* Top Compact Header (Mobile & Tablet) */}
-          <header style={{ background: '#002d62', color: 'white', padding: '0.8rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {/* Top Header with Language Options & Entity Badge */}
+          <header style={{ background: '#002d62', color: 'white', padding: '0.6rem 1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
               <span style={{ fontSize: '1.3rem' }}>⚖️</span>
               <div>
                 <strong style={{ fontSize: '0.95rem', display: 'block' }}>Portail Mandataire V2</strong>
-                <span style={{ fontSize: '0.75rem', color: '#a2c4ec' }}>{user.fullName}</span>
+                <span style={{ fontSize: '0.75rem', color: '#a2c4ec' }}>
+                  {user.fullName} {mandate ? `• ${mandate.representedEntityName}` : ''}
+                </span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+              {/* Language Switcher moved to Header */}
+              <div style={{ display: 'flex', background: 'rgba(255,255,255,0.12)', borderRadius: 6, padding: 2 }}>
+                {(['ht', 'fr', 'en'] as const).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => setLang(l)}
+                    style={{
+                      border: 'none',
+                      background: lang === l ? '#003893' : 'transparent',
+                      color: 'white',
+                      padding: '3px 9px',
+                      borderRadius: 4,
+                      fontSize: '0.74rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {l === 'ht' ? 'Kreyòl' : l}
+                  </button>
+                ))}
+              </div>
+
               {mandate && (
-                <span style={{ background: 'rgba(255,255,255,0.15)', padding: '3px 8px', borderRadius: 4, fontSize: '0.75rem', color: 'white', fontWeight: 600 }}>
-                  {mandate.representedEntityName}
+                <span style={{ background: 'rgba(255,255,255,0.15)', padding: '4px 10px', borderRadius: 4, fontSize: '0.75rem', color: 'white', fontWeight: 600 }}>
+                  ✓ {mandate.status}
                 </span>
               )}
             </div>
