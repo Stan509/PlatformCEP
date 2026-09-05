@@ -124,11 +124,28 @@ export interface AdminDevice {
   lastSync: string;
 }
 
+export interface PermissionDefinition {
+  id: string;
+  name: string;
+  category: 'SUPERVISION' | 'ELECTIONS' | 'PARTIES_CANDIDATES' | 'OPERATIONS' | 'AUDIT' | 'USERS';
+  description: string;
+}
+
+export interface AdminRole {
+  id: string;
+  code: string;
+  title: string;
+  description: string;
+  permissions: string[];
+  isSystem?: boolean;
+}
+
 export interface AdminUser {
   id: string;
   fullName: string;
   username: string;
-  role: 'ADMIN_CEP' | 'MEMBER_CEP' | 'BED_SUPERVISOR' | 'BEC_SUPERVISOR' | 'AUDITOR' | 'OPERATOR';
+  password?: string;
+  role: string; // 'ADMIN_CEP' | 'MEMBER_CEP' | 'BED_SUPERVISOR' | 'BEC_SUPERVISOR' | 'AUDITOR' | 'OPERATOR' | custom role code
   roleTitle: string;
   department?: string;
   commune?: string;
@@ -136,6 +153,64 @@ export interface AdminUser {
   mTLSVerified: boolean;
   lastActive: string;
 }
+
+export const ALL_PERMISSIONS: PermissionDefinition[] = [
+  { id: 'PERM_DASHBOARD_VIEW', name: 'Supervision & Command Center', category: 'SUPERVISION', description: 'Accès en lecture seule au Tableau de bord et au Command Center' },
+  { id: 'PERM_ELECTIONS_MANAGE', name: 'Gestion des Scrutins Électoraux', category: 'ELECTIONS', description: 'Création, modification et configuration des modalités de vote' },
+  { id: 'PERM_PARTIES_VIEW', name: 'Consultation Partis Politiques', category: 'PARTIES_CANDIDATES', description: 'Lecture seule du registre légal des partis et mandataires' },
+  { id: 'PERM_PARTIES_MANAGE', name: 'Reconnaissance Partis Politiques', category: 'PARTIES_CANDIDATES', description: 'Ajout, modification et suspension des partis politiques' },
+  { id: 'PERM_CANDIDATES_MANAGE', name: 'Gestion & Homologation Candidats', category: 'PARTIES_CANDIDATES', description: 'Approbation, rejet et édition des fiches de candidats' },
+  { id: 'PERM_PV_VALIDATE', name: 'Validation & Homologation PV', category: 'OPERATIONS', description: 'Saisie, vérification et validation officielle des Procès-Verbaux' },
+  { id: 'PERM_INCIDENTS_MANAGE', name: 'Gestion des Incidents & Alertes', category: 'OPERATIONS', description: 'Modération, clôture et investigation des incidents de terrain' },
+  { id: 'PERM_DEVICES_MANAGE', name: 'Gestion des Appareils BIOPAD', category: 'OPERATIONS', description: 'Enrôlement, suspension, révocation mTLS et verrouillage à distance' },
+  { id: 'PERM_APK_AGENTS_MANAGE', name: 'Gestion des Utilisateurs APK', category: 'USERS', description: 'Création et gestion des identifiants d\'agents terrain et bureau de vote' },
+  { id: 'PERM_AUDIT_LOGS_VIEW', name: 'Audit & Journaux Cryptographiques', category: 'AUDIT', description: 'Inspection de la piste d\'audit SHA-256 et vérification des hashs' },
+  { id: 'PERM_USERS_ROLES_MANAGE', name: 'Administration Utilisateurs & Rôles (RBAC)', category: 'USERS', description: 'Création, attribution et modification des rôles et autorisations' },
+];
+
+export const INITIAL_ADMIN_ROLES: AdminRole[] = [
+  {
+    id: 'role-admin-cep',
+    code: 'ADMIN_CEP',
+    title: 'Président & Conseillers CEP',
+    description: 'Accès institutionnel souverain total. Signature des décrets et validation ultime des résultats.',
+    permissions: ALL_PERMISSIONS.map((p) => p.id),
+    isSystem: true,
+  },
+  {
+    id: 'role-bed-supervisor',
+    code: 'BED_SUPERVISOR',
+    title: 'Directeur BED (Département)',
+    description: 'Supervision départementale, validation des PV locaux et contrôle de la flotte d\'appareils BIOPAD.',
+    permissions: ['PERM_DASHBOARD_VIEW', 'PERM_PARTIES_VIEW', 'PERM_CANDIDATES_MANAGE', 'PERM_PV_VALIDATE', 'PERM_INCIDENTS_MANAGE', 'PERM_DEVICES_MANAGE', 'PERM_APK_AGENTS_MANAGE'],
+    isSystem: true,
+  },
+  {
+    id: 'role-bec-supervisor',
+    code: 'BEC_SUPERVISOR',
+    title: 'Superviseur BEC (Commune)',
+    description: 'Supervision communale, déploiement des agents de bureau et remontée des procès-verbaux.',
+    permissions: ['PERM_DASHBOARD_VIEW', 'PERM_PV_VALIDATE', 'PERM_INCIDENTS_MANAGE', 'PERM_APK_AGENTS_MANAGE'],
+    isSystem: true,
+  },
+  {
+    id: 'role-auditor',
+    code: 'AUDITOR',
+    title: 'Auditeur Indépendant / Observateur',
+    description: 'Lecture seule absolue sur le Command Center, les registres et la piste d\'audit cryptographique.',
+    permissions: ['PERM_DASHBOARD_VIEW', 'PERM_PARTIES_VIEW', 'PERM_AUDIT_LOGS_VIEW'],
+    isSystem: true,
+  },
+  {
+    id: 'role-operator',
+    code: 'OPERATOR',
+    title: 'Opérateur de Saisie & Support',
+    description: 'Saisie technique des procès-verbaux et assistance opérationnelle aux bureaux de vote.',
+    permissions: ['PERM_DASHBOARD_VIEW', 'PERM_PV_VALIDATE', 'PERM_INCIDENTS_MANAGE'],
+    isSystem: true,
+  },
+];
+
 
 export interface AdminIncident {
   id: string;

@@ -8,6 +8,7 @@ import {
   ADMIN_USERS,
   APK_AGENT_USERS,
   ELECTORAL_MANDATAIRES,
+  INITIAL_ADMIN_ROLES,
   MANDATAIRE_REMARKS,
   POLITICAL_PARTIES,
   USER_ACCOUNTS,
@@ -16,6 +17,7 @@ import type {
   AdminCandidate,
   AdminDevice,
   AdminElection,
+  AdminRole,
   AdminUser,
   ApkAgentUser,
   ElectoralMandataire,
@@ -30,6 +32,7 @@ const STORAGE_KEY_ELECTIONS = 'cep_admin_elections_v1';
 const STORAGE_KEY_CANDIDATES = 'cep_admin_candidates_v1';
 const STORAGE_KEY_DEVICES = 'cep_admin_devices_v1';
 const STORAGE_KEY_USERS = 'cep_admin_users_v1';
+const STORAGE_KEY_ROLES = 'cep_admin_roles_v1';
 const STORAGE_KEY_PARTIES = 'cep_admin_parties_v1';
 const STORAGE_KEY_MANDATAIRES = 'cep_admin_mandataires_v1';
 const STORAGE_KEY_REMARKS = 'cep_admin_remarks_v1';
@@ -223,10 +226,49 @@ export const adminApi = {
     return devices;
   },
 
-  // CEP Admin Users
+  // CEP Admin Users & Roles
   async users(): Promise<AdminUser[]> {
     await delay(150);
     return getStored(STORAGE_KEY_USERS, ADMIN_USERS);
+  },
+
+  async saveUser(user: AdminUser): Promise<AdminUser[]> {
+    await delay(150);
+    const users = getStored(STORAGE_KEY_USERS, ADMIN_USERS);
+    const idx = users.findIndex((u) => u.id === user.id);
+    if (idx >= 0) users[idx] = user;
+    else users.unshift(user);
+    setStored(STORAGE_KEY_USERS, users);
+    return users;
+  },
+
+  async deleteUser(id: string): Promise<AdminUser[]> {
+    await delay(150);
+    const users = getStored<AdminUser[]>(STORAGE_KEY_USERS, ADMIN_USERS).filter((u) => u.id !== id);
+    setStored(STORAGE_KEY_USERS, users);
+    return users;
+  },
+
+  async roles(): Promise<AdminRole[]> {
+    await delay(150);
+    return getStored(STORAGE_KEY_ROLES, INITIAL_ADMIN_ROLES);
+  },
+
+  async saveRole(role: AdminRole): Promise<AdminRole[]> {
+    await delay(150);
+    const roles = getStored(STORAGE_KEY_ROLES, INITIAL_ADMIN_ROLES);
+    const idx = roles.findIndex((r) => r.id === role.id);
+    if (idx >= 0) roles[idx] = role;
+    else roles.unshift(role);
+    setStored(STORAGE_KEY_ROLES, roles);
+    return roles;
+  },
+
+  async deleteRole(id: string): Promise<AdminRole[]> {
+    await delay(150);
+    const roles = getStored<AdminRole[]>(STORAGE_KEY_ROLES, INITIAL_ADMIN_ROLES).filter((r) => r.id !== id);
+    setStored(STORAGE_KEY_ROLES, roles);
+    return roles;
   },
 
   getActiveUser(): AdminUser {
@@ -241,3 +283,4 @@ export const adminApi = {
   async audit() { await delay(150); return ADMIN_AUDIT; },
   async releases() { await delay(150); return ADMIN_RELEASES; },
 };
+
