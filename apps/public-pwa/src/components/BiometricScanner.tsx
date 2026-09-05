@@ -102,13 +102,22 @@ export function BiometricScanner({
     return canvas.toDataURL('image/jpeg', 0.85);
   };
 
-  // Step 1: Submit Identity Form
+  // Step 1: Submit Identity Form & Strict Dermalog Jovenel Moïse Card Validation
   const handleIdentitySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName.trim() || !lastName.trim() || !nin.trim()) {
       alert('Veuillez remplir les informations d\'identité.');
       return;
     }
+
+    // Contrôle strict de conformité de la carte Dermalog Jovenel Moïse
+    const validation = api.validateDermalogMoiseCard(nin);
+    if (!validation.isValid) {
+      setErrorMessage(validation.reason || 'Carte d\'identité invalide.');
+      setStage('error');
+      return;
+    }
+
     setStage('card_capture');
   };
 
@@ -118,7 +127,6 @@ export function BiometricScanner({
     if (frame) {
       setCardPhoto(frame);
     } else {
-      // Fallback preview
       setCardPhoto('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80');
     }
   };
@@ -214,7 +222,7 @@ export function BiometricScanner({
       title={
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--cep-space-2)' }}>
           <span style={{ fontSize: '1.25rem' }}>📸</span>
-          <span>Système Biométrique Réel — Dermalog® Haïti</span>
+          <span>Système Biométrique Réel — Carte Dermalog® Jovenel Moïse</span>
         </div>
       }
       body={
@@ -226,7 +234,7 @@ export function BiometricScanner({
           {stage === 'identity_input' && (
             <form onSubmit={handleIdentitySubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <p style={{ fontSize: '0.95rem', color: 'var(--cep-color-text-secondary)' }}>
-                Étape 1/3 : Saisissez vos informations civiles officielles figurant sur votre carte Dermalog® ou passeport.
+                Étape 1/3 : Saisissez vos informations civiles officielles figurant sur votre <strong>Carte d'Identité Unique Dermalog®</strong> (émise sous Jovenel Moïse).
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
@@ -253,7 +261,7 @@ export function BiometricScanner({
               </div>
 
               <div>
-                <label className="cep-label">Numéro Carte Dermalog (CIN / NIF) *</label>
+                <label className="cep-label">Numéro Carte Dermalog Jovenel Moïse (CIN / NIF 10 chiffres) *</label>
                 <input
                   type="text"
                   className="cep-input"
@@ -263,6 +271,9 @@ export function BiometricScanner({
                   style={{ letterSpacing: '1px', fontWeight: 600 }}
                   required
                 />
+                <span style={{ fontSize: '0.8rem', color: 'var(--cep-color-text-muted)', marginTop: '4px', display: 'block' }}>
+                  ⚠️ Seule la carte Dermalog® officielle 10 chiffres (série ONI 001/004/009/101/104/109) est acceptée. Les anciennes cartes 9 chiffres seront rejetées.
+                </span>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
@@ -466,6 +477,19 @@ export function BiometricScanner({
               <p style={{ fontSize: '0.8rem', color: 'var(--cep-color-text-muted)' }}>
                 Redirection automatique vers votre bulletin de vote...
               </p>
+            </div>
+          )}
+
+          {/* STAGE 6: Rejection Card for Invalid / Non-Dermalog Jovenel Moïse Cards */}
+          {stage === 'error' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', textAlign: 'center', padding: '16px', background: '#FFF0F0', border: '2px solid red', borderRadius: 12 }}>
+              <StatusIndicator tone="danger" label="Carte Non Conforme — Accès Refusé" />
+              <div style={{ fontSize: '0.95rem', color: '#900', whiteSpace: 'pre-line', textAlign: 'left', lineHeight: 1.5 }}>
+                {errorMessage}
+              </div>
+              <Button onClick={() => setStage('identity_input')}>
+                ← Corriger le numéro de carte Dermalog
+              </Button>
             </div>
           )}
         </div>

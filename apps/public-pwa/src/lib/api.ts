@@ -23,6 +23,36 @@ export const api = {
     return DEMO_RESULTS;
   },
 
+  // Validation stricte de la Carte d'Identité Unique Dermalog® (Série émise sous Jovenel Moïse)
+  validateDermalogMoiseCard(nin: string): { isValid: boolean; reason?: string } {
+    const cleaned = nin.trim().replace(/[\s-]/g, '');
+
+    // Support passeport diaspora
+    if (nin.toUpperCase().startsWith('PASSPORT') || nin.toUpperCase().startsWith('PA-')) {
+      return { isValid: true };
+    }
+
+    // Anciennes cartes rose ou cartes de 9 chiffres (legacy pré-2018 non Dermalog)
+    if (cleaned.length === 9 || !/^\d{10}$/.test(cleaned)) {
+      return {
+        isValid: false,
+        reason: "❌ Kat sa a pa konfòm oswa li obsolèt. Sèlman Kat Idantite Unik Dermalog® (ki te fèt anba administrasyon Prezidan Jovenel Moïse ak nimerotasyon ONI 10 chif ak puce) ki valab pou w vote.\n\n❌ Carte non conforme ou obsolète. Seule la Carte d'Identité Unique Dermalog® officielle (émise sous l'administration du Président Jovenel Moïse - NIF/CIN 10 chiffres avec puce biométrique ONI) est acceptée."
+      };
+    }
+
+    // Doit commencer par une série ONI Dermalog valide (001, 004, 009, 101, 104, 109, etc.)
+    const validPrefixes = ['001', '004', '009', '101', '104', '109'];
+    const prefix = cleaned.substring(0, 3);
+    if (!validPrefixes.includes(prefix)) {
+      return {
+        isValid: false,
+        reason: "❌ Série de carte non reconnue par le registre ONI Dermalog® (Jovenel Moïse). Veuillez effectuer la mise à jour de votre carte dans un bureau ONI."
+      };
+    }
+
+    return { isValid: true };
+  },
+
   // Recherche d'électeur par NIN / Carte Dermalog
   async getVoterByNIN(nin: string): Promise<DermalogVoter | null> {
     await delay(400);
@@ -107,9 +137,16 @@ export const api = {
     };
   },
 
-  // Vérification complète de l'éligibilité au vote
+  // Vérification complète de l'éligibilité au vote avec rejet des anciennes cartes
   async checkEligibility(nin: string, electionId: string = 'haiti-general-2026') {
     await delay(500);
+
+    // Contrôle de conformité de la carte Dermalog Jovenel Moïse
+    const cardValidation = this.validateDermalogMoiseCard(nin);
+    if (!cardValidation.isValid) {
+      return { status: 'INVALID_CARD' as const, reason: cardValidation.reason };
+    }
+
     const voter = await this.getVoterByNIN(nin);
     if (!voter) {
       return { status: 'NOT_REGISTERED' as const };

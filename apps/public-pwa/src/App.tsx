@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
 import { Header } from './components/public/Header';
 import { Footer } from './components/public/Footer';
+import { MobileBottomNav } from './components/public/MobileBottomNav';
 import type { Route } from './router';
 import { useHashRoute } from './router';
 import { Home } from './pages/Home';
@@ -36,7 +37,7 @@ function renderPage(route: Route): JSX.Element {
   }
 }
 
-/** PWA publique CEP — layout institutionnel + routage (hash). */
+/** PWA publique CEP — layout institutionnel + routage (hash) + Mobile Bottom Nav. */
 export function App(): JSX.Element {
   const route = useHashRoute();
   return (
@@ -44,6 +45,7 @@ export function App(): JSX.Element {
       <Header route={route} />
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>{renderPage(route)}</main>
       <Footer />
+      <MobileBottomNav currentRoute={route} />
     </div>
   );
 }
