@@ -7,6 +7,7 @@ export type AdminRoute =
   | 'elections'
   | 'candidates'
   | 'parties'
+  | 'mandataire'
   | 'apk-users'
   | 'devices'
   | 'incidents'
@@ -21,6 +22,7 @@ const VALID: AdminRoute[] = [
   'elections',
   'candidates',
   'parties',
+  'mandataire',
   'apk-users',
   'devices',
   'incidents',
@@ -29,6 +31,7 @@ const VALID: AdminRoute[] = [
   'users',
   'settings',
 ];
+
 
 function fromHash(hash: string): AdminRoute {
   const raw = hash.replace(/^#\/?/, '').trim();

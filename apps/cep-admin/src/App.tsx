@@ -23,7 +23,7 @@ import { MandatairePortal } from './pages/MandatairePortal';
 import { adminApi } from './lib/api';
 import type { UserAccount } from './lib/mockData';
 
-function renderPage(route: AdminRoute): JSX.Element {
+function renderPage(route: AdminRoute, session: UserAccount, onLogout: () => void): JSX.Element {
   switch (route) {
     case 'command-center':
       return <CommandCenter />;
@@ -33,6 +33,8 @@ function renderPage(route: AdminRoute): JSX.Element {
       return <Candidates />;
     case 'parties':
       return <Parties />;
+    case 'mandataire':
+      return <MandatairePortal user={session} onLogout={onLogout} />;
     case 'apk-users':
       return <ApkManager />;
     case 'devices':
@@ -83,6 +85,11 @@ export function App(): JSX.Element {
     return <MandatairePortal user={session} onLogout={handleLogout} />;
   }
 
+  // If CEP admin or member explicitly navigates to #mandataire
+  if (route === 'mandataire') {
+    return <MandatairePortal user={session} onLogout={handleLogout} />;
+  }
+
   // Full CEP Admin Back-office reserved exclusively for CEP Council Members & Admins
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
@@ -90,9 +97,10 @@ export function App(): JSX.Element {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <Topbar route={route} onLogout={handleLogout} />
         <main style={{ padding: 'var(--cep-space-6)', background: 'var(--cep-color-background)', flex: 1 }}>
-          {renderPage(route)}
+          {renderPage(route, session, handleLogout)}
         </main>
       </div>
     </div>
   );
 }
+

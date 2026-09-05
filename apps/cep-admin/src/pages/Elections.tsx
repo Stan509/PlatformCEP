@@ -162,6 +162,96 @@ export function Elections(): JSX.Element {
         }
       />
 
+      {/* Mandataires V2 Section for Elections */}
+      <div
+        style={{
+          background: 'white',
+          borderRadius: 'var(--cep-radius-lg)',
+          border: '2px solid var(--cep-color-cep-blue)',
+          padding: '1.5rem',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          boxShadow: '0 4px 12px rgba(0, 56, 147, 0.08)',
+        }}
+      >
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <div>
+            <h3 style={{ margin: 0, color: 'var(--cep-color-deep-blue)', fontSize: '1.25rem' }}>
+              📋 Portail Mandataire V2 — Accréditations & Représentation des Scrutins
+            </h3>
+            <p style={{ margin: '4px 0 0', color: 'var(--cep-color-text-muted)', fontSize: '0.88rem' }}>
+              Portail professionnel des mandataires accrédités (Représentation d'un Candidat ou d'un Parti, périmètre géographique, bureaux et modalités FIXED, NOMADIC, ONLINE).
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              window.location.hash = '#mandataire';
+            }}
+            style={{
+              background: '#003893',
+              color: 'white',
+              border: 'none',
+              padding: '0.7rem 1.4rem',
+              borderRadius: 'var(--cep-radius-md)',
+              fontWeight: 800,
+              cursor: 'pointer',
+              boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+              fontSize: '0.92rem',
+            }}
+          >
+            🚀 Ouvrir le Portail Mandataire V2
+          </button>
+        </div>
+
+        {/* Mandataire Quick Summary List */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem', marginTop: '0.5rem' }}>
+          <div style={{ border: '1px solid #e0e0e0', padding: '1rem', borderRadius: 8, background: '#f8f9fa' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#003893', textTransform: 'uppercase' }}>MANDATAIRE CANDIDAT</span>
+            <strong style={{ display: 'block', color: '#002d62', fontSize: '1.05rem', marginTop: 2 }}>Pierre-Richard Alexis</strong>
+            <span style={{ fontSize: '0.82rem', color: '#555', display: 'block', marginTop: 2 }}>Représente : <strong>Jean-Charles Moïse #14</strong> (Pitit Desalin)</span>
+            <div style={{ marginTop: 8, fontSize: '0.78rem', color: 'gray' }}>
+              Zone : Ouest (Port-au-Prince) | Modalités : <strong>FIXED + NOMADIC</strong>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const u = { id: 'u-mandat-1', username: 'mandat.ouest.01', password: 'Mandat2026!', fullName: 'Pierre-Richard Alexis', role: 'MANDATAIRE' as const, roleTitle: 'Mandataire Électoral', mandataireId: 'm1' };
+                adminApi.setActiveUser(u as any);
+                window.location.hash = '#mandataire';
+                window.location.reload();
+              }}
+              style={{ marginTop: 8, background: '#e0e8f5', color: '#003893', border: 'none', padding: '4px 10px', borderRadius: 4, fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+            >
+              Simuler la vue de ce Mandataire
+            </button>
+          </div>
+
+          <div style={{ border: '1px solid #e0e0e0', padding: '1rem', borderRadius: 8, background: '#f8f9fa' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#137333', textTransform: 'uppercase' }}>MANDATAIRE PARTI POLITIQUE</span>
+            <strong style={{ display: 'block', color: '#002d62', fontSize: '1.05rem', marginTop: 2 }}>Claudette Saint-Germain</strong>
+            <span style={{ fontSize: '0.82rem', color: '#555', display: 'block', marginTop: 2 }}>Représente : <strong>Parti Politique RDNP</strong></span>
+            <div style={{ marginTop: 8, fontSize: '0.78rem', color: 'gray' }}>
+              Zone : Nord (Cap-Haïtien) | Modalités : <strong>BOTH (FIXED + ONLINE)</strong>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const u = { id: 'm2', username: 'c.saintgermain', password: 'Mandat2026!', fullName: 'Claudette Saint-Germain', role: 'MANDATAIRE' as const, roleTitle: 'Mandataire RDNP', mandataireId: 'm2' };
+                adminApi.setActiveUser(u as any);
+                window.location.hash = '#mandataire';
+                window.location.reload();
+              }}
+              style={{ marginTop: 8, background: '#e6f4ea', color: '#137333', border: 'none', padding: '4px 10px', borderRadius: 4, fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
+            >
+              Simuler la vue de ce Mandataire
+            </button>
+          </div>
+        </div>
+      </div>
+
+
       {/* Modal CRUD Election */}
       {modalOpen && (
         <div

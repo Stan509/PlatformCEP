@@ -3,12 +3,13 @@ import { useI18n } from '@cep/i18n';
 import type { AdminRoute } from '../../router';
 import { adminNavigate } from '../../router';
 
-const NAV: { key: AdminRoute; labelKey: string }[] = [
+const NAV: { key: AdminRoute; labelKey: string; labelOverride?: string }[] = [
   { key: 'dashboard', labelKey: 'admin.nav.dashboard' },
   { key: 'command-center', labelKey: 'admin.nav.commandCenter' },
   { key: 'elections', labelKey: 'admin.nav.elections' },
   { key: 'candidates', labelKey: 'admin.nav.candidates' },
   { key: 'parties', labelKey: 'admin.nav.parties' },
+  { key: 'mandataire', labelKey: 'admin.nav.parties', labelOverride: '📋 Portail Mandataire V2' },
   { key: 'apk-users', labelKey: 'admin.nav.apkUsers' },
   { key: 'devices', labelKey: 'admin.nav.devices' },
   { key: 'incidents', labelKey: 'admin.nav.incidents' },
@@ -17,6 +18,7 @@ const NAV: { key: AdminRoute; labelKey: string }[] = [
   { key: 'users', labelKey: 'admin.nav.users' },
   { key: 'settings', labelKey: 'admin.nav.settings' },
 ];
+
 
 interface SidebarProps {
   route: AdminRoute;
@@ -59,7 +61,7 @@ export function Sidebar({ route, onLogout }: SidebarProps): JSX.Element {
             font: 'inherit',
           }}
         >
-          {t(item.labelKey)}
+          {item.labelOverride || t(item.labelKey)}
         </button>
       ))}
 
