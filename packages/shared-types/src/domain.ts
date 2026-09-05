@@ -173,6 +173,7 @@ export interface TerritoryRule {
 }
 
 export interface Election {
+  id?: string;
   electionId: string;
   name: Record<LanguageCode, string>;
   electionType: string;
@@ -185,6 +186,9 @@ export interface Election {
   votingRules: { modalities: string[] };
   countingRules: Record<string, unknown>;
   publicationRules: Record<string, unknown>;
+  title?: string;
+  type?: string;
+  candidates?: Candidate[];
 }
 
 // ---------------------------------------------------------------------------
@@ -201,12 +205,19 @@ export type CandidateStatus =
   | 'WITHDRAWN';
 
 export interface Candidate {
+  id?: string;
   candidateRef: string;
   firstName: string;
   lastName: string;
   partyRef?: string;
+  party?: string;
+  partyAcronym?: string;
+  slogan?: string;
   post: string;
   territory: string; // reference node
+  territoryScope?: 'NATIONAL' | 'DEPARTMENT' | 'COMMUNE';
+  department?: string;
+  commune?: string;
   /** Position officielle sur le bulletin — ordre juridique, pas popularité. */
   ballotIndex: number;
   status: CandidateStatus;
@@ -270,89 +281,43 @@ export type Role =
   | 'CITIZEN'
   | 'DIASPORA';
 
-/**
- * Règle forte : le rôle DEV ne donne AUCUN droit électoral.
- * Cette règle est garantie par le moteur de permissions côté backend.
- */
-
 // ---------------------------------------------------------------------------
-// Appareils & synchronisation (local-first)
+// Biométrie Dermalog & Vote Électorale Haïti
 // ---------------------------------------------------------------------------
 
-export type DeviceStatus =
-  | 'PROVISIONED'
-  | 'ACTIVE'
-  | 'SUSPENDED'
-  | 'LOST'
-  | 'STOLEN'
-  | 'REVOKED'
-  | 'RETIRED';
-
-export type SyncStatus = 'PENDING' | 'SYNCING' | 'SYNCED' | 'ERROR' | 'BLOCKED';
-
-export interface Device {
-  deviceId: string;
-  status: DeviceStatus;
-  appVersion: string;
-  allowedElectionId?: string;
-  assignedGeoNodeId?: string;
-  assignedAgentRef?: string;
-  lastConnectionAt?: string;
-  lastSyncAt?: string;
+export interface DermalogVoter {
+  nin: string;
+  nif?: string;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  birthDate: string;
+  dateOfBirth?: string;
+  gender?: string;
+  cartePhotoUrl: string;
+  facePhotoUrl: string;
+  isBiometricVerified: boolean;
+  department: string;
+  commune: string;
+  sectionCommunale?: string;
+  address: string;
+  isDiaspora: boolean;
+  passportNumber?: string;
+  countryOfResidence?: string;
+  consularZone?: string;
+  hasVotedElections: Record<string, boolean>;
 }
 
-// ---------------------------------------------------------------------------
-// Audit immuable (tamper-evident)
-// ---------------------------------------------------------------------------
-
-export interface AuditEvent {
-  eventId: string;
-  actorRef: string;
-  actorRole: Role;
-  deviceId?: string;
-  action: string;
-  occurredAt: string;
-  context: string;
-  objectRef: string;
-  previousValue?: string;
-  newValue?: string;
-  reason?: string;
-  transactionId: string;
-  /** hash du contenu de l'événement (anti-tampering). */
-  eventHash: string;
-  /** hash de l'événement précédent → chaîne immuable. */
-  previousHash: string | null;
-  signature?: string;
+export interface BiometricVerificationResult {
+  matched: boolean;
+  confidenceScore: number;
+  matchedAt: string;
+  voter?: DermalogVoter;
 }
 
-// ---------------------------------------------------------------------------
-// Incidents
-// ---------------------------------------------------------------------------
-
-export type IncidentCategory =
-  | 'device'
-  | 'network'
-  | 'power'
-  | 'identity'
-  | 'eligibility'
-  | 'security'
-  | 'hardware'
-  | 'software'
-  | 'station_inaccessible'
-  | 'operational'
-  | 'sync_anomaly'
-  | 'electoral';
-
-export type IncidentSeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-export type IncidentStatus = 'OPEN' | 'CLASSIFIED' | 'ASSIGNED' | 'INVESTIGATING' | 'RESOLVED' | 'VERIFIED' | 'ARCHIVED';
-
-export interface Incident {
-  incidentId: string;
-  category: IncidentCategory;
-  severity: IncidentSeverity;
-  status: IncidentStatus;
-  deviceId?: string;
-  reportedBy?: string;
-  reportedAt: string;
-  description: string;
+export interface CastVotePayload {
+  nin?: string;
+  voterNin?: string;
+  electionId: string;
+  selections: Record<string, string>;
 }

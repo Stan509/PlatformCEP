@@ -8,10 +8,14 @@ import { CheckStatus } from './pages/CheckStatus';
 import { Register } from './pages/Register';
 import { Candidates } from './pages/Candidates';
 import { Results } from './pages/Results';
-import { Diaspora, Help, Info } from './pages/Info';
+import { VoteBooth } from './pages/VoteBooth';
+import { Diaspora } from './pages/Diaspora';
+import { Help, Info } from './pages/Info';
 
 function renderPage(route: Route): JSX.Element {
   switch (route) {
+    case 'vote':
+      return <VoteBooth />;
     case 'check-status':
       return <CheckStatus />;
     case 'register':

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 /** Routes de la PWA publique. */
 export type Route =
   | 'home'
+  | 'vote'
   | 'check-status'
   | 'register'
   | 'candidates'
@@ -13,6 +14,7 @@ export type Route =
 
 const VALID: Route[] = [
   'home',
+  'vote',
   'check-status',
   'register',
   'candidates',
