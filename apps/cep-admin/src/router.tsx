@@ -5,6 +5,7 @@ export type AdminRoute =
   | 'dashboard'
   | 'command-center'
   | 'elections'
+  | 'candidates'
   | 'devices'
   | 'incidents'
   | 'audit'
@@ -15,6 +16,7 @@ const VALID: AdminRoute[] = [
   'dashboard',
   'command-center',
   'elections',
+  'candidates',
   'devices',
   'incidents',
   'audit',

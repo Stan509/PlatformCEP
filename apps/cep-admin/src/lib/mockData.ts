@@ -8,10 +8,22 @@ export interface AdminElection {
   name: string;
   type: string;
   date: string;
-  status: string; // clé i18n `admin.elections.statusX`
+  status: string; // 'statusDraft' | 'statusPublished' | 'statusOpen' | 'statusClosed' | 'statusTabulation' | 'statusFinal'
   candidates: number;
   stations: number;
   lastModified: string;
+}
+
+export interface AdminCandidate {
+  id: string;
+  name: string;
+  party: string;
+  post: string;
+  territory: string;
+  slogan: string;
+  photoUrl: string;
+  electionId: string;
+  status: 'APPROVED' | 'PENDING' | 'REJECTED';
 }
 
 export interface AdminDevice {
@@ -66,6 +78,53 @@ export const ADMIN_KPIS = [
 export const ADMIN_ELECTIONS: AdminElection[] = [
   { id: 'e1', name: 'Élection Démo 2026', type: 'demo_2026', date: '2026-09-02', status: 'statusOpen', candidates: 184, stations: 4982, lastModified: '2026-09-02T08:00' },
   { id: 'e2', name: 'Élection locale (archivée)', type: 'local', date: '2024-01-15', status: 'statusFinal', candidates: 96, stations: 1240, lastModified: '2024-01-20T18:00' },
+];
+
+export const ADMIN_CANDIDATES: AdminCandidate[] = [
+  {
+    id: 'c1',
+    name: 'Jean-Charles Moïse',
+    party: 'Pitit Desalin',
+    post: 'Président',
+    territory: 'National',
+    slogan: 'Pou yon Ayiti Souvren ak Djanm',
+    photoUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    status: 'APPROVED',
+  },
+  {
+    id: 'c2',
+    name: 'Mirlande Manigat',
+    party: 'RDNP',
+    post: 'Président',
+    territory: 'National',
+    slogan: 'Ansanm pou Rekonstriksyon Ayiti',
+    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    status: 'APPROVED',
+  },
+  {
+    id: 'c3',
+    name: 'Steven Benoît',
+    party: 'LAPEH',
+    post: 'Sénateur',
+    territory: 'Département de l\'Ouest',
+    slogan: 'Lalwa ak Jistis pou Tout Moun',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    status: 'APPROVED',
+  },
+  {
+    id: 'c4',
+    name: 'Jerry Tardieu',
+    party: 'En Avant',
+    post: 'Député',
+    territory: 'Circonscription de Pétion-Ville',
+    slogan: 'Modernisation ak Devlopman Lokal',
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    electionId: 'e1',
+    status: 'APPROVED',
+  },
 ];
 
 export const ADMIN_DEVICES: AdminDevice[] = [

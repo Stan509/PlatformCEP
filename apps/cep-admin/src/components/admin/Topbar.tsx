@@ -7,6 +7,7 @@ const ROUTE_LABEL: Record<AdminRoute, string> = {
   dashboard: 'admin.nav.dashboard',
   'command-center': 'admin.nav.commandCenter',
   elections: 'admin.nav.elections',
+  candidates: 'admin.nav.candidates',
   devices: 'admin.nav.devices',
   incidents: 'admin.nav.incidents',
   audit: 'admin.nav.audit',

@@ -164,16 +164,26 @@
     }
   },
   "admin": {
-    "nav": { "dashboard": "Tableau de bord", "commandCenter": "Centre de commandement", "elections": "Élections", "devices": "Appareils", "incidents": "Incidents", "audit": "Audit", "releases": "Versions APK", "settings": "Configuration" },
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "commandCenter": "Centre de commandement",
+      "elections": "Élections",
+      "candidates": "Candidats",
+      "devices": "Appareils",
+      "incidents": "Incidents",
+      "audit": "Audit",
+      "releases": "Versions APK",
+      "settings": "Configuration"
+    },
     "topbar": { "activeElection": "Élection active", "systemStatus": "État du système", "notifications": "Notifications" },
     "dashboard": { "title": "Tableau de bord", "electors": "Électeurs", "candidates": "Candidats", "stations": "Bureaux", "agents": "Agents", "devices": "Appareils", "sync": "Synchronisation", "incidents": "Incidents", "security": "Sécurité", "tabulation": "Tabulation" },
     "commandCenter": { "title": "Centre de commandement", "operational": "Opérationnels", "attention": "Attention", "incidentLabel": "Incident", "online": "En ligne", "offline": "Hors ligne", "pending": "En attente", "pvReceived": "PV reçus", "pvValidated": "PV validés", "perDayTitle": "Progression de la journée" },
-    "elections": { "title": "Élections", "name": "Nom", "type": "Type", "date": "Date", "status": "Statut", "candidates": "Candidats", "stations": "Bureaux", "lastModified": "Dernière modification", "statusDraft": "Brouillon", "statusPublished": "Publiée", "statusOpen": "Ouverte", "statusClosed": "Fermée", "statusTabulation": "Tabulation", "statusFinal": "Définitive" },
+    "elections": { "title": "Gestion des Élections", "name": "Nom", "type": "Type", "date": "Date", "status": "Statut", "candidates": "Candidats", "stations": "Bureaux", "lastModified": "Dernière modification", "statusDraft": "Brouillon", "statusPublished": "Publiée", "statusOpen": "Ouverte", "statusClosed": "Fermée", "statusTabulation": "Tabulation", "statusFinal": "Définitive" },
     "devices": { "title": "Appareils", "deviceId": "ID appareil", "version": "Version", "assignedUser": "Utilisateur", "status": "Statut", "lastSeen": "Dernière connexion", "lastSync": "Dernière synchronisation", "statusActive": "Actif", "statusRevoked": "Révoqué", "statusSuspended": "Suspendu", "actions": "Actions", "suspend": "Suspendre", "revoke": "Révoquer" },
     "incidents": { "title": "Incidents", "category": "Catégorie", "severity": "Niveau", "status": "Statut", "reportedBy": "Signalé par", "reportedAt": "Date", "statusOpen": "Ouvert", "statusResolved": "Résolu" },
     "audit": { "title": "Audit", "actor": "Acteur", "action": "Action", "object": "Objet", "outcome": "Résultat", "correlationId": "ID de corrélation", "occurredAt": "Date" },
-    "releases": { "title": "Versions APK", "version": "Version", "build": "Build", "hash": "Hash", "signature": "Signature", "status": "Statut", "publishPrivate": "Publier en privé" },
-    "settings": { "title": "Configuration", "configHint": "Le système est 100 % configurable : aucune règle électorale n'est codée en dur.", "separationHint": "La séparation stricte identité / vote est garantie par l'architecture." }
+    "releases": { "title": "Versions APK & Téléchargements Mobile", "version": "Version", "build": "Build", "hash": "Hash", "signature": "Signature", "status": "Statut", "publishPrivate": "Publier en privé" },
+    "settings": { "title": "Configuration Système", "configHint": "Le système est 100 % configurable : aucune règle électorale n'est codée en dur.", "separationHint": "La séparation stricte identité / vote est garantie par l'architecture." }
   },
   "apps": {
     "field": { "mission": "Mission active", "registered": "Inscrits", "synced": "Synchronisés", "pending": "En attente", "newRegistration": "Nouvelle inscription", "search": "Rechercher un électeur", "sync": "Synchroniser", "incident": "Incident", "offlineNote": "Hors ligne — données conservées localement" },

@@ -6,6 +6,7 @@ import { useAdminRoute } from './router';
 import { Dashboard } from './pages/Dashboard';
 import { CommandCenter } from './pages/CommandCenter';
 import { Elections } from './pages/Elections';
+import { Candidates } from './pages/Candidates';
 import { Devices } from './pages/Devices';
 import { Incidents } from './pages/Incidents';
 import { Audit } from './pages/Audit';
@@ -18,6 +19,8 @@ function renderPage(route: AdminRoute): JSX.Element {
       return <CommandCenter />;
     case 'elections':
       return <Elections />;
+    case 'candidates':
+      return <Candidates />;
     case 'devices':
       return <Devices />;
     case 'incidents':
