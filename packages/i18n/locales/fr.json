@@ -56,13 +56,36 @@
     }
   },
   "public": {
-    "nav": { "home": "Accueil", "elections": "Élections", "electors": "Électeurs", "candidates": "Candidats", "results": "Résultats", "info": "Informations", "diaspora": "Diaspora", "help": "Aide" },
+    "nav": {
+      "home": "Accueil",
+      "vote": "Voter (Isit la)",
+      "checkStatus": "Vérifier statut",
+      "elections": "Élections",
+      "electors": "Électeurs",
+      "candidates": "Candidats",
+      "results": "Résultats",
+      "info": "Informations",
+      "diaspora": "Diaspora",
+      "help": "Aide",
+      "menu": "Menu"
+    },
     "hero": {
-      "title": "Votre voix compte. Votre participation est protégée.",
-      "subtitle": "Informations officielles, inscription et participation.",
+      "badge": "RÉPUBLIQUE D'HAÏTI — CONSEIL ÉLECTORAL PROVISOIRE",
+      "title": "Plateforme Électorale Nationale d'Haïti",
+      "subtitle": "Système officiel du Conseil Électoral Provisoire (CEP). Authentification biométrique Dermalog® et vote secret garanti.",
+      "ctaVote": "Voter en ligne",
       "ctaVerify": "Vérifier mon statut",
+      "ctaDiaspora": "Espace Diaspora",
       "ctaRegister": "S'inscrire comme électeur",
       "ctaUnderstand": "Comprendre le processus"
+    },
+    "features": {
+      "dermalogTitle": "Carte Dermalog® ONI",
+      "dermalogDesc": "Validation stricte du Numéro d'Identité Unique (CIN/NIF) relié à l'Office National d'Identification.",
+      "biometricsTitle": "Reconnaissance Biométrique",
+      "biometricsDesc": "Vérification de concordance faciale en direct par caméra avec le modèle officiel Dermalog.",
+      "territoryTitle": "Bulletins par Circonscription",
+      "territoryDesc": "Filtrage automatique selon la commune et le département de résidence de l'électeur."
     },
     "cycle": {
       "title": "Cycle électoral",
@@ -77,9 +100,10 @@
   },
   "pages": {
     "status": {
-      "title": "Vérifier mon statut",
-      "fieldLabel": "Identifiant électoral",
-      "fieldPlaceholder": "Ex. CEP-0000-0000",
+      "title": "Vérifier mon statut électoral",
+      "subtitle": "Consultez l'état de votre inscription sur la liste électorale nationale et votre centre de vote.",
+      "fieldLabel": "Identifiant Dermalog (CIN/NIF) ou Passeport",
+      "fieldPlaceholder": "Ex. 004-123-456-7 ou PA-998877",
       "submit": "Vérifier",
       "loading": "Vérification...",
       "registeredBadge": "Électeur enregistré",

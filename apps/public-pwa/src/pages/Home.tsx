@@ -6,6 +6,7 @@ import { useAsync } from '../hooks/useAsync';
 import { api } from '../lib/api';
 
 const CYCLE_STEPS = ['step1', 'step2', 'step3', 'step4', 'step5', 'step6', 'step7'] as const;
+
 const TRUST_BY_STATUS: Record<string, 'info' | 'success' | 'warning'> = {
   OPEN: 'success',
   PROVISIONAL_RESULTS: 'warning',
@@ -13,6 +14,7 @@ const TRUST_BY_STATUS: Record<string, 'info' | 'success' | 'warning'> = {
   FINAL_RESULTS: 'info',
   CLOSED: 'info',
 };
+
 const STATUS_LABEL_KEY: Record<string, string> = {
   OPEN: 'design_system.status.open',
   PROVISIONAL_RESULTS: 'design_system.status.provisional',
@@ -28,126 +30,249 @@ export function Home(): JSX.Element {
 
   return (
     <>
-      <section style={{ background: 'linear-gradient(135deg, #001A4D 0%, #002060 60%, #0B3C85 100%)', color: 'white', padding: 'var(--cep-space-9) var(--cep-space-6)' }}>
+      {/* Hero Banner — Modéré, institutionnel & harmonieux avec les tokens CSS */}
+      <section
+        style={{
+          background: 'linear-gradient(180deg, var(--cep-color-light-blue) 0%, #F4F8FC 100%)',
+          borderBottom: '1px solid var(--cep-color-border)',
+          padding: 'var(--cep-space-8) var(--cep-space-5)',
+        }}
+      >
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ display: 'inline-block', background: 'rgba(255, 255, 255, 0.15)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '1px', marginBottom: '16px' }}>
-            🇭🇹 RÉPUBLIQUE D'HAÏTI — CONSEIL ÉLECTORAL PROVISOIRE
+          {/* Institutional Badge */}
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--cep-space-2)',
+              background: 'var(--cep-color-white)',
+              color: 'var(--cep-color-deep-blue)',
+              border: '1px solid var(--cep-color-border)',
+              padding: '6px 14px',
+              borderRadius: 'var(--cep-radius-full)',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              boxShadow: 'var(--cep-shadow-xs)',
+              marginBottom: 'var(--cep-space-4)',
+            }}
+          >
+            <span>🇭🇹</span> {t('public.hero.badge')}
           </div>
-          <h1 style={{ fontSize: 'clamp(2.2rem, 5vw, 3.4rem)', maxWidth: '22ch', color: 'white', lineHeight: 1.15, textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-            Plateforme Nationale de Vote & Biométrie Électorale
+
+          {/* Hero Title */}
+          <h1
+            style={{
+              fontSize: 'clamp(1.8rem, 4vw, 2.75rem)',
+              color: 'var(--cep-color-deep-blue)',
+              lineHeight: 1.2,
+              fontWeight: 800,
+              maxWidth: '22ch',
+              margin: '0 0 var(--cep-space-3) 0',
+            }}
+          >
+            {t('public.hero.title')}
           </h1>
-          <p style={{ marginTop: 'var(--cep-space-4)', color: 'rgba(255, 255, 255, 0.9)', maxWidth: '56ch', fontSize: '1.15rem', lineHeight: 1.5 }}>
-            Voter de manière sécurisée avec votre carte Dermalog® (CIN / NIF) et votre passeport haïtien (Diaspora). Authentification par reconnaissance biométrique faciale.
+
+          {/* Hero Subtitle */}
+          <p
+            style={{
+              color: 'var(--cep-color-text-secondary)',
+              maxWidth: '56ch',
+              fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+              lineHeight: 1.5,
+              margin: '0 0 var(--cep-space-6) 0',
+            }}
+          >
+            {t('public.hero.subtitle')}
           </p>
-          <div style={{ display: 'flex', gap: 'var(--cep-space-4)', marginTop: 'var(--cep-space-6)', flexWrap: 'wrap' }}>
+
+          {/* Responsive CTAs */}
+          <div
+            style={{
+              display: 'flex',
+              gap: 'var(--cep-space-3)',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+            }}
+          >
             <button
               onClick={() => navigate('vote')}
               style={{
-                background: '#F59E0B',
-                color: '#001A4D',
-                fontWeight: 800,
-                fontSize: '1.1rem',
-                padding: '14px 28px',
-                borderRadius: '30px',
+                background: 'var(--cep-color-cep-blue)',
+                color: 'var(--cep-color-white)',
+                fontWeight: 700,
+                fontSize: '1rem',
+                padding: '12px 24px',
+                borderRadius: 'var(--cep-radius-full)',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 20px rgba(245, 158, 11, 0.4)',
-                display: 'flex',
+                boxShadow: 'var(--cep-shadow-sm)',
+                display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '8px',
+                transition: 'all 0.15s ease',
               }}
             >
-              <span>🗳️</span> Accéder à l'Isoloir (Voter en ligne)
+              <span>🗳️</span> {t('public.hero.ctaVote')}
             </button>
 
             <button
               onClick={() => navigate('check-status')}
               style={{
-                background: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
+                background: 'var(--cep-color-white)',
+                color: 'var(--cep-color-deep-blue)',
                 fontWeight: 600,
-                fontSize: '1rem',
-                padding: '14px 24px',
-                borderRadius: '30px',
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-                cursor: 'pointer'
+                fontSize: '0.95rem',
+                padding: '12px 20px',
+                borderRadius: 'var(--cep-radius-full)',
+                border: '1px solid var(--cep-color-border)',
+                cursor: 'pointer',
+                boxShadow: 'var(--cep-shadow-xs)',
               }}
             >
-              🔍 Vérifier mon Statut d'Électeur
+              🔍 {t('public.hero.ctaVerify')}
             </button>
 
             <button
               onClick={() => navigate('diaspora')}
               style={{
                 background: 'transparent',
-                color: 'white',
+                color: 'var(--cep-color-cep-blue)',
                 fontWeight: 600,
-                fontSize: '1rem',
-                padding: '14px 24px',
-                borderRadius: '30px',
-                border: '1px solid rgba(255, 255, 255, 0.4)',
-                cursor: 'pointer'
+                fontSize: '0.95rem',
+                padding: '12px 20px',
+                borderRadius: 'var(--cep-radius-full)',
+                border: '1px solid var(--cep-color-cep-blue)',
+                cursor: 'pointer',
               }}
             >
-              🌐 Espace Diaspora Haïtienne
+              🌐 {t('public.hero.ctaDiaspora')}
             </button>
           </div>
         </div>
       </section>
 
-      {/* Feature Highlights */}
-      <section style={{ padding: 'var(--cep-space-7) var(--cep-space-6)', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-          <Card title="🎴 Carte Dermalog® & Identité Unique" body={
-            <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: '0.95rem' }}>
-              Validation stricte des numéros d'identification unique (CIN/NIF) reliés à la base centrale de l'Office National d'Identification (ONI).
-            </p>
-          } />
-          <Card title="📸 Biométrie Faciale Sécurisée" body={
-            <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: '0.95rem' }}>
-              Scan facial en direct devant caméra avec comparaison automatique du modèle facial officiel issu de la carte d'identité.
-            </p>
-          } />
-          <Card title="📍 Circonscription Géographique" body={
-            <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: '0.95rem' }}>
-              Attribution exacte du bulletin selon la commune et le département : Président (National), Sénateur (Département), Député & Magistrat (Commune).
-            </p>
-          } />
+      {/* Feature Highlights Grid — Fully Responsive */}
+      <section
+        style={{
+          padding: 'var(--cep-space-7) var(--cep-space-5)',
+          maxWidth: 1200,
+          margin: '0 auto',
+          width: '100%',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: 'var(--cep-space-4)',
+          }}
+        >
+          <Card
+            title={`🎴 ${t('public.features.dermalogTitle')}`}
+            body={
+              <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: '0.95rem', margin: 0 }}>
+                {t('public.features.dermalogDesc')}
+              </p>
+            }
+          />
+          <Card
+            title={`📸 ${t('public.features.biometricsTitle')}`}
+            body={
+              <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: '0.95rem', margin: 0 }}>
+                {t('public.features.biometricsDesc')}
+              </p>
+            }
+          />
+          <Card
+            title={`📍 ${t('public.features.territoryTitle')}`}
+            body={
+              <p style={{ color: 'var(--cep-color-text-secondary)', fontSize: '0.95rem', margin: 0 }}>
+                {t('public.features.territoryDesc')}
+              </p>
+            }
+          />
         </div>
       </section>
 
-      <section style={{ padding: 'var(--cep-space-7) var(--cep-space-6)', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-        <h2 style={{ fontSize: 'var(--cep-font-size-h2)' }}>{t('public.cycle.title')}</h2>
-        <div style={{ display: 'grid', gap: 'var(--cep-space-3)', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', marginTop: 'var(--cep-space-5)' }}>
+      {/* Cycle électoral */}
+      <section
+        style={{
+          padding: 'var(--cep-space-6) var(--cep-space-5)',
+          maxWidth: 1200,
+          margin: '0 auto',
+          width: '100%',
+        }}
+      >
+        <h2 style={{ fontSize: 'var(--cep-font-size-h2)', color: 'var(--cep-color-deep-blue)' }}>
+          {t('public.cycle.title')}
+        </h2>
+        <div
+          style={{
+            display: 'grid',
+            gap: 'var(--cep-space-3)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+            marginTop: 'var(--cep-space-4)',
+          }}
+        >
           {CYCLE_STEPS.map((step, i) => (
-            <Card key={step} title={`${i + 1}`} body={<span style={{ fontSize: 'var(--cep-font-size-small)' }}>{t(`public.cycle.${step}`)}</span>} />
+            <Card
+              key={step}
+              title={`${i + 1}`}
+              body={
+                <span style={{ fontSize: 'var(--cep-font-size-small)', color: 'var(--cep-color-text-secondary)' }}>
+                  {t(`public.cycle.${step}`)}
+                </span>
+              }
+            />
           ))}
         </div>
       </section>
 
-      <section style={{ padding: 'var(--cep-space-7) var(--cep-space-6)', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-        <h2 style={{ fontSize: 'var(--cep-font-size-h2)' }}>{t('public.nav.elections')}</h2>
+      {/* Liste des Élections Actives */}
+      <section
+        style={{
+          padding: 'var(--cep-space-6) var(--cep-space-5)',
+          maxWidth: 1200,
+          margin: '0 auto',
+          width: '100%',
+        }}
+      >
+        <h2 style={{ fontSize: 'var(--cep-font-size-h2)', color: 'var(--cep-color-deep-blue)' }}>
+          {t('public.nav.elections')}
+        </h2>
         <div style={{ marginTop: 'var(--cep-space-4)' }}>
           {elections.state === 'loading' && <StateView state="loading" />}
           {elections.state === 'error' && <StateView state="error" />}
           {elections.state === 'empty' && <StateView state="empty" />}
           {elections.state === 'success' && (
-            <div style={{ display: 'grid', gap: 'var(--cep-space-4)', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+            <div
+              style={{
+                display: 'grid',
+                gap: 'var(--cep-space-4)',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              }}
+            >
               {elections.data.map((election) => (
                 <Card
                   key={election.electionId}
-                  title={election.name[lang]}
+                  title={election.name[lang] || election.name.fr}
                   body={
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-3)' }}>
                       <StatusIndicator
                         tone={TRUST_BY_STATUS[election.status] ?? 'info'}
                         label={t(STATUS_LABEL_KEY[election.status] ?? 'design_system.status.open')}
                       />
-                      <span style={{ fontSize: 'var(--cep-font-size-caption-lg)', color: 'var(--cep-color-text-secondary)' }}>
-                        Date d'ouverture: {new Date(election.startDate).toLocaleDateString()}
+                      <span
+                        style={{
+                          fontSize: 'var(--cep-font-size-caption-lg)',
+                          color: 'var(--cep-color-text-secondary)',
+                        }}
+                      >
+                        {new Date(election.startDate).toLocaleDateString()}
                       </span>
-                      <Button onClick={() => navigate('vote')}>
-                        Voter à ce Scrutin →
+                      <Button block onClick={() => navigate('vote')}>
+                        {t('public.hero.ctaVote')} →
                       </Button>
                     </div>
                   }
@@ -155,14 +280,6 @@ export function Home(): JSX.Element {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      <section style={{ padding: 'var(--cep-space-7) var(--cep-space-6)', maxWidth: 1200, margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'grid', gap: 'var(--cep-space-4)', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))' }}>
-          <Card title={t('pages.results.title')} body={<Button variant="secondary" onClick={() => navigate('results')}>{t('common.actions.continue')}</Button>} />
-          <Card title={t('pages.info.title')} body={<Button variant="secondary" onClick={() => navigate('info')}>{t('common.actions.continue')}</Button>} />
-          <Card title={t('public.nav.candidates')} body={<Button variant="secondary" onClick={() => navigate('candidates')}>{t('common.actions.continue')}</Button>} />
         </div>
       </section>
     </>

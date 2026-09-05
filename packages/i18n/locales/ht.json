@@ -56,13 +56,36 @@
     }
   },
   "public": {
-    "nav": { "home": "Akèy", "elections": "Eleksyon", "electors": "Elèktè", "candidates": "Kandida", "results": "Rezilta", "info": "Enfòmasyon", "diaspora": "Diyaspora", "help": "Èd" },
+    "nav": {
+      "home": "Akèy",
+      "vote": "Vote (Isit la)",
+      "checkStatus": "Tcheke Estati",
+      "elections": "Eleksyon",
+      "electors": "Elèktè",
+      "candidates": "Kandida",
+      "results": "Rezilta",
+      "info": "Enfòmasyon",
+      "diaspora": "Diyaspora",
+      "help": "Èd",
+      "menu": "Meni"
+    },
     "hero": {
-      "title": "Vwa ou konte. Patisipasyon ou pwoteje.",
-      "subtitle": "Enfòmasyon ofisyèl, enskripsyon ak patisipasyon.",
+      "badge": "REPİBLIK D AYITI — KONSÈY ELEKTORAL PWOVIZWA",
+      "title": "Platfòm Elektoral Nasyonal d Ayiti",
+      "subtitle": "Sistèm ofisyèl Konsèy Elektoral Pwovizwa (CEP). Otantifikasyon biometrik Dermalog® ak vòt konfidansyèl garanti.",
+      "ctaVote": "Vote sou Entènèt",
       "ctaVerify": "Tcheke estati mwen",
+      "ctaDiaspora": "Espas Diyaspora",
       "ctaRegister": "Enskri kòm elèktè",
       "ctaUnderstand": "Konprann pwosesis la"
+    },
+    "features": {
+      "dermalogTitle": "Kat Dermalog® ONI",
+      "dermalogDesc": "Validasyon strik Nimewo Idantite Unik (CIN/NIF) ki kòresponn ak Biwo Nasyonal Idantifikasyon.",
+      "biometricsTitle": "Rekonèsans Biometrik",
+      "biometricsDesc": "Verifikasyon figi ak kamera an dirèk dapre modèl ofisyèl Dermalog la.",
+      "territoryTitle": "Biletin pa Sirkonskripsyon",
+      "territoryDesc": "Filtraj otomatik dapre komin ak depatman kote elektè a rete."
     },
     "cycle": {
       "title": "Sik elektoral la",
@@ -77,9 +100,10 @@
   },
   "pages": {
     "status": {
-      "title": "Tcheke estati mwen",
-      "fieldLabel": "Idantifyan elektoral",
-      "fieldPlaceholder": "Eg. CEP-0000-0000",
+      "title": "Tcheke estati elektoral mwen",
+      "subtitle": "Gade si ou enskri sou lis elektoral nasyonal la ak biwo vòt ou.",
+      "fieldLabel": "Idantifyan Dermalog (CIN/NIF) oswa Pasaspò",
+      "fieldPlaceholder": "Eg. 004-123-456-7 oswa PA-998877",
       "submit": "Verifye",
       "loading": "Verifikasyon...",
       "registeredBadge": "Elèktè enskri",
