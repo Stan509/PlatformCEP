@@ -119,6 +119,7 @@ const ALL_NAV_DOMAINS: NavDomainDef[] = [
       { key: 'roles', label: 'Rôles & Permissions', icon: '🛡️', requiredPermission: 'user.permissions.manage' },
       { key: 'permissions-manage', label: 'Matrice de Permissions', icon: '⚙️', requiredPermission: 'user.permissions.manage' },
       { key: 'settings', label: 'Configuration Système', icon: '🔧', requiredPermission: 'dashboard.view' },
+      { key: 'kernel-monitor', label: 'Superadmin DevOps & Kernel', icon: '⚡', requiredPermission: 'system.superadmin' },
     ],
   },
 ];

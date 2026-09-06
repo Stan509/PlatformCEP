@@ -26,6 +26,7 @@ import { Releases } from './pages/Releases';
 import { Users } from './pages/Users';
 import { PermissionsManage } from './pages/PermissionsManage';
 import { Settings } from './pages/Settings';
+import { KernelMonitor } from './pages/KernelMonitor';
 import { LoginPage } from './pages/LoginPage';
 import { CandidatePortal } from './pages/CandidatePortal';
 import { PartyPortal } from './pages/PartyPortal';
@@ -146,6 +147,8 @@ function renderPage(route: AdminRoute, session: UserAccount, onLogout: () => voi
       return <PermissionsManage currentUser={session} />;
     case 'settings':
       return <Settings />;
+    case 'kernel-monitor':
+      return <KernelMonitor />;
     case 'dashboard':
     default:
       return <Dashboard user={session} />;

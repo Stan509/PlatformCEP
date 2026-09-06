@@ -28,6 +28,7 @@ export type AdminRoute =
   | 'roles'
   | 'permissions-manage'
   | 'settings'
+  | 'kernel-monitor'
   | 'mandataire'; // alias for mandataire portal view
 
 export interface RouteMeta {
@@ -63,6 +64,7 @@ export const ROUTE_META_REGISTRY: Record<AdminRoute, RouteMeta> = {
   roles: { route: 'roles', label: 'Rôles & Permissions', requiredPermissions: ['user.permissions.manage'] },
   'permissions-manage': { route: 'permissions-manage', label: 'Matrice de Permissions', requiredPermissions: ['user.permissions.manage'] },
   settings: { route: 'settings', label: 'Configuration Système', requiredPermissions: ['dashboard.view'] },
+  'kernel-monitor': { route: 'kernel-monitor', label: 'Superadmin DevOps & Kernel', requiredPermissions: ['system.superadmin'] },
 };
 
 const VALID: AdminRoute[] = Object.keys(ROUTE_META_REGISTRY) as AdminRoute[];

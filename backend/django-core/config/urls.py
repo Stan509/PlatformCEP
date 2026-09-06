@@ -37,6 +37,10 @@ router.register(r"mandates", MandateViewSet, basename="mandate")
 router.register(r"stations", PollingStationViewSet, basename="station")
 router.register(r"devices", DeviceViewSet, basename="device")
 
+from apps.kernel_views import (
+    KernelMetricsView, KernelErrorLogsView, KernelSecurityAlertsView, PurgeTestDataView
+)
+
 urlpatterns = [
     path("", root_api_index, name="api-root-index"),
     path("admin/", admin.site.urls),
@@ -49,6 +53,10 @@ urlpatterns = [
     path("api/actions/submit-ballot", SubmitBallotView.as_view(), name="action-submit-ballot"),
     path("api/command-center", CommandCenterView.as_view(), name="command-center"),
     path("api/audit", AuditLogView.as_view(), name="audit-log"),
+    path("api/kernel/metrics", KernelMetricsView.as_view(), name="kernel-metrics"),
+    path("api/kernel/errors", KernelErrorLogsView.as_view(), name="kernel-errors"),
+    path("api/kernel/security-alerts", KernelSecurityAlertsView.as_view(), name="kernel-alerts"),
+    path("api/kernel/purge-test-data", PurgeTestDataView.as_view(), name="kernel-purge"),
     path("api/", include(router.urls)),
     path("api/", include("apps.accounts.urls")),
 ]
