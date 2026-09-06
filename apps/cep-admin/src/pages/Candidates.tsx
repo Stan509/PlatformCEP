@@ -149,7 +149,9 @@ export function Candidates(): JSX.Element {
     }
   };
 
-  const filteredCandidates = candidates.filter((c) => {
+  const safeCandidates = Array.isArray(candidates) ? candidates : [];
+
+  const filteredCandidates = safeCandidates.filter((c) => {
     const matchesSearch =
       c.name.toLowerCase().includes(search.toLowerCase()) ||
       c.party.toLowerCase().includes(search.toLowerCase()) ||
@@ -164,6 +166,38 @@ export function Candidates(): JSX.Element {
 
   return (
     <div style={{ padding: 'var(--cep-space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--cep-space-4)' }}>
+      {/* Navigation rapide du Pôle Électoral */}
+      <div style={{ display: 'flex', gap: '0.5rem', background: '#eef3fb', padding: '6px', borderRadius: 10, border: '1px solid #d0e0f8' }}>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#elections'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: '#003893', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          🗳️ Scrutins Électoraux
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#candidates'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: '#003893', color: 'white', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          👤 Candidats & Programmes
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#parties'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: '#003893', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          🏛️ Partis Politiques
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#mandataire'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: '#003893', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          📋 Portail Mandataires V2
+        </button>
+      </div>
+
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>

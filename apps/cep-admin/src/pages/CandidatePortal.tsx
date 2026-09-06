@@ -513,7 +513,7 @@ export function CandidatePortal({ user, onLogout }: CandidatePortalProps): JSX.E
                       <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: 4 }}>Commune</label>
                       <select value={mandatCommune} onChange={(e) => setMandatCommune(e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: 4, border: '1px solid #ccc' }}>
                         {getCommunesByDepartmentName(mandatDept).map((c) => (
-                          <option key={c} value={c}>{c}</option>
+                          <option key={c.name} value={c.name}>{c.name}</option>
                         ))}
                       </select>
                     </div>
@@ -616,7 +616,7 @@ export function CandidatePortal({ user, onLogout }: CandidatePortalProps): JSX.E
             {/* VIEW 14: RESULTS */}
             {activeView === 'results' && candidate && (
               <div style={{ background: 'white', padding: '1.5rem', borderRadius: 12, border: '1px solid #e0e0e0' }}>
-                <h2 style={{ margin: '0 0 0.5rem', color: '#002d62', fontSize: '1.2rem' }}>📊 Résultats Détaillés pour {candidate.name} ({selectedElection.name})</h2>
+                <h2 style={{ margin: '0 0 0.5rem', color: '#002d62', fontSize: '1.2rem' }}>📊 Résultats Détaillés pour {candidate.name} ({selectedElection?.name || 'Élection Active'})</h2>
                 <div style={{ background: '#fff3cd', borderLeft: '4px solid #ffc107', padding: '0.8rem', borderRadius: 6, fontSize: '0.82rem', color: '#856404', marginBottom: '1rem' }}>
                   ⚠️ Statut CEP : <strong>RÉSULTATS PROVISOIRES</strong> (82.5% dépouillé).
                 </div>

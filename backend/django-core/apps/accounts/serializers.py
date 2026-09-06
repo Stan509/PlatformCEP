@@ -35,4 +35,8 @@ class MFAVerifySerializer(serializers.Serializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "username", "role", "mfa_enabled", "electoral_reference"]
+        fields = [
+            "id", "username", "role", "mfa_enabled", "electoral_reference",
+            "permissions", "scope", "first_name", "last_name", "email"
+        ]
+

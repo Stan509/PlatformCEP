@@ -143,6 +143,15 @@ export interface ApkAgentUser {
   status: 'ACTIVE' | 'SUSPENDED';
 }
 
+export interface UserScope {
+  departments?: string[];
+  communes?: string[];
+  elections?: string[];
+  stationCodes?: string[];
+  partyIds?: string[];
+  candidateIds?: string[];
+}
+
 export interface UserAccount {
   id: string;
   username: string;
@@ -150,6 +159,8 @@ export interface UserAccount {
   fullName: string;
   role: 'ADMIN_CEP' | 'MEMBER_CEP' | 'CANDIDATE' | 'PARTY' | 'MANDATAIRE' | 'APK_AGENT';
   roleTitle: string;
+  permissions?: string[];
+  scope?: UserScope;
   candidateId?: string;
   partyId?: string;
   mandataireId?: string;
@@ -740,20 +751,179 @@ export const APK_AGENT_USERS: ApkAgentUser[] = [
 export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'u-cep-1',
+    username: 'president.cep',
+    password: 'CepPassword2026!',
+    fullName: 'Me. Max Mathurin',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Président du Conseil Électoral Provisoire (CEP)',
+    permissions: ['system.superadmin', '*.*'],
+    scope: { departments: ['ALL'], elections: ['ALL'], communes: ['ALL'] },
+  },
+  {
+    id: 'u-cep-1-legacy',
     username: 'm.mathurin.cep',
     password: 'CepPassword2026!',
     fullName: 'Me. Max Mathurin',
     role: 'ADMIN_CEP',
     roleTitle: 'Président du Conseil Électoral Provisoire (CEP)',
+    permissions: ['system.superadmin', '*.*'],
+    scope: { departments: ['ALL'], elections: ['ALL'], communes: ['ALL'] },
   },
   {
-    id: 'u-cep-2',
-    username: 'y.mengual.cep',
+    id: 'u-exec-dg',
+    username: 'directeur.exec',
     password: 'CepPassword2026!',
-    fullName: 'Dr. Yolette Mengual',
-    role: 'MEMBER_CEP',
-    roleTitle: 'Conseillère Électorale — Responsable Opérations',
+    fullName: 'Me. Max Delva Guillaume',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Directeur Exécutif & Général du CEP',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'election.view',
+      'election.update',
+      'station.view',
+      'device.view',
+      'user.view',
+      'audit.view',
+    ],
+    scope: { departments: ['ALL'], elections: ['ALL'] },
   },
+  {
+    id: 'u-ops-cep',
+    username: 'ops.cep',
+    password: 'CepPassword2026!',
+    fullName: 'Ing. Fritz Bernard',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Conseiller Électoral — Responsable des Opérations & Logistique',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'station.view',
+      'station.create',
+      'station.assign',
+      'station.transfer',
+      'device.view',
+      'device.register',
+      'device.activate',
+      'device.suspend',
+      'device.revoke',
+      'incident.view',
+      'incident.resolve',
+      'audit.view',
+    ],
+    scope: { departments: ['ALL'], elections: ['ALL'] },
+  },
+  {
+    id: 'u-legal-cep',
+    username: 'legal.cep',
+    password: 'CepPassword2026!',
+    fullName: 'Me. Rose Lhérisson',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Conseillère Électorale — Responsable Contentieux & Juridique',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'candidate.view',
+      'candidate.approve',
+      'candidate.reject',
+      'party.view',
+      'mandate.view',
+      'mandate.approve',
+      'pv.view',
+      'pv.review',
+      'pv.reject',
+      'incident.view',
+      'incident.resolve',
+      'audit.view',
+    ],
+    scope: { departments: ['ALL'], elections: ['ALL'] },
+  },
+  {
+    id: 'u-it-cep',
+    username: 'it.cep',
+    password: 'CepPassword2026!',
+    fullName: 'Col. Jacques Roche',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Conseiller Électoral — Responsable Registre & Sécurité Informatique',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'elector.view',
+      'elector.search',
+      'elector.assign',
+      'device.view',
+      'device.revoke',
+      'audit.view',
+      'audit.export',
+      'user.view',
+      'user.permissions.manage',
+    ],
+    scope: { departments: ['ALL'], elections: ['ALL'] },
+  },
+  {
+    id: 'u-bed-ouest',
+    username: 'bed.ouest',
+    password: 'BedPassword2026!',
+    fullName: 'Directeur BED Ouest (Port-au-Prince)',
+    role: 'MEMBER_CEP',
+    roleTitle: 'Directeur du Bureau Électoral Départemental (BED Ouest)',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'station.view',
+      'device.view',
+      'candidate.view',
+      'pv.view',
+      'pv.review',
+      'pv.validate',
+      'incident.view',
+      'incident.create',
+    ],
+    scope: { departments: ['Ouest'], elections: ['e1'] },
+    department: 'Ouest',
+  },
+  {
+    id: 'u-bed-nord',
+    username: 'bed.nord',
+    password: 'BedPassword2026!',
+    fullName: 'Directeur BED Cap-Haïtien (Nord)',
+    role: 'MEMBER_CEP',
+    roleTitle: 'Directeur du Bureau Électoral Départemental (BED Nord)',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'station.view',
+      'device.view',
+      'candidate.view',
+      'pv.view',
+      'pv.review',
+      'pv.validate',
+      'incident.view',
+      'incident.create',
+    ],
+    scope: { departments: ['Nord'], elections: ['e1'] },
+    department: 'Nord',
+  },
+  {
+    id: 'u-sup-terrain',
+    username: 'sup.terrain',
+    password: 'BecPassword2026!',
+    fullName: 'Superviseur Communal & Agent de Liaison (Port-au-Prince)',
+    role: 'MEMBER_CEP',
+    roleTitle: 'Superviseur Communal & Agent de Liaison Terrain (BEC)',
+    permissions: [
+      'dashboard.view',
+      'myScope.view',
+      'station.view',
+      'elector.search',
+      'incident.view',
+      'incident.create',
+    ],
+    scope: { departments: ['Ouest'], communes: ['Port-au-Prince'], elections: ['e1'] },
+    department: 'Ouest',
+    commune: 'Port-au-Prince',
+  },
+
   {
     id: 'u-cand-1',
     username: 'cand.moise.14',

@@ -41,10 +41,58 @@ class User(AbstractUser):
     mfa_enabled = models.BooleanField(default=False)
     # Identifiant de compte ordonné : jamais l'identité civile complète.
     electoral_reference = models.CharField(max_length=40, blank=True, unique=True, null=True)
+    # Permissions granulaires (resource.action) et Scopes ABAC (départements, communes, élection, etc.)
+    permissions = models.JSONField(default=list, blank=True)
+    scope = models.JSONField(default=dict, blank=True)
 
     class Meta:
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
+
+    def has_perm_code(self, perm_code: str) -> bool:
+        """Vérifie si l'utilisateur possède une permission explicite ou superadmin."""
+        if not self.is_active:
+            return False
+        user_perms = self.permissions or []
+        if "system.superadmin" in user_perms:
+            return True
+        if perm_code in user_perms or "*.*" in user_perms or "*" in user_perms:
+            return True
+        domain = perm_code.split(".")[0] if "." in perm_code else ""
+        if domain and f"{domain}.*" in user_perms:
+            return True
+        return False
+
+    def has_scope_target(self, target: dict) -> bool:
+        """Vérifie si la cible (département, commune, élection, etc.) est dans le scope de l'utilisateur."""
+        if not self.is_active:
+            return False
+        user_scope = self.scope or {}
+        # Scope vide ou non restreint = accès global
+        if not user_scope or user_scope.get("isGlobal", False):
+            return True
+
+        if "department" in target and target["department"]:
+            dept_scope = user_scope.get("departments", [])
+            if dept_scope and target["department"] not in dept_scope:
+                return False
+
+        if "commune" in target and target["commune"]:
+            commune_scope = user_scope.get("communes", [])
+            if commune_scope and target["commune"] not in commune_scope:
+                return False
+
+        if "election" in target and target["election"]:
+            election_scope = user_scope.get("elections", [])
+            if election_scope and target["election"] not in election_scope:
+                return False
+
+        if "party" in target and target["party"]:
+            party_scope = user_scope.get("parties", [])
+            if party_scope and target["party"] not in party_scope:
+                return False
+
+        return True
 
     def __str__(self) -> str:
         return self.username

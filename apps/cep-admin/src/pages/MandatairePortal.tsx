@@ -200,19 +200,19 @@ export function MandatairePortal({ user, onLogout }: MandatairePortalProps): JSX
 
   // Nav Menu Items List
   const navItems: { id: MandataireView; label: string; icon: string; badge?: number; show: boolean }[] = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', show: true },
-    { id: 'mandat', label: 'Mon Mandat', icon: '📜', show: true },
-    { id: 'zone', label: 'Ma Zone', icon: '🗺️', show: true },
-    { id: 'bureaux', label: 'Bureaux de Vote', icon: '🏢', show: hasPhysical },
-    { id: 'online', label: 'Online-Z', icon: '🌐', show: hasOnline },
-    { id: 'participation', label: 'Participation', icon: '👥', show: true },
-    { id: 'decompte', label: 'Décompte Parallèle', icon: '📊', show: true },
-    { id: 'pv', label: 'Procès-Verbaux', icon: '📄', show: true },
-    { id: 'incidents', label: 'Incidents', icon: '🚨', badge: openIncidentsCount, show: true },
-    { id: 'observations', label: 'Observations', icon: '📝', show: true },
-    { id: 'documents', label: 'Documents', icon: '📑', show: true },
-    { id: 'notifications', label: 'Notifications', icon: '🔔', badge: unreadNotificationsCount, show: true },
-    { id: 'profile', label: 'Profil & Compte', icon: '👤', show: true },
+    { id: 'dashboard' as MandataireView, label: 'Dashboard', icon: '📊', show: true },
+    { id: 'mandat' as MandataireView, label: 'Mon Mandat', icon: '📜', show: true },
+    { id: 'zone' as MandataireView, label: 'Ma Zone', icon: '🗺️', show: true },
+    { id: 'bureaux' as MandataireView, label: 'Bureaux de Vote', icon: '🏢', show: !!hasPhysical },
+    { id: 'online' as MandataireView, label: 'Online-Z', icon: '🌐', show: !!hasOnline },
+    { id: 'participation' as MandataireView, label: 'Participation', icon: '👥', show: true },
+    { id: 'decompte' as MandataireView, label: 'Décompte Parallèle', icon: '📊', show: true },
+    { id: 'pv' as MandataireView, label: 'Procès-Verbaux', icon: '📄', show: true },
+    { id: 'incidents' as MandataireView, label: 'Incidents', icon: '🚨', badge: openIncidentsCount, show: true },
+    { id: 'observations' as MandataireView, label: 'Observations', icon: '📝', show: true },
+    { id: 'documents' as MandataireView, label: 'Documents', icon: '📑', show: true },
+    { id: 'notifications' as MandataireView, label: 'Notifications', icon: '🔔', badge: unreadNotificationsCount, show: true },
+    { id: 'profile' as MandataireView, label: 'Profil & Compte', icon: '👤', show: true },
   ].filter((item) => item.show);
 
   // Primary items for mobile bottom navbar (4 main tabs + 'Plus')

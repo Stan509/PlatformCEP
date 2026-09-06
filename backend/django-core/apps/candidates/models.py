@@ -75,3 +75,73 @@ class Candidate(models.Model):
 
     def __str__(self) -> str:
         return self.display_name
+
+
+class RepresentedType(models.TextChoices):
+    PARTY = "PARTY", "Parti politique"
+    CANDIDATE = "CANDIDATE", "Candidat indépendant"
+
+
+class MandateMode(models.TextChoices):
+    PHYSICAL = "PHYSICAL", "Bureau physique"
+    ONLINE = "ONLINE", "Surveillance en ligne"
+    BOTH = "BOTH", "Hybride (Physique + En ligne)"
+
+
+class MandateStatus(models.TextChoices):
+    DRAFT = "DRAFT", "Brouillon"
+    PROPOSED = "PROPOSED", "Proposé"
+    PENDING_CEP_REVIEW = "PENDING_CEP_REVIEW", "En examen CEP"
+    APPROVED = "APPROVED", "Approuvé"
+    ACTIVE = "ACTIVE", "Actif"
+    SUSPENDED = "SUSPENDED", "Suspendu"
+    REVOKED = "REVOKED", "Révoqué"
+    EXPIRED = "EXPIRED", "Expiré"
+    REJECTED = "REJECTED", "Rejeté"
+
+
+class Mandataire(models.Model):
+    """Personne accréditée comme mandataire d'un parti ou candidat."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
+    cin = models.CharField(max_length=32, unique=True)
+    phone = models.CharField(max_length=32, blank=True)
+    email = models.EmailField(blank=True)
+    photo_url = models.CharField(max_length=256, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name} ({self.cin})"
+
+
+class Mandate(models.Model):
+    """Mandat d'accréditation avec workflow d'approbation et périmètre territorial."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    mandataire = models.ForeignKey(Mandataire, on_delete=models.CASCADE, related_name="mandates")
+    election = models.ForeignKey("elections.Election", on_delete=models.CASCADE, related_name="mandates")
+    represented_type = models.CharField(max_length=16, choices=RepresentedType.choices, default=RepresentedType.PARTY)
+    party = models.ForeignKey(Party, on_delete=models.SET_NULL, null=True, blank=True, related_name="mandates")
+    candidate = models.ForeignKey(Candidate, on_delete=models.SET_NULL, null=True, blank=True, related_name="mandates")
+    mode = models.CharField(max_length=16, choices=MandateMode.choices, default=MandateMode.PHYSICAL)
+    status = models.CharField(max_length=32, choices=MandateStatus.choices, default=MandateStatus.DRAFT)
+    
+    department = models.CharField(max_length=64, blank=True)
+    commune = models.CharField(max_length=64, blank=True)
+    assigned_stations = models.JSONField(default=list, blank=True)  # codes des bureaux autorisés
+    
+    badge_code = models.CharField(max_length=64, blank=True, unique=True, null=True)
+    issued_at = models.DateTimeField(null=True, blank=True)
+    valid_until = models.DateTimeField(null=True, blank=True)
+    rejection_reason = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"Mandat {self.mandataire} @ {self.election} ({self.status})"
+

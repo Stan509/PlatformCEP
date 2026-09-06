@@ -133,8 +133,42 @@ export function Elections(): JSX.Element {
     },
   ];
 
+  const safeElections = Array.isArray(elections) ? elections : [];
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: 'var(--cep-space-4)' }}>
+      {/* Navigation rapide du Pôle Électoral */}
+      <div style={{ display: 'flex', gap: '0.5rem', background: '#eef3fb', padding: '6px', borderRadius: 10, border: '1px solid #d0e0f8' }}>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#elections'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: '#003893', color: 'white', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          🗳️ Scrutins Électoraux
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#candidates'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: '#003893', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          👤 Candidats & Programmes
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#parties'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: '#003893', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          🏛️ Partis Politiques
+        </button>
+        <button
+          type="button"
+          onClick={() => { window.location.hash = '#mandataire'; }}
+          style={{ padding: '6px 14px', borderRadius: 6, border: 'none', background: 'transparent', color: '#003893', fontWeight: 600, fontSize: '0.82rem', cursor: 'pointer' }}
+        >
+          📋 Portail Mandataires V2
+        </button>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--cep-color-deep-blue)' }}>
@@ -154,10 +188,10 @@ export function Elections(): JSX.Element {
         body={
           loading ? (
             <StateView state="loading" />
-          ) : elections.length === 0 ? (
+          ) : safeElections.length === 0 ? (
             <StateView state="empty" />
           ) : (
-            <Table columns={columns} data={elections} keyField={(r) => r.id} />
+            <Table columns={columns} data={safeElections} keyField={(r) => r.id} />
           )
         }
       />

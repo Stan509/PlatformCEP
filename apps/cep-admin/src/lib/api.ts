@@ -46,7 +46,10 @@ const STORAGE_KEY_CURRENT_SESSION = 'cep_admin_auth_session_v1';
 function getStored<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed !== null && parsed !== undefined) return parsed;
+    }
   } catch {}
   return fallback;
 }

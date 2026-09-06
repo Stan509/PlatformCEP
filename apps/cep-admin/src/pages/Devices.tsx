@@ -42,11 +42,16 @@ export function Devices(): JSX.Element {
       {/* Header */}
       <div>
         <h1 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--cep-color-deep-blue)' }}>
-          Gestion & Télémétrie de Sécurité des Appareils
+          📱 Gestion & Télémétrie de Sécurité des Appareils BIOPAD
         </h1>
         <p style={{ margin: '4px 0 0', color: 'var(--cep-color-text-muted)', fontSize: '0.9rem' }}>
           Surveillance en temps réel des 7 420 Biopads et tablettes d'émargement : Localisation, enclaves matérielles TPM 2.0 et détection d'intrusions.
         </p>
+      </div>
+
+      {/* Device vs Station Clarification Note */}
+      <div style={{ background: '#eef4ff', border: '1px solid #b8d1f9', padding: '0.9rem', borderRadius: 8, fontSize: '0.85rem', color: '#002d62' }}>
+        ℹ️ <strong>Règle d'Intégrité : DEVICE ≠ POLLING STATION.</strong> Un bureau de vote peut comporter plusieurs appareils BIOPAD en parallèle. La suspension ou révocation mTLS d'un appareil ne supprime ni n'altère la station électorale de rattachement.
       </div>
 
       {/* Red Alert Banner if a device is compromised */}

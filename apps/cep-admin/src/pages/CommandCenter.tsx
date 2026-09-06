@@ -157,7 +157,7 @@ export function CommandCenter(): JSX.Element {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ margin: 0, fontSize: '1.75rem', color: 'var(--cep-color-deep-blue)' }}>
-            {t('admin.commandCenter.title')}
+            🚨 {t('admin.commandCenter.title')} CEP
           </h1>
           <p style={{ margin: '4px 0 0', color: 'var(--cep-color-text-muted)', fontSize: '0.9rem' }}>
             Surveillance globale des bureaux de vote (Fixes, Nomades avec Géofencing, et Virtuel Online-Z), transferts d'affectation et tabulation des PV.
@@ -166,6 +166,20 @@ export function CommandCenter(): JSX.Element {
         <Button variant="primary" onClick={() => setTransferModalOpen(true)}>
           ⇄ Transférer un Électeur (Fixe / Nomade / Online-Z)
         </Button>
+      </div>
+
+      {/* Scope Filter Bar */}
+      <div style={{ background: 'white', padding: '1rem', borderRadius: 8, border: '1px solid #e0e0e0', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#003893' }}>🎯 Filtre de Périmètre (Scope) :</span>
+        <select style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid #ccc', fontSize: '0.85rem' }}>
+          <option value="ALL">Périmètre National (Tous les Départements)</option>
+          <option value="Ouest">Département de l'Ouest</option>
+          <option value="Nord">Département du Nord</option>
+          <option value="Artibonite">Département de l'Artibonite</option>
+        </select>
+        <select style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid #ccc', fontSize: '0.85rem' }}>
+          <option value="e1">Élections Générales 2026 (Scrutin Active)</option>
+        </select>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
