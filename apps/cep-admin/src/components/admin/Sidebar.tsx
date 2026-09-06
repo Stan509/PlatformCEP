@@ -5,6 +5,7 @@ import { adminNavigate } from '../../router';
 import type { UserAccount } from '../../lib/mockData';
 import { hasPermission } from '../../lib/permissions';
 import type { PermissionCode } from '../../lib/permissions';
+import { useViewMode } from '../../context/ViewModeContext';
 
 interface NavItemDef {
   key: AdminRoute;
@@ -17,6 +18,17 @@ interface NavDomainDef {
   title: string;
   items: NavItemDef[];
 }
+
+const INSTITUTIONAL_NAV_DOMAINS: NavDomainDef[] = [
+  {
+    title: 'ESPACE CONSEILLER CEP',
+    items: [
+      { key: 'dashboard', label: 'Accueil & Tableau de Bord', icon: '🏠', requiredPermission: 'dashboard.view' },
+      { key: 'results', label: 'Suivi des Votes et Résultats', icon: '🗳️', requiredPermission: 'result.view' },
+      { key: 'incidents', label: 'Signalements et Incidents', icon: '⚠️', requiredPermission: 'incident.view' },
+    ],
+  },
+];
 
 const ALL_NAV_DOMAINS: NavDomainDef[] = [
   {
@@ -58,7 +70,6 @@ const ALL_NAV_DOMAINS: NavDomainDef[] = [
       { key: 'mandates', label: 'Accréditations Mandataires', icon: '📜', requiredPermission: 'mandate.view' },
     ],
   },
-
   {
     title: 'OPÉRATIONS TERRAIN',
     items: [
@@ -119,13 +130,17 @@ interface SidebarProps {
 }
 
 /**
- * Sidebar de l'admin CEP V3 — Générée dynamiquement selon les permissions & scope de l'utilisateur.
+ * Sidebar de l'admin CEP V3 — Générée dynamiquement selon les permissions, scope et le mode actif (Institutionnel vs Technique).
  */
 export function Sidebar({ route, user, onLogout }: SidebarProps): JSX.Element {
   const { t } = useI18n();
+  const { isInstitutional, toggleViewMode } = useViewMode();
+
+  // Select navigation domains according to active View Mode
+  const activeDomains = isInstitutional ? INSTITUTIONAL_NAV_DOMAINS : ALL_NAV_DOMAINS;
 
   // Filter menu items by user permissions
-  const visibleDomains = ALL_NAV_DOMAINS.map((domain) => {
+  const visibleDomains = activeDomains.map((domain) => {
     const items = domain.items.filter((item) =>
       hasPermission(user.permissions, item.requiredPermission)
     );
@@ -159,9 +174,40 @@ export function Sidebar({ route, user, onLogout }: SidebarProps): JSX.Element {
         </span>
       </div>
 
+      {/* Mode Status Banner inside Sidebar */}
+      <div
+        style={{
+          background: isInstitutional ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.2)',
+          padding: '8px 10px',
+          borderRadius: 8,
+          border: isInstitutional ? '1px solid rgba(255, 255, 255, 0.25)' : '1px solid rgba(255, 255, 255, 0.1)',
+        }}
+      >
+        <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#e0e7ff', display: 'block' }}>
+          {isInstitutional ? '🏛️ Mode Institutionnel' : '⚙️ Mode Technique'}
+        </span>
+        <button
+          type="button"
+          onClick={toggleViewMode}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#93c5fd',
+            fontSize: '0.7rem',
+            padding: 0,
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            marginTop: 2,
+            fontWeight: 600,
+          }}
+        >
+          {isInstitutional ? 'Passer en Vue Technique' : 'Passer en Vue Épurée'}
+        </button>
+      </div>
+
       <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
         {visibleDomains.map((group) => (
-          <div key={group.title} style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+          <div key={group.title} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <span
               style={{
                 fontSize: '0.65rem',
@@ -187,17 +233,17 @@ export function Sidebar({ route, user, onLogout }: SidebarProps): JSX.Element {
                     cursor: 'pointer',
                     background: isActive ? 'var(--cep-color-cep-blue)' : 'transparent',
                     color: isActive ? '#ffffff' : 'var(--cep-color-light-blue)',
-                    padding: '6px 10px',
+                    padding: isInstitutional ? '10px 12px' : '6px 10px',
                     borderRadius: 'var(--cep-radius-md)',
-                    fontSize: '0.82rem',
+                    fontSize: isInstitutional ? '0.92rem' : '0.82rem',
                     fontWeight: isActive ? 700 : 500,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
+                    gap: '10px',
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  <span style={{ fontSize: '0.9rem' }}>{item.icon}</span>
+                  <span style={{ fontSize: isInstitutional ? '1.1rem' : '0.9rem' }}>{item.icon}</span>
                   <span>{item.label}</span>
                 </button>
               );

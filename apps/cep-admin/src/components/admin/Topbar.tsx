@@ -6,6 +6,7 @@ import { ROUTE_META_REGISTRY, adminNavigate } from '../../router';
 import { adminApi } from '../../lib/api';
 import type { UserAccount } from '../../lib/mockData';
 import { USER_ACCOUNTS } from '../../lib/mockData';
+import { useViewMode } from '../../context/ViewModeContext';
 
 interface TopbarProps {
   route: AdminRoute;
@@ -14,9 +15,10 @@ interface TopbarProps {
   onLogout?: () => void;
 }
 
-/** Topbar admin CEP V3 — Élection active, statut système, Persona Switcher & Scope actif. */
+/** Topbar admin CEP V3 — Élection active, statut système, Dual Mode Switcher & Persona Switcher. */
 export function Topbar({ route, user, onSwitchUser, onLogout }: TopbarProps): JSX.Element {
   const { t } = useI18n();
+  const { viewMode, setViewMode, isInstitutional, isTechnical } = useViewMode();
 
   const routeMeta = ROUTE_META_REGISTRY[route];
   const routeTitle = routeMeta ? routeMeta.label : 'Tableau de bord';
@@ -52,7 +54,7 @@ export function Topbar({ route, user, onSwitchUser, onLogout }: TopbarProps): JS
       }}
     >
       {/* Route Title & System Status */}
-      <div style={{ display: 'flex', gap: 'var(--cep-space-4)', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 'var(--cep-space-4)', alignItems: 'center', flexWrap: 'wrap' }}>
         <strong style={{ fontSize: '1.2rem', color: 'var(--cep-color-deep-blue)' }}>{routeTitle}</strong>
         <StatusIndicator tone="success" label={t('admin.topbar.systemStatus')} />
         <span
@@ -68,6 +70,48 @@ export function Topbar({ route, user, onSwitchUser, onLogout }: TopbarProps): JS
         >
           📍 {scopeLabel}
         </span>
+
+        {/* DUAL MODE TOGGLE SWITCH */}
+        <div style={{ display: 'flex', alignItems: 'center', background: '#f1f5f9', padding: '3px', borderRadius: 20, border: '1px solid #cbd5e1' }}>
+          <button
+            type="button"
+            onClick={() => setViewMode('institutionnel')}
+            title="Mode épuré pour les membres et conseillers du CEP"
+            style={{
+              background: isInstitutional ? '#003893' : 'transparent',
+              color: isInstitutional ? '#ffffff' : '#475569',
+              border: 'none',
+              padding: '4px 12px',
+              borderRadius: 16,
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: isInstitutional ? '0 1px 3px rgba(0,0,0,0.2)' : 'none',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            🏛️ Mode Institutionnel
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('technique')}
+            title="Mode complet pour ingénieurs IT et auditeurs"
+            style={{
+              background: isTechnical ? '#003893' : 'transparent',
+              color: isTechnical ? '#ffffff' : '#475569',
+              border: 'none',
+              padding: '4px 12px',
+              borderRadius: 16,
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: isTechnical ? '0 1px 3px rgba(0,0,0,0.2)' : 'none',
+              transition: 'all 0.2s ease',
+            }}
+          >
+            ⚙️ Mode Technique
+          </button>
+        </div>
       </div>
 
       {/* User Persona Quick Switcher & Actions */}

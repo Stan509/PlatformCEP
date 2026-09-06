@@ -32,6 +32,7 @@ import { PartyPortal } from './pages/PartyPortal';
 import { MandatairePortal } from './pages/MandatairePortal';
 import { AccessDenied } from './pages/AccessDenied';
 import { ScopeDenied } from './pages/ScopeDenied';
+import { ViewModeProvider } from './context/ViewModeContext';
 import { adminApi } from './lib/api';
 import type { UserAccount } from './lib/mockData';
 import { hasPermission } from './lib/permissions';
@@ -188,16 +189,17 @@ export function App(): JSX.Element {
   // Full CEP Admin V3 Back-office reserved exclusively for CEP Council Members & Admins
   return (
     <ErrorBoundary>
-      <div style={{ display: 'flex', minHeight: '100vh' }}>
-        <Sidebar route={route} user={session} onLogout={handleLogout} />
-        <div style={{ flex: 1, marginLeft: 255, display: 'flex', flexDirection: 'column', minWidth: 0, width: 'calc(100% - 255px)', minHeight: '100vh' }}>
-          <Topbar route={route} user={session} onSwitchUser={handleSwitchUser} onLogout={handleLogout} />
-          <main style={{ padding: 'var(--cep-space-6)', background: 'var(--cep-color-background)', flex: 1, overflowY: 'auto' }}>
-            {renderPage(route, session, handleLogout)}
-          </main>
+      <ViewModeProvider>
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+          <Sidebar route={route} user={session} onLogout={handleLogout} />
+          <div style={{ flex: 1, marginLeft: 255, display: 'flex', flexDirection: 'column', minWidth: 0, width: 'calc(100% - 255px)', minHeight: '100vh' }}>
+            <Topbar route={route} user={session} onSwitchUser={handleSwitchUser} onLogout={handleLogout} />
+            <main style={{ padding: 'var(--cep-space-6)', background: 'var(--cep-color-background)', flex: 1, overflowY: 'auto' }}>
+              {renderPage(route, session, handleLogout)}
+            </main>
+          </div>
         </div>
-      </div>
+      </ViewModeProvider>
     </ErrorBoundary>
   );
-
 }

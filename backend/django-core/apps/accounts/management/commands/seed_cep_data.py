@@ -80,18 +80,58 @@ class Command(BaseCommand):
         # 3. Seed Official CEP Institutional Personas
         personas = [
             {
-                "username": "president.cep",
+                "username": "jacques.desrosiers",
                 "role": Role.ADMIN_CEP,
-                "first_name": "Me. Max",
-                "last_name": "Mathurin",
+                "first_name": "Jacques",
+                "last_name": "Desrosiers",
                 "perms": ["*.*", "system.superadmin"],
                 "scope": {"isGlobal": True}
             },
             {
-                "username": "m.mathurin.cep",
+                "username": "patrick.saint.hilaire",
                 "role": Role.ADMIN_CEP,
-                "first_name": "Me. Max",
-                "last_name": "Mathurin",
+                "first_name": "Patrick",
+                "last_name": "Saint-Hilaire",
+                "perms": ["*.*", "system.superadmin"],
+                "scope": {"isGlobal": True}
+            },
+            {
+                "username": "magalie.georges",
+                "role": Role.ADMIN_CEP,
+                "first_name": "Rose Magalie Thérèse",
+                "last_name": "Georges",
+                "perms": ["*.*", "system.superadmin"],
+                "scope": {"isGlobal": True}
+            },
+            {
+                "username": "florence.mathieu",
+                "role": Role.ADMIN_CEP,
+                "first_name": "Marie Florence",
+                "last_name": "Mathieu",
+                "perms": ["*.*", "system.superadmin"],
+                "scope": {"isGlobal": True}
+            },
+            {
+                "username": "yves.marie.edouard",
+                "role": Role.ADMIN_CEP,
+                "first_name": "Yves Marie",
+                "last_name": "Édouard",
+                "perms": ["*.*", "system.superadmin"],
+                "scope": {"isGlobal": True}
+            },
+            {
+                "username": "schnaida.adely",
+                "role": Role.ADMIN_CEP,
+                "first_name": "Schnaida",
+                "last_name": "Adely",
+                "perms": ["*.*", "system.superadmin"],
+                "scope": {"isGlobal": True}
+            },
+            {
+                "username": "president.cep",
+                "role": Role.ADMIN_CEP,
+                "first_name": "Jacques",
+                "last_name": "Desrosiers",
                 "perms": ["*.*", "system.superadmin"],
                 "scope": {"isGlobal": True}
             },
@@ -139,7 +179,7 @@ class Command(BaseCommand):
                 "username": "bed.nord",
                 "role": Role.BED,
                 "first_name": "Directeur BED",
-                "last_name": "Cap-Haïtien",
+                "last_name": "Nord",
                 "perms": ["dashboard.view", "myScope.view", "station.view", "device.view", "candidate.view", "pv.view", "pv.review", "pv.validate", "incident.view", "incident.create"],
                 "scope": {"departments": ["Nord"], "elections": ["GENERAL_2026"]}
             },
