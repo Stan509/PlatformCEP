@@ -80,6 +80,14 @@ class Command(BaseCommand):
         # 3. Seed Official CEP Institutional Personas
         personas = [
             {
+                "username": "devops.admin",
+                "role": Role.ADMIN_CEP,
+                "first_name": "Ing. Superadmin",
+                "last_name": "DevOps",
+                "perms": ["*.*", "system.superadmin"],
+                "scope": {"isGlobal": True}
+            },
+            {
                 "username": "jacques.desrosiers",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Jacques",

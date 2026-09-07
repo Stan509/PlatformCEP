@@ -750,6 +750,16 @@ export const APK_AGENT_USERS: ApkAgentUser[] = [
 
 export const USER_ACCOUNTS: UserAccount[] = [
   {
+    id: 'u-devops-kernel',
+    username: 'devops.admin',
+    password: 'CepPassword2026!',
+    fullName: 'Ing. Superadmin DevOps',
+    role: 'ADMIN_CEP',
+    roleTitle: 'Administrateur Système & Kernel Monitor',
+    permissions: ['system.superadmin', '*.*'],
+    scope: { departments: ['ALL'], elections: ['ALL'], communes: ['ALL'] },
+  },
+  {
     id: 'u-cep-desrosiers',
     username: 'jacques.desrosiers',
     password: 'CepPassword2026!',
