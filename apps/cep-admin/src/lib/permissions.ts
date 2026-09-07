@@ -90,6 +90,20 @@ export type PermissionCode =
   | 'infrastructure.metrics'
   | 'infrastructure.alerts'
   | 'infrastructure.purge'
+  | 'devops.dashboard.view'
+  | 'devops.server.view'
+  | 'devops.metrics.view'
+  | 'devops.logs.view'
+  | 'devops.security.view'
+  | 'devops.alerts.manage'
+  | 'devops.sessions.manage'
+  | 'devops.users.create'
+  | 'devops.users.manage'
+  | 'devops.devices.manage'
+  | 'devops.backups.manage'
+  | 'devops.demo_data.manage'
+  | 'devops.infrastructure.manage'
+  | 'devops.emergency.manage'
   // Superadmin Emergency Bypass
   | 'system.superadmin';
 
@@ -224,17 +238,17 @@ export function hasPermission(
   // 1. DEVOPS HAS ZERO ELECTORAL PERMISSIONS
   if (isDevOpsUser) {
     const isRequestingInfrastructure = required.some(
-      (perm) => perm.startsWith('infrastructure.') || perm === 'system.superadmin'
+      (perm) => perm.startsWith('infrastructure.') || perm.startsWith('devops.') || perm === 'system.superadmin'
     );
     if (!isRequestingInfrastructure) {
       return false; // Deny all electoral permissions for DevOps
     }
-    return true; // Grant infrastructure permissions for DevOps user
+    return true; // Grant infrastructure/devops permissions for DevOps user
   }
 
   // 2. CEP MEMBERS & ELECTORAL USERS HAVE ZERO DEVOPS PERMISSIONS
   if (!isDevOpsUser) {
-    const isRequestingInfrastructure = required.some((perm) => perm.startsWith('infrastructure.'));
+    const isRequestingInfrastructure = required.some((perm) => perm.startsWith('infrastructure.') || perm.startsWith('devops.'));
     if (isRequestingInfrastructure) {
       return false; // Deny all DevOps permissions for CEP members & electoral users
     }
