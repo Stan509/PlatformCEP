@@ -157,7 +157,7 @@ export interface UserAccount {
   username: string;
   password: string;
   fullName: string;
-  role: 'ADMIN_CEP' | 'MEMBER_CEP' | 'CANDIDATE' | 'PARTY' | 'MANDATAIRE' | 'APK_AGENT';
+  role: 'SUPERADMIN_DEVOPS' | 'ADMIN_CEP' | 'MEMBER_CEP' | 'CANDIDATE' | 'PARTY' | 'MANDATAIRE' | 'APK_AGENT';
   roleTitle: string;
   permissions?: string[];
   scope?: UserScope;
