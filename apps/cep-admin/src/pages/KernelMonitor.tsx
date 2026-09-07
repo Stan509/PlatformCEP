@@ -571,11 +571,12 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
           zIndex: 10,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <img src="/cep-logo.png" alt="CEP Emblem" style={{ width: 36, height: 36, borderRadius: '50%', background: 'black', padding: 2, border: '1px solid #00f0ff88', boxShadow: '0 0 10px rgba(0, 240, 255, 0.4)' }} />
           <div
             style={{
-              width: 12,
-              height: 12,
+              width: 10,
+              height: 10,
               borderRadius: '50%',
               background: '#00ff88',
               boxShadow: '0 0 12px #00ff88',

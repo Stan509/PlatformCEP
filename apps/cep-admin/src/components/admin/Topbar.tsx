@@ -55,7 +55,10 @@ export function Topbar({ route, user, onSwitchUser, onLogout }: TopbarProps): JS
     >
       {/* Route Title & System Status */}
       <div style={{ display: 'flex', gap: 'var(--cep-space-4)', alignItems: 'center', flexWrap: 'wrap' }}>
-        <strong style={{ fontSize: '1.2rem', color: 'var(--cep-color-deep-blue)' }}>{routeTitle}</strong>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <img src="/cep-logo.png" alt="CEP Logo" style={{ width: 32, height: 32, borderRadius: '50%', background: 'black', padding: 2, border: '1px solid #002d62' }} />
+          <strong style={{ fontSize: '1.2rem', color: 'var(--cep-color-deep-blue)' }}>{routeTitle}</strong>
+        </div>
         <StatusIndicator tone="success" label={t('admin.topbar.systemStatus')} />
         <span
           style={{

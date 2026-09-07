@@ -166,13 +166,16 @@ export function Sidebar({ route, user, onLogout }: SidebarProps): JSX.Element {
         overflowY: 'auto',
       }}
     >
-      <div style={{ padding: '0 var(--cep-space-2)' }}>
-        <strong style={{ fontSize: '1.2rem', display: 'block', color: '#ffffff' }}>
-          🇭🇹 CEP Admin V3
-        </strong>
-        <span style={{ fontSize: '0.73rem', color: 'var(--cep-color-light-blue)', opacity: 0.9, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {user.roleTitle || user.fullName}
-        </span>
+      <div style={{ padding: '0 var(--cep-space-2)', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <img src="/cep-logo.png" alt="CEP Logo" style={{ width: 36, height: 36, borderRadius: '50%', background: 'black', padding: 2, border: '1px solid rgba(255,255,255,0.4)' }} />
+        <div>
+          <strong style={{ fontSize: '1.1rem', display: 'block', color: '#ffffff', lineHeight: 1.2 }}>
+            CEP Admin V3
+          </strong>
+          <span style={{ fontSize: '0.7rem', color: 'var(--cep-color-light-blue)', opacity: 0.9, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 160 }}>
+            {user.roleTitle || user.fullName}
+          </span>
+        </div>
       </div>
 
       {/* Mode Status Banner inside Sidebar */}

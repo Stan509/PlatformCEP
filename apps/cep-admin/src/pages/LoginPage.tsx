@@ -86,36 +86,31 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps): JSX.Element {
           style={{
             background: 'var(--cep-color-deep-blue, #002d62)',
             color: 'white',
-            padding: '2rem 1.5rem',
+            padding: '2.5rem 1.5rem',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.5rem',
+            gap: '0.75rem',
           }}
         >
-          <div
+          <img
+            src="/cep-logo.png"
+            alt="Conseil Électoral Provisoire - Haïti"
             style={{
-              width: 60,
-              height: 60,
+              width: 84,
+              height: 84,
               borderRadius: '50%',
-              background: 'white',
-              color: '#002d62',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem',
-              fontWeight: 900,
-              boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+              background: 'black',
+              padding: 4,
+              boxShadow: '0 4px 14px rgba(0,0,0,0.3)',
             }}
-          >
-            🇭🇹
-          </div>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, letterSpacing: '0.5px' }}>
+          />
+          <h1 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, letterSpacing: '0.5px' }}>
             CONSEIL ÉLECTORAL PROVISOIRE
           </h1>
-          <span style={{ fontSize: '0.85rem', color: '#a2c4ec', letterSpacing: '1px', textTransform: 'uppercase' }}>
-            Portail Unifié de Connexion Sécurisée
+          <span style={{ fontSize: '0.82rem', color: '#a2c4ec', letterSpacing: '1px', textTransform: 'uppercase', fontWeight: 700 }}>
+            PORTAIL DE CONNEXION SÉCURISÉ PLATEFORME CEP
           </span>
         </div>
 
@@ -137,7 +132,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps): JSX.Element {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.88rem', fontWeight: 700, marginBottom: 6, color: '#002d62' }}>
                 Identifiant unique / Nom d'utilisateur
@@ -199,42 +194,6 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps): JSX.Element {
               {loading ? 'Authentification en cours...' : 'Se Connecter'}
             </button>
           </form>
-
-          {/* Quick Demo Switcher */}
-          <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid #eee' }}>
-            <span style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: 'gray', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
-              ⚡ Connexion Rapide Démo (Tester un Rôle en 1 Clic)
-            </span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {USER_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.id}
-                  type="button"
-                  onClick={() => handleQuickLogin(acc)}
-                  style={{
-                    background: '#f8f9fa',
-                    border: '1px solid #e0e0e0',
-                    padding: '0.5rem 0.8rem',
-                    borderRadius: 6,
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    fontSize: '0.82rem',
-                  }}
-                >
-                  <div>
-                    <strong style={{ color: '#002d62', display: 'block' }}>{acc.fullName}</strong>
-                    <span style={{ fontSize: '0.75rem', color: 'gray' }}>{acc.roleTitle}</span>
-                  </div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, background: '#e0e8f5', color: '#003893', padding: '2px 6px', borderRadius: 4 }}>
-                    Connecter
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>
