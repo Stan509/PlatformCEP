@@ -213,6 +213,11 @@ export function App(): JSX.Element {
     return <MandatairePortal user={session} onLogout={handleLogout} />;
   }
 
+  // Strict Role Isolation: DevOps / Kernel Monitor Fullscreen SOC/NOC
+  if (session.role === 'SUPERADMIN_DEVOPS' || session.username === 'devops.admin' || route === 'kernel-monitor') {
+    return <KernelMonitor user={session} onLogout={handleLogout} />;
+  }
+
   // Full CEP Admin V3 Back-office reserved exclusively for CEP Council Members & Admins
   return (
     <ErrorBoundary>

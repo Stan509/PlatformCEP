@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import type { UserAccount } from '../lib/mockData';
 
 // --- TYPES & NAVIGATION NODES ---
 export type DevOpsTabV3 =
@@ -78,7 +79,12 @@ interface AuditLedger {
   status: 'SUCCESS' | 'DENIED' | 'FLAGGED';
 }
 
-export function KernelMonitor(): React.ReactElement {
+export interface KernelMonitorProps {
+  user?: UserAccount | null;
+  onLogout?: () => void;
+}
+
+export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.ReactElement {
   // Boot Sequence State
   const [booting, setBooting] = useState<boolean>(true);
   const [bootProgress, setBootProgress] = useState<number>(0);
@@ -90,6 +96,7 @@ export function KernelMonitor(): React.ReactElement {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [uptimeSeconds, setUptimeSeconds] = useState<number>(3684300);
   const [threatLevel] = useState<ThreatLevel>('GREEN');
+  const [language, setLanguage] = useState<'fr' | 'ht' | 'en'>('fr');
 
   // Forensics Time Range
   const [timeRange, setTimeRange] = useState<ForensicsTimeRange>('1h');
@@ -107,6 +114,9 @@ export function KernelMonitor(): React.ReactElement {
   ]);
   const [terminalLoading, setTerminalLoading] = useState<boolean>(false);
   const terminalEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Canvas Background Matrix Animation
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Live Metrics State
   const [serverMetrics, setServerMetrics] = useState({
@@ -132,7 +142,7 @@ export function KernelMonitor(): React.ReactElement {
     ddosStatus: 'NORMAL' as 'NORMAL' | 'WARNING' | 'SPIKE' | 'ATTACK',
   });
 
-  // Service Topology
+  // Services Topology List
   const [services] = useState<ServiceNode[]>([
     { id: 's1', name: 'Nginx Reverse Proxy & WAF', category: 'GATEWAY', status: 'HEALTHY', uptime: '42d 15h', version: '1.25.4-alpine', latencyMs: 1.8, restartCount: 0 },
     { id: 's2', name: 'Django Core REST API (DRF)', category: 'CORE', status: 'HEALTHY', uptime: '14d 08h', version: '5.0.3-py3.12', latencyMs: 16.2, restartCount: 1 },
@@ -177,6 +187,60 @@ export function KernelMonitor(): React.ReactElement {
   // New CEP Admin Account Form State
   const [newAdmin, setNewAdmin] = useState({ fullName: '', username: '', role: 'ADMIN_CEP', department: 'ALL' });
   const [userCreatedMsg, setUserCreatedMsg] = useState<string | null>(null);
+
+  // MATRIX BINARY RAIN CANVAS ANIMATION
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animId: number;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const handleResize = () => {
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const chars = '01010101010101010101';
+    const fontSize = 14;
+    const cols = Math.floor(canvas.width / fontSize);
+    const drops: number[] = Array(cols).fill(1);
+
+    const render = () => {
+      ctx.fillStyle = 'rgba(3, 7, 18, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#00f0ff';
+      ctx.font = `${fontSize}px 'JetBrains Mono', Consolas, monospace`;
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        const x = i * fontSize;
+        const y = (drops[i] ?? 0) * fontSize;
+        ctx.fillText(text, x, y);
+
+        if (y > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        } else {
+          drops[i] = (drops[i] ?? 0) + 1;
+        }
+      }
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animId);
+    };
+  }, []);
 
   // Boot Sequence Simulation (1.2 Seconds max)
   useEffect(() => {
@@ -274,7 +338,6 @@ export function KernelMonitor(): React.ReactElement {
           },
         ]);
       } else {
-        // Fallback local broker format
         setTerminalHistory((prev) => [
           ...prev,
           {
@@ -287,7 +350,6 @@ export function KernelMonitor(): React.ReactElement {
         ]);
       }
     } catch {
-      // Local fallback for whitelisted CLI commands
       const whitelist: Record<string, string> = {
         help: "AVAILABLE COMMANDS:\n - system.status       : Check kernel health & uptime\n - system.resources    : Hardware CPU/RAM/Disk/Load gauges\n - service.status     : Platform services status\n - service.restart    : Graceful reload API worker pool\n - docker.status      : Active containers telemetry\n - docker.logs        : Latest container stdout logs\n - database.status    : PostgreSQL 16 performance metrics\n - database.backup    : Trigger manual DB snapshot\n - network.status     : Traffic Mbps & latency readouts\n - security.summary   : SOC threat summary & blocked IPs\n - sessions.list      : Active user sessions",
         'system.status': 'KERNEL STATUS: ALL NODES OPERATIONAL | UPTIME: 42d 15h 32m | THREAT LEVEL: LOW',
@@ -368,6 +430,7 @@ export function KernelMonitor(): React.ReactElement {
           alignItems: 'center',
           justifyContent: 'center',
           padding: 24,
+          position: 'relative',
         }}
       >
         <div
@@ -379,6 +442,7 @@ export function KernelMonitor(): React.ReactElement {
             maxWidth: 600,
             width: '100%',
             boxShadow: '0 0 30px rgba(0, 240, 255, 0.25)',
+            zIndex: 10,
           }}
         >
           <div style={{ fontSize: '1.1rem', fontWeight: 900, marginBottom: 16, letterSpacing: '1px', color: '#00f0ff' }}>
@@ -417,7 +481,7 @@ export function KernelMonitor(): React.ReactElement {
     );
   }
 
-  // 2. MAIN V3 MILITARY-GRADE CONTROL CENTER INTERFACE
+  // 2. MAIN V3 MILITARY-GRADE CONTROL CENTER INTERFACE (100% FULLSCREEN CYBERPUNK)
   return (
     <div
       style={{
@@ -425,70 +489,140 @@ export function KernelMonitor(): React.ReactElement {
         color: '#e5e7eb',
         fontFamily: "'JetBrains Mono', Consolas, monospace",
         minHeight: '100vh',
-        margin: '-24px',
-        padding: '16px 20px',
-        backgroundImage: 'radial-gradient(#00f0ff 0.4px, transparent 0.4px), radial-gradient(#1e293b 0.4px, #030712 0.4px)',
-        backgroundSize: '24px 24px',
-        backgroundPosition: '0 0, 12px 12px',
+        width: '100vw',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'hidden',
+        zIndex: 99999,
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      {/* V3 MILITARY-GRADE HEADER */}
+      {/* MATRIX BINARY RAIN CANVAS BACKGROUND */}
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          opacity: 0.18,
+          zIndex: 0,
+        }}
+      />
+
+      {/* TOP DEVOPS FULLSCREEN SOC HEADER BAR */}
       <div
         style={{
           background: 'linear-gradient(90deg, #070d18 0%, #0c1526 100%)',
-          border: '1px solid #1e293b',
-          borderLeft: '4px solid #00f0ff',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6)',
-          borderRadius: 6,
-          padding: '14px 20px',
-          marginBottom: 16,
+          borderBottom: '1px solid #00f0ff44',
+          boxShadow: '0 4px 20px rgba(0, 240, 255, 0.15)',
+          padding: '12px 24px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: 12,
+          zIndex: 10,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          {/* Heartbeat pulse indicator */}
           <div
             style={{
               width: 12,
               height: 12,
               borderRadius: '50%',
               background: '#00ff88',
-              boxShadow: '0 0 10px #00ff88',
+              boxShadow: '0 0 12px #00ff88',
             }}
           />
-
           <div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, letterSpacing: '1px', color: '#00f0ff' }}>
-              KERNEL CONTROL // SECURITY OPERATIONS CENTER (SOC / NOC)
+            <div style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '1px', color: '#00f0ff' }}>
+              ⚡ CEP DEVOPS KERNEL V3 // CRITICAL INFRASTRUCTURE SOC & NOC LAB
             </div>
             <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
-              NODE: <strong style={{ color: '#cbd5e1' }}>CEP-CORE-01</strong> | CRITICAL GOVERNMENT INFRASTRUCTURE
+              NODE: <strong style={{ color: '#cbd5e1' }}>CEP-CORE-01</strong> | MILITARY-GRADE SECURITY OPERATIONS CENTER
             </div>
           </div>
         </div>
 
-        {/* Telemetry Header Pill */}
+        {/* User Pill & Language Switcher & Logout */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: '0.78rem' }}>
-          <div style={{ background: '#090d16', border: '1px solid #1e293b', padding: '5px 10px', borderRadius: 4 }}>
-            <span style={{ color: '#64748b', marginRight: 4 }}>UPTIME:</span>
-            <strong style={{ color: '#00ff88' }}>{formatUptime(uptimeSeconds)}</strong>
+          <div style={{ background: '#090d16', border: '1px solid #00f0ff44', padding: '5px 12px', borderRadius: 4, color: '#00f0ff', fontWeight: 800 }}>
+            👤 {user?.fullName || 'Ing. Superadmin DevOps'} ({user?.role || 'SUPERADMIN_DEVOPS'})
           </div>
 
-          <div style={{ background: '#090d16', border: '1px solid #1e293b', padding: '5px 10px', borderRadius: 4 }}>
-            <span style={{ color: '#64748b', marginRight: 4 }}>LATENCY:</span>
-            <strong style={{ color: '#00f0ff' }}>{networkMetrics.latencyMs} ms</strong>
+          <div style={{ display: 'flex', background: '#030712', border: '1px solid #1e293b', borderRadius: 4, overflow: 'hidden' }}>
+            {(['ht', 'fr', 'en'] as const).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => setLanguage(lang)}
+                style={{
+                  background: language === lang ? '#1d4ed8' : 'transparent',
+                  color: language === lang ? '#fff' : '#64748b',
+                  border: 'none',
+                  padding: '4px 8px',
+                  fontSize: '0.7rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {lang}
+              </button>
+            ))}
           </div>
 
-          <div style={{ background: '#090d16', border: '1px solid #1e293b', padding: '5px 10px', borderRadius: 4 }}>
-            <span style={{ color: '#64748b', marginRight: 4 }}>THREAT LEVEL:</span>
-            <strong style={{ color: threatLevel === 'GREEN' ? '#00ff88' : '#ef4444' }}>{threatLevel}</strong>
-          </div>
+          {onLogout && (
+            <button
+              type="button"
+              onClick={onLogout}
+              style={{
+                background: '#dc2626',
+                color: '#fff',
+                border: '1px solid #ef4444',
+                padding: '6px 14px',
+                borderRadius: 4,
+                fontWeight: 900,
+                fontSize: '0.75rem',
+                cursor: 'pointer',
+                boxShadow: '0 0 10px rgba(220, 38, 38, 0.4)',
+              }}
+            >
+              🔴 SE DÉCONNECTER
+            </button>
+          )}
+        </div>
+      </div>
 
-          {/* Environment Selector */}
+      {/* SECONDARY SYSTEM STATUS STRIP */}
+      <div
+        style={{
+          background: '#040810',
+          borderBottom: '1px solid #1e293b',
+          padding: '6px 24px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.75rem',
+          zIndex: 10,
+        }}
+      >
+        <div style={{ display: 'flex', gap: 16 }}>
+          <span>UPTIME: <strong style={{ color: '#00ff88' }}>{formatUptime(uptimeSeconds)}</strong></span>
+          <span>LATENCY: <strong style={{ color: '#00f0ff' }}>{networkMetrics.latencyMs} ms</strong></span>
+          <span>RPS: <strong style={{ color: '#00f0ff' }}>{networkMetrics.rps} req/s</strong></span>
+          <span>THREAT LEVEL: <strong style={{ color: threatLevel === 'GREEN' ? '#00ff88' : '#ef4444' }}>{threatLevel}</strong></span>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12 }}>
+          <span style={{ color: '#64748b' }}>SERVER TIME: <strong style={{ color: '#cbd5e1' }}>{currentTime}</strong></span>
           <div style={{ display: 'flex', background: '#030712', border: '1px solid #334155', borderRadius: 4, overflow: 'hidden' }}>
             {(['DEVELOPMENT', 'STAGING', 'PRODUCTION'] as SystemEnvironment[]).map((env) => (
               <button
@@ -499,9 +633,9 @@ export function KernelMonitor(): React.ReactElement {
                   background: environment === env ? (env === 'PRODUCTION' ? '#dc2626' : '#1d4ed8') : 'transparent',
                   color: environment === env ? '#fff' : '#64748b',
                   border: 'none',
-                  padding: '4px 10px',
+                  padding: '2px 8px',
                   fontWeight: 800,
-                  fontSize: '0.72rem',
+                  fontSize: '0.68rem',
                   cursor: 'pointer',
                 }}
               >
@@ -512,10 +646,20 @@ export function KernelMonitor(): React.ReactElement {
         </div>
       </div>
 
-      {/* TWO COLUMN HIGH DENSITY LAYOUT */}
-      <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: 16 }}>
-        {/* V3 DEVOPS NAVIGATION SIDEBAR */}
-        <div style={{ background: '#070d18', border: '1px solid #1e293b', borderRadius: 6, padding: '12px 8px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+      {/* TWO COLUMN MAIN CONTENT BODY */}
+      <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', flex: 1, minHeight: 0, zIndex: 10 }}>
+        {/* DEVOPS SIDEBAR NAVIGATION */}
+        <div
+          style={{
+            background: '#070d18',
+            borderRight: '1px solid #1e293b',
+            padding: '12px 8px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            overflowY: 'auto',
+          }}
+        >
           {/* CATEGORY 1: CORE */}
           <div>
             <div style={{ fontSize: '0.68rem', color: '#00f0ff', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: 6, paddingLeft: 6 }}>
@@ -657,8 +801,8 @@ export function KernelMonitor(): React.ReactElement {
           </div>
         </div>
 
-        {/* MAIN DISPLAY COCKPIT PANEL */}
-        <div style={{ background: '#070d18', border: '1px solid #1e293b', borderRadius: 6, padding: 20, minHeight: 650 }}>
+        {/* MAIN PANEL CONTENT DISPLAY AREA */}
+        <div style={{ background: '#070d18', padding: 20, overflowY: 'auto' }}>
           {/* VIEW 1: COMMAND CENTER */}
           {activeTab === 'command-center' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -860,7 +1004,7 @@ export function KernelMonitor(): React.ReactElement {
             </div>
           )}
 
-          {/* VIEW: ELECTION INFRASTRUCTURE TECHNICAL HEALTH (SECRET VOTE ISOLATION) */}
+          {/* VIEW: ELECTION INFRASTRUCTURE TECHNICAL HEALTH */}
           {activeTab === 'election-health' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
