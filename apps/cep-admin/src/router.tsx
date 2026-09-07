@@ -64,7 +64,7 @@ export const ROUTE_META_REGISTRY: Record<AdminRoute, RouteMeta> = {
   roles: { route: 'roles', label: 'Rôles & Permissions', requiredPermissions: ['user.permissions.manage'] },
   'permissions-manage': { route: 'permissions-manage', label: 'Matrice de Permissions', requiredPermissions: ['user.permissions.manage'] },
   settings: { route: 'settings', label: 'Configuration Système', requiredPermissions: ['dashboard.view'] },
-  'kernel-monitor': { route: 'kernel-monitor', label: 'Superadmin DevOps & Kernel', requiredPermissions: ['system.superadmin'] },
+  'kernel-monitor': { route: 'kernel-monitor', label: 'Superadmin DevOps & Kernel', requiredPermissions: ['infrastructure.monitor'] },
 };
 
 const VALID: AdminRoute[] = Object.keys(ROUTE_META_REGISTRY) as AdminRoute[];

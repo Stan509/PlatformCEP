@@ -217,17 +217,19 @@ export function hasPermission(
   username?: string
 ): boolean {
   if (!requiredPermissions) return true;
-  if (!userPermissions || userPermissions.length === 0) return false;
 
   const isDevOpsUser = userRole === 'SUPERADMIN_DEVOPS' || username === 'devops.admin';
   const required = Array.isArray(requiredPermissions) ? requiredPermissions : [requiredPermissions];
 
   // 1. DEVOPS HAS ZERO ELECTORAL PERMISSIONS
   if (isDevOpsUser) {
-    const isRequestingInfrastructure = required.some((perm) => perm.startsWith('infrastructure.'));
+    const isRequestingInfrastructure = required.some(
+      (perm) => perm.startsWith('infrastructure.') || perm === 'system.superadmin'
+    );
     if (!isRequestingInfrastructure) {
       return false; // Deny all electoral permissions for DevOps
     }
+    return true; // Grant infrastructure permissions for DevOps user
   }
 
   // 2. CEP MEMBERS & ELECTORAL USERS HAVE ZERO DEVOPS PERMISSIONS
@@ -238,7 +240,7 @@ export function hasPermission(
     }
   }
 
-  // Superadmin emergency permission check (for non-devops)
+  if (!userPermissions || userPermissions.length === 0) return false;
   if (userPermissions.includes('system.superadmin') && !isDevOpsUser) return true;
 
   return required.some((perm) => userPermissions.includes(perm));
