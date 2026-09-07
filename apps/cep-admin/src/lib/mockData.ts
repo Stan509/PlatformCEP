@@ -752,11 +752,11 @@ export const USER_ACCOUNTS: UserAccount[] = [
   {
     id: 'u-devops-kernel',
     username: 'devops.admin',
-    password: 'CepPassword2026!',
+    password: 'DevOps#2026!PortauPrince',
     fullName: 'Ing. Superadmin DevOps',
-    role: 'ADMIN_CEP',
-    roleTitle: 'Administrateur Système & Kernel Monitor',
-    permissions: ['system.superadmin', '*.*'],
+    role: 'SUPERADMIN_DEVOPS',
+    roleTitle: 'Administrateur Système & Kernel Monitor (DevOps)',
+    permissions: ['infrastructure.monitor', 'infrastructure.logs', 'infrastructure.security', 'infrastructure.purge'],
     scope: { departments: ['ALL'], elections: ['ALL'], communes: ['ALL'] },
   },
   {

@@ -88,7 +88,7 @@ function renderPage(route: AdminRoute, session: UserAccount, onLogout: () => voi
   const isDevOps = session.role === 'SUPERADMIN_DEVOPS' || session.username === 'devops.admin';
 
   // 1. Strict Isolation: DevOps cannot access electoral pages
-  if (isDevOps && route !== 'kernel-monitor' && route !== 'my-scope') {
+  if (isDevOps && route !== 'kernel-monitor' && route !== 'dashboard' && route !== 'my-scope') {
     return <AccessDenied requiredPermission={['infrastructure.monitor']} currentUserRole="DevOps Administrator (No Electoral Rights)" />;
   }
 
@@ -185,9 +185,17 @@ export function App(): JSX.Element {
     setSession(nextUser);
   };
 
-  // If not logged in, render single dynamic login page
   if (!session) {
-    return <LoginPage onLoginSuccess={(u) => setSession(u)} />;
+    return (
+      <LoginPage
+        onLoginSuccess={(u) => {
+          setSession(u);
+          if (u.role === 'SUPERADMIN_DEVOPS' || u.username === 'devops.admin') {
+            window.location.hash = '#kernel-monitor';
+          }
+        }}
+      />
+    );
   }
 
   // Strict Role Isolation: Candidate Portal
