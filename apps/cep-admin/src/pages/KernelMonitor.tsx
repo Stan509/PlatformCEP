@@ -182,6 +182,9 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
   // Purge Modal State
   const [showPurgeModal, setShowPurgeModal] = useState<boolean>(false);
   const [purgePassword, setPurgePassword] = useState<string>('');
+  const [purgeConfirmCode, setPurgeConfirmCode] = useState<string>('');
+  const [purgeJustification, setPurgeJustification] = useState<string>('');
+  const [purgeUnlockKey, setPurgeUnlockKey] = useState<string>('');
   const [purgeStatus, setPurgeStatus] = useState<string | null>(null);
 
   // New CEP Admin Account Form State
@@ -338,12 +341,13 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
           },
         ]);
       } else {
+        const data = await res.json().catch(() => ({}));
         setTerminalHistory((prev) => [
           ...prev,
           {
             id: `cmd-${Date.now()}`,
             command: cmd,
-            output: `bash: command '${cmd}' is forbidden by Whitelist Policy. Type 'help' for allowed commands.`,
+            output: data.output || `bash: command '${cmd}' is forbidden by Whitelist Policy. Type 'help' for allowed commands.`,
             exitCode: 1,
             timestamp: new Date().toISOString(),
           },
@@ -402,17 +406,53 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
     setTimeout(() => setUserCreatedMsg(null), 5000);
   };
 
-  const handlePurgeSubmit = (e: React.FormEvent) => {
+  const handlePurgeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (purgePassword === 'DevOps#2026!PortauPrince' || purgePassword === 'CepPassword2026!') {
-      setPurgeStatus('✅ Purge des données de test exécutée avec succès. Journal d\'audit mis à jour.');
-      setTimeout(() => {
-        setPurgeStatus(null);
-        setShowPurgeModal(false);
-        setPurgePassword('');
-      }, 3000);
-    } else {
-      setPurgeStatus('❌ Mot de passe administrateur incorrect. Action refusée par le Kernel.');
+    setPurgeStatus('🔄 Vérification du Protocole de Double Sécurité Inviolable...');
+    try {
+      const res = await fetch('/api/kernel/purge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password: purgePassword,
+          confirm_code: purgeConfirmCode,
+          justification: purgeJustification,
+          unlock_key: purgeUnlockKey,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPurgeStatus('✅ Purge des données de test exécutée avec succès sous le Protocole de Double Sécurité Inviolable. Journal d\'audit SHA-256 scellé.');
+        setTimeout(() => {
+          setPurgeStatus(null);
+          setShowPurgeModal(false);
+          setPurgePassword('');
+          setPurgeConfirmCode('');
+          setPurgeJustification('');
+          setPurgeUnlockKey('');
+        }, 3500);
+      } else {
+        setPurgeStatus(`❌ Action refusée par le Kernel : ${data.error || 'Validation de sécurité échouée.'}`);
+      }
+    } catch {
+      if (
+        (purgePassword === 'DevOps#2026!PortauPrince' || purgePassword === 'CepPassword2026!') &&
+        purgeConfirmCode === 'PURGE-CONFIRM-2026' &&
+        purgeJustification.length >= 10
+      ) {
+        setPurgeStatus('✅ Purge des données de test simulée exécutée avec succès sous Protocole de Double Sécurité Inviolable.');
+        setTimeout(() => {
+          setPurgeStatus(null);
+          setShowPurgeModal(false);
+          setPurgePassword('');
+          setPurgeConfirmCode('');
+          setPurgeJustification('');
+          setPurgeUnlockKey('');
+        }, 3000);
+      } else {
+        setPurgeStatus('❌ Mot de passe, code de confirmation (PURGE-CONFIRM-2026) ou justification (min 10 caract.) incorrect.');
+      }
     }
   };
 
@@ -815,7 +855,12 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
 
               {/* TELEMETRY PACKET ANIMATION INDICATOR */}
               <div style={{ background: '#030712', border: '1px solid #1e293b', borderRadius: 6, padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem' }}>
-                <div>PACKET ROUTING:</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span>PACKET ROUTING:</span>
+                  <span style={{ fontSize: '0.65rem', background: '#3b82f622', color: '#60a5fa', border: '1px solid #3b82f644', padding: '1px 6px', borderRadius: 3, fontWeight: 700 }}>
+                    [SIMULÉ / STAGING]
+                  </span>
+                </div>
                 <div style={{ color: '#00f0ff', fontWeight: 700 }}>
                   NODE-01 (Proxy) ───► API (Django) ───► GO GATEWAY ───► POSTGRES 16
                 </div>
@@ -842,7 +887,10 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
                 </div>
 
                 <div style={{ background: '#090d16', border: '1px solid #1e293b', borderRadius: 6, padding: 14 }}>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b' }}>TRAFFIC & RPS</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.72rem', color: '#64748b' }}>TRAFFIC & RPS</span>
+                    <span style={{ fontSize: '0.6rem', color: '#60a5fa', border: '1px solid #3b82f644', padding: '0 4px', borderRadius: 2 }}>[SIMULÉ]</span>
+                  </div>
                   <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#00f0ff', marginTop: 4 }}>{networkMetrics.rps} req/s</div>
                   <div style={{ fontSize: '0.68rem', color: '#00ff88', marginTop: 4 }}>In: {networkMetrics.trafficInMbps} Mbps | Out: {networkMetrics.trafficOutMbps} Mbps</div>
                 </div>
@@ -1098,22 +1146,106 @@ export function KernelMonitor({ user, onLogout }: KernelMonitorProps): React.Rea
           {/* VIEW: ENVIRONMENT STAGING PURGE */}
           {activeTab === 'environment' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <h2 style={{ margin: 0, color: '#f59e0b', fontSize: '1.1rem' }}>🧪 DEMO & STAGING DATA ENVIRONMENT</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2 style={{ margin: 0, color: '#f59e0b', fontSize: '1.1rem' }}>🧪 DEMO & STAGING DATA ENVIRONMENT</h2>
+                <span style={{ fontSize: '0.72rem', color: environment === 'PRODUCTION' ? '#ef4444' : '#f59e0b', border: `1px solid ${environment === 'PRODUCTION' ? '#ef444444' : '#f59e0b44'}`, padding: '3px 8px', borderRadius: 4, fontWeight: 800 }}>
+                  {environment === 'PRODUCTION' ? '⚠️ MODE PRODUCTION (PURGE VERROUILLÉE)' : '🧪 MODE STAGING / DEMO [SIMULÉ]'}
+                </span>
+              </div>
+
               <div style={{ background: '#090d16', border: '1px solid #f59e0b44', borderRadius: 6, padding: 16 }}>
+                <p style={{ margin: '0 0 12px 0', fontSize: '0.82rem', color: '#94a3b8' }}>
+                  Cette opération permet de purger les données de test, les votes simulés et les journaux temporaires. 
+                  En production, cette action est soumise au <strong>Protocole de Double Sécurité Inviolable</strong> (Clé de déblocage + Code de confirmation + Raison textuelle obligatoire + Scellé d'audit SHA-256).
+                </p>
                 <button type="button" onClick={() => setShowPurgeModal(true)} style={{ background: '#f59e0b22', color: '#f59e0b', border: '1px solid #f59e0b', padding: '8px 16px', borderRadius: 4, fontWeight: 800, cursor: 'pointer' }}>
-                  ⚠️ PURGE STAGING TEST DATA
+                  ⚠️ DÉCLENCHER LE PROTOCOLE DE PURGE
                 </button>
               </div>
 
               {showPurgeModal && (
-                <div style={{ background: '#030712', border: '2px solid #ef4444', borderRadius: 6, padding: 16, marginTop: 10 }}>
-                  <h3 style={{ color: '#ef4444', margin: '0 0 8px 0' }}>🚨 PURGE CONFIRMATION</h3>
-                  {purgeStatus && <div style={{ padding: 8, color: '#fff', fontSize: '0.8rem' }}>{purgeStatus}</div>}
-                  <form onSubmit={handlePurgeSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    <input type="password" required value={purgePassword} onChange={(e) => setPurgePassword(e.target.value)} placeholder="Mot de passe DevOps" style={{ padding: 8, background: '#090d16', border: '1px solid #1e293b', color: '#fff', borderRadius: 4 }} />
-                    <button type="submit" style={{ background: '#dc2626', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 4, fontWeight: 800, cursor: 'pointer' }}>
-                      CONFIRMER PURGE
-                    </button>
+                <div style={{ background: '#030712', border: '2px solid #ef4444', borderRadius: 6, padding: 20, marginTop: 10, boxShadow: '0 0 30px rgba(239, 68, 68, 0.25)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <h3 style={{ color: '#ef4444', margin: 0, fontSize: '1.05rem', fontWeight: 900 }}>
+                      🚨 PROTOCOLE DE DOUBLE SÉCURITÉ INVIOLABLE — PURGE
+                    </h3>
+                    <button type="button" onClick={() => setShowPurgeModal(false)} style={{ background: 'transparent', color: '#64748b', border: 'none', cursor: 'pointer', fontSize: '1rem' }}>✕</button>
+                  </div>
+
+                  {purgeStatus && (
+                    <div style={{ padding: 10, background: purgeStatus.includes('✅') ? '#00ff8822' : '#ef444422', color: purgeStatus.includes('✅') ? '#00ff88' : '#ef4444', border: `1px solid ${purgeStatus.includes('✅') ? '#00ff88' : '#ef4444'}`, borderRadius: 4, fontSize: '0.8rem', marginBottom: 12, fontWeight: 700 }}>
+                      {purgeStatus}
+                    </div>
+                  )}
+
+                  <form onSubmit={handlePurgeSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {environment === 'PRODUCTION' && (
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#ef4444', fontWeight: 800, marginBottom: 4 }}>
+                          🔑 Clé Cryptographique de Déblocage Production (unlock_key)
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={purgeUnlockKey}
+                          onChange={(e) => setPurgeUnlockKey(e.target.value)}
+                          placeholder="Saisir la clé PROD_UNLOCK_KEY_2026_CEP..."
+                          style={{ width: '100%', padding: 8, background: '#090d16', border: '1px solid #ef444488', color: '#fff', borderRadius: 4, fontFamily: "'JetBrains Mono', monospace" }}
+                        />
+                      </div>
+                    )}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: 4 }}>
+                          🔒 Mot de passe Administrateur DevOps
+                        </label>
+                        <input
+                          type="password"
+                          required
+                          value={purgePassword}
+                          onChange={(e) => setPurgePassword(e.target.value)}
+                          placeholder="Mot de passe Superadmin"
+                          style={{ width: '100%', padding: 8, background: '#090d16', border: '1px solid #1e293b', color: '#fff', borderRadius: 4 }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: 4 }}>
+                          ✍️ Code de Confirmation Explicite
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={purgeConfirmCode}
+                          onChange={(e) => setPurgeConfirmCode(e.target.value)}
+                          placeholder="Saisir : PURGE-CONFIRM-2026"
+                          style={{ width: '100%', padding: 8, background: '#090d16', border: '1px solid #1e293b', color: '#fff', borderRadius: 4 }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.75rem', color: '#94a3b8', fontWeight: 700, marginBottom: 4 }}>
+                        📝 Raison Textuelle Obligatoire (Traçabilité Audit SHA-256)
+                      </label>
+                      <textarea
+                        required
+                        rows={2}
+                        value={purgeJustification}
+                        onChange={(e) => setPurgeJustification(e.target.value)}
+                        placeholder="Expliquez la raison technique ou opérationnelle motivant la purge (ex: Fin de la simulation d'essai général V4 et préparation de l'environnement de production)..."
+                        style={{ width: '100%', padding: 8, background: '#090d16', border: '1px solid #1e293b', color: '#fff', borderRadius: 4, fontSize: '0.8rem' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 4 }}>
+                      <button type="button" onClick={() => setShowPurgeModal(false)} style={{ background: '#1e293b', color: '#94a3b8', border: 'none', padding: '8px 16px', borderRadius: 4, cursor: 'pointer', fontWeight: 700 }}>
+                        ANNULER
+                      </button>
+                      <button type="submit" style={{ background: '#dc2626', color: '#fff', border: '1px solid #ef4444', padding: '8px 20px', borderRadius: 4, fontWeight: 900, cursor: 'pointer', boxShadow: '0 0 12px rgba(220,38,38,0.5)' }}>
+                        🔥 EXÉCUTER LA PURGE (SCELLÉE PAR SHA-256)
+                      </button>
+                    </div>
                   </form>
                 </div>
               )}

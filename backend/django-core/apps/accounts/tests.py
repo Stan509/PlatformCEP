@@ -74,6 +74,54 @@ class DevOpsAndElectoralIsolationTestCase(TestCase):
         self.assertNotIn("rm -rf /", broker.COMMAND_WHITELIST)
         self.assertNotIn("drop database", broker.COMMAND_WHITELIST)
 
+    def test_terminal_command_injection_rejection(self):
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        from apps.kernel_views import KernelTerminalView
+
+        factory = APIRequestFactory()
+        view = KernelTerminalView.as_view()
+
+        # Command injection attempt with semicolon
+        request = factory.post('/api/kernel/terminal', {'command': 'system.status; cat /etc/passwd'}, format='json')
+        force_authenticate(request, user=self.devops)
+        response = view(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("SECURITY ALERT", response.data.get("output", ""))
+
+    def test_purge_test_data_double_lock_protocol(self):
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        from apps.kernel_views import PurgeTestDataView
+
+        factory = APIRequestFactory()
+        view = PurgeTestDataView.as_view()
+
+        # 1. Reject invalid password
+        req1 = factory.post('/api/kernel/purge', {'password': 'wrong_pass', 'confirm_code': 'PURGE-CONFIRM-2026', 'justification': 'Testing purge safety'}, format='json')
+        force_authenticate(req1, user=self.devops)
+        resp1 = view(req1)
+        self.assertEqual(resp1.status_code, 403)
+
+        # 2. Reject missing confirmation code
+        req2 = factory.post('/api/kernel/purge', {'password': 'CepPassword2026!', 'confirm_code': 'WRONG-CODE', 'justification': 'Testing purge safety'}, format='json')
+        force_authenticate(req2, user=self.devops)
+        resp2 = view(req2)
+        self.assertEqual(resp2.status_code, 400)
+
+        # 3. Reject short justification (< 10 chars)
+        req3 = factory.post('/api/kernel/purge', {'password': 'CepPassword2026!', 'confirm_code': 'PURGE-CONFIRM-2026', 'justification': 'short'}, format='json')
+        force_authenticate(req3, user=self.devops)
+        resp3 = view(req3)
+        self.assertEqual(resp3.status_code, 400)
+
+        # 4. Valid purge execution
+        req4 = factory.post('/api/kernel/purge', {'password': 'CepPassword2026!', 'confirm_code': 'PURGE-CONFIRM-2026', 'justification': 'Valid test purge justification text for audit'}, format='json')
+        force_authenticate(req4, user=self.devops)
+        resp4 = view(req4)
+        self.assertEqual(resp4.status_code, 200)
+        self.assertTrue(resp4.data.get("success"))
+
+
 
 class VotingCoreTestCase(TestCase):
     def setUp(self):

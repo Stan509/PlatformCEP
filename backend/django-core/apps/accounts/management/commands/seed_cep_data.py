@@ -77,7 +77,8 @@ class Command(BaseCommand):
             }
         )
 
-        # 3. Seed Official CEP Institutional Personas
+        # 3. Seed Official CEP Institutional Personas (Strict Hierarchical Cascade)
+        # Cascade Flow: DevOps (Initializes President) -> President CEP (Habilitates 7 Councilors) -> Councilors (Provision BED Directors) -> BED (Supervise BEC/Field Supervisors)
         personas = [
             {
                 "username": "devops.admin",
@@ -85,63 +86,63 @@ class Command(BaseCommand):
                 "first_name": "Ing. Superadmin",
                 "last_name": "DevOps",
                 "perms": ["infrastructure.*", "infrastructure.monitor", "infrastructure.logs", "infrastructure.metrics", "infrastructure.alerts", "infrastructure.purge"],
-                "scope": {"isGlobal": True}
+                "scope": {"isGlobal": True, "institutionalLevel": "LEVEL_0_DEVOPS_INFRASTRUCTURE"}
             },
             {
                 "username": "jacques.desrosiers",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Jacques",
-                "last_name": "Desrosiers",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "last_name": "Desrosiers (Président CEP)",
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.create", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "devops.admin", "institutionalLevel": "LEVEL_1_PRESIDENCY", "title": "Président du CEP"}
             },
             {
                 "username": "patrick.saint.hilaire",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Patrick",
-                "last_name": "Saint-Hilaire",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "last_name": "Saint-Hilaire (Conseiller)",
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_COUNCIL", "title": "Conseiller Électoral"}
             },
             {
                 "username": "magalie.georges",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Rose Magalie Thérèse",
-                "last_name": "Georges",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "last_name": "Georges (Conseillère)",
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_COUNCIL", "title": "Conseillère Électorale"}
             },
             {
                 "username": "florence.mathieu",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Marie Florence",
-                "last_name": "Mathieu",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "last_name": "Mathieu (Conseillère)",
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_COUNCIL", "title": "Conseillère Électorale"}
             },
             {
                 "username": "yves.marie.edouard",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Yves Marie",
-                "last_name": "Édouard",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "last_name": "Édouard (Conseiller)",
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_COUNCIL", "title": "Conseiller Électoral"}
             },
             {
                 "username": "schnaida.adely",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Schnaida",
-                "last_name": "Adely",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "last_name": "Adely (Conseillère)",
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_COUNCIL", "title": "Conseillère Électorale"}
             },
             {
                 "username": "president.cep",
                 "role": Role.ADMIN_CEP,
                 "first_name": "Jacques",
                 "last_name": "Desrosiers",
-                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
-                "scope": {"isGlobal": True}
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view", "user.provision"],
+                "scope": {"isGlobal": True, "provisionedBy": "devops.admin", "institutionalLevel": "LEVEL_1_PRESIDENCY"}
             },
             {
                 "username": "directeur.exec",
@@ -149,7 +150,7 @@ class Command(BaseCommand):
                 "first_name": "Me. Max Delva",
                 "last_name": "Guillaume",
                 "perms": ["dashboard.view", "myScope.view", "election.view", "election.update", "station.view", "device.view", "user.view", "audit.view"],
-                "scope": {"isGlobal": True}
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_EXECUTIVE_DIR"}
             },
             {
                 "username": "ops.cep",
@@ -157,7 +158,7 @@ class Command(BaseCommand):
                 "first_name": "Ing. Fritz",
                 "last_name": "Bernard",
                 "perms": ["dashboard.view", "myScope.view", "station.view", "station.create", "station.assign", "station.transfer", "device.view", "device.register", "device.revoke", "incident.view", "incident.resolve"],
-                "scope": {"isGlobal": True}
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_OPS_DIR"}
             },
             {
                 "username": "legal.cep",
@@ -165,7 +166,7 @@ class Command(BaseCommand):
                 "first_name": "Me. Rose",
                 "last_name": "Lhérisson",
                 "perms": ["dashboard.view", "myScope.view", "candidate.view", "candidate.approve", "candidate.reject", "party.view", "mandate.view", "mandate.approve", "pv.view", "pv.review", "incident.view", "incident.resolve"],
-                "scope": {"isGlobal": True}
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_LEGAL_DIR"}
             },
             {
                 "username": "it.cep",
@@ -173,7 +174,7 @@ class Command(BaseCommand):
                 "first_name": "Col. Jacques",
                 "last_name": "Roche",
                 "perms": ["dashboard.view", "myScope.view", "elector.view", "elector.search", "elector.assign", "device.view", "device.revoke", "audit.view", "audit.export", "user.view"],
-                "scope": {"isGlobal": True}
+                "scope": {"isGlobal": True, "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_2_IT_DIR"}
             },
             {
                 "username": "bed.ouest",
@@ -181,7 +182,7 @@ class Command(BaseCommand):
                 "first_name": "Directeur BED",
                 "last_name": "Ouest",
                 "perms": ["dashboard.view", "myScope.view", "station.view", "device.view", "candidate.view", "pv.view", "pv.review", "pv.validate", "incident.view", "incident.create"],
-                "scope": {"departments": ["Ouest"], "elections": ["GENERAL_2026"]}
+                "scope": {"departments": ["Ouest"], "elections": ["GENERAL_2026"], "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_3_BED_DEPARTMENT"}
             },
             {
                 "username": "bed.nord",
@@ -189,7 +190,7 @@ class Command(BaseCommand):
                 "first_name": "Directeur BED",
                 "last_name": "Nord",
                 "perms": ["dashboard.view", "myScope.view", "station.view", "device.view", "candidate.view", "pv.view", "pv.review", "pv.validate", "incident.view", "incident.create"],
-                "scope": {"departments": ["Nord"], "elections": ["GENERAL_2026"]}
+                "scope": {"departments": ["Nord"], "elections": ["GENERAL_2026"], "provisionedBy": "jacques.desrosiers", "institutionalLevel": "LEVEL_3_BED_DEPARTMENT"}
             },
             {
                 "username": "sup.terrain",
@@ -197,7 +198,7 @@ class Command(BaseCommand):
                 "first_name": "Superviseur",
                 "last_name": "Port-au-Prince",
                 "perms": ["dashboard.view", "myScope.view", "station.view", "elector.search", "incident.view", "incident.create"],
-                "scope": {"departments": ["Ouest"], "communes": ["Port-au-Prince"]}
+                "scope": {"departments": ["Ouest"], "communes": ["Port-au-Prince"], "provisionedBy": "bed.ouest", "institutionalLevel": "LEVEL_4_BEC_SUPERVISOR"}
             }
         ]
 

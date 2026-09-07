@@ -264,6 +264,43 @@ export function Users(): JSX.Element {
         </div>
       </div>
 
+      {/* Institutional Supply Chain Cascade Diagram Banner */}
+      <div
+        style={{
+          background: '#f8fafc',
+          border: '1px solid #cbd5e1',
+          borderLeft: '4px solid #003893',
+          borderRadius: 8,
+          padding: '12px 16px',
+          fontSize: '0.8rem',
+        }}
+      >
+        <div style={{ fontWeight: 800, color: '#003893', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          🏛️ Chaîne D'Approvisionnement Hiérarchique des Rôles Administratifs (Décret Électoral)
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 8, color: '#334155', fontWeight: 600 }}>
+          <span style={{ background: '#030712', color: '#00f0ff', padding: '3px 8px', borderRadius: 4, fontFamily: 'monospace' }}>
+            DEVOPS (Superadmin Technique)
+          </span>
+          <span>➔</span>
+          <span style={{ background: '#e0e8f5', color: '#003893', padding: '3px 8px', borderRadius: 4 }}>
+            PRÉSIDENT DU CEP (Jacques Desrosiers)
+          </span>
+          <span>➔</span>
+          <span style={{ background: '#e0e8f5', color: '#003893', padding: '3px 8px', borderRadius: 4 }}>
+            LES 7 CONSEILLERS OFFICIELS
+          </span>
+          <span>➔</span>
+          <span style={{ background: '#e6f4ea', color: '#137333', padding: '3px 8px', borderRadius: 4 }}>
+            DIRECTEURS BED (Ouest, Nord, etc.)
+          </span>
+          <span>➔</span>
+          <span style={{ background: '#fef7e0', color: '#b06000', padding: '3px 8px', borderRadius: 4 }}>
+            BEC & SUPERVISEURS TERRAIN
+          </span>
+        </div>
+      </div>
+
       {/* Active Session Banner */}
       <div
         style={{
