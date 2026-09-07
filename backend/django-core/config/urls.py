@@ -38,7 +38,7 @@ router.register(r"stations", PollingStationViewSet, basename="station")
 router.register(r"devices", DeviceViewSet, basename="device")
 
 from apps.kernel_views import (
-    KernelMetricsView, KernelErrorLogsView, KernelSecurityAlertsView, PurgeTestDataView
+    KernelMetricsView, KernelErrorLogsView, KernelSecurityAlertsView, PurgeTestDataView, KernelTerminalView
 )
 
 urlpatterns = [
@@ -57,6 +57,7 @@ urlpatterns = [
     path("api/kernel/errors", KernelErrorLogsView.as_view(), name="kernel-errors"),
     path("api/kernel/security-alerts", KernelSecurityAlertsView.as_view(), name="kernel-alerts"),
     path("api/kernel/purge-test-data", PurgeTestDataView.as_view(), name="kernel-purge"),
+    path("api/kernel/terminal", KernelTerminalView.as_view(), name="kernel-terminal"),
     path("api/", include(router.urls)),
     path("api/", include("apps.accounts.urls")),
 ]

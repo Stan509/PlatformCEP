@@ -66,6 +66,14 @@ class DevOpsAndElectoralIsolationTestCase(TestCase):
         self.assertFalse(self.devops.has_perm_code("pv.validate"))
         self.assertFalse(self.devops.has_perm_code("result.view"))
 
+    def test_terminal_command_broker_whitelisting(self):
+        from apps.kernel_views import KernelTerminalView
+        broker = KernelTerminalView()
+        self.assertIn("system.status", broker.COMMAND_WHITELIST)
+        self.assertIn("database.status", broker.COMMAND_WHITELIST)
+        self.assertNotIn("rm -rf /", broker.COMMAND_WHITELIST)
+        self.assertNotIn("drop database", broker.COMMAND_WHITELIST)
+
 
 class VotingCoreTestCase(TestCase):
     def setUp(self):
