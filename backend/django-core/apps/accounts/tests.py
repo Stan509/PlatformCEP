@@ -39,6 +39,34 @@ class RBACAndScopeTestCase(TestCase):
         self.assertFalse(self.user_ouest.has_scope_target({"department": "Nord"}))
 
 
+class DevOpsAndElectoralIsolationTestCase(TestCase):
+    def setUp(self):
+        self.president = User.objects.create(
+            username="president.test",
+            role=Role.ADMIN_CEP,
+            permissions=["election.view", "candidate.approve", "pv.validate"],
+            scope={"isGlobal": True}
+        )
+        self.devops = User.objects.create(
+            username="devops.test",
+            role=Role.SUPERADMIN_DEVOPS,
+            permissions=["infrastructure.monitor", "infrastructure.logs"],
+            scope={"isGlobal": True}
+        )
+
+    def test_electoral_user_has_zero_infrastructure_permissions(self):
+        self.assertFalse(self.president.has_perm_code("infrastructure.monitor"))
+        self.assertFalse(self.president.has_perm_code("infrastructure.logs"))
+
+    def test_devops_user_has_zero_electoral_permissions(self):
+        self.assertTrue(self.devops.has_perm_code("infrastructure.monitor"))
+        self.assertFalse(self.devops.has_perm_code("election.view"))
+        self.assertFalse(self.devops.has_perm_code("election.open"))
+        self.assertFalse(self.devops.has_perm_code("candidate.approve"))
+        self.assertFalse(self.devops.has_perm_code("pv.validate"))
+        self.assertFalse(self.devops.has_perm_code("result.view"))
+
+
 class VotingCoreTestCase(TestCase):
     def setUp(self):
         self.geo_ver = GeoVersion.objects.create(

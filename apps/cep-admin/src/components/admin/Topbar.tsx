@@ -114,24 +114,8 @@ export function Topbar({ route, user, onSwitchUser, onLogout }: TopbarProps): JS
         </div>
       </div>
 
-      {/* User Persona Quick Switcher & Actions */}
+      {/* User Session Badge & Actions */}
       <div style={{ display: 'flex', gap: 'var(--cep-space-3)', alignItems: 'center', flexWrap: 'wrap' }}>
-        {/* Quick Persona Switcher for UI validation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#f8f9fa', padding: '4px 8px', borderRadius: 6, border: '1px solid #e0e0e0' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#5f6368' }}>🎭 Commuter Profil (RBAC Test) :</span>
-          <select
-            value={user.username}
-            onChange={(e) => handleSelectPersona(e.target.value)}
-            style={{ fontSize: '0.78rem', padding: '3px 6px', borderRadius: 4, border: '1px solid #ccc', fontWeight: 600, background: '#fff', color: '#003893', cursor: 'pointer' }}
-          >
-            {USER_ACCOUNTS.map((acc) => (
-              <option key={acc.id} value={acc.username}>
-                {acc.fullName} ({acc.role})
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* User Scope Link Badge */}
         <button
           type="button"

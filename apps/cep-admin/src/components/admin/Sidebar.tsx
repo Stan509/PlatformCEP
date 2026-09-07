@@ -119,7 +119,7 @@ const ALL_NAV_DOMAINS: NavDomainDef[] = [
       { key: 'roles', label: 'Rôles & Permissions', icon: '🛡️', requiredPermission: 'user.permissions.manage' },
       { key: 'permissions-manage', label: 'Matrice de Permissions', icon: '⚙️', requiredPermission: 'user.permissions.manage' },
       { key: 'settings', label: 'Configuration Système', icon: '🔧', requiredPermission: 'dashboard.view' },
-      { key: 'kernel-monitor', label: 'Superadmin DevOps & Kernel', icon: '⚡', requiredPermission: 'system.superadmin' },
+      { key: 'kernel-monitor', label: 'Superadmin DevOps & Kernel', icon: '⚡', requiredPermission: 'infrastructure.monitor' },
     ],
   },
 ];
@@ -140,10 +140,10 @@ export function Sidebar({ route, user, onLogout }: SidebarProps): JSX.Element {
   // Select navigation domains according to active View Mode
   const activeDomains = isInstitutional ? INSTITUTIONAL_NAV_DOMAINS : ALL_NAV_DOMAINS;
 
-  // Filter menu items by user permissions
+  // Filter menu items by user permissions & DevOps isolation
   const visibleDomains = activeDomains.map((domain) => {
     const items = domain.items.filter((item) =>
-      hasPermission(user.permissions, item.requiredPermission)
+      hasPermission(user.permissions, item.requiredPermission, user.role, user.username)
     );
     return { title: domain.title, items };
   }).filter((domain) => domain.items.length > 0);

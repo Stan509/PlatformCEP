@@ -85,13 +85,19 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
 function renderPage(route: AdminRoute, session: UserAccount, onLogout: () => void): JSX.Element {
   const meta = ROUTE_META_REGISTRY[route];
+  const isDevOps = session.role === 'SUPERADMIN_DEVOPS' || session.username === 'devops.admin';
 
-  // 1. Permission Guard
-  if (meta?.requiredPermissions && !hasPermission(session.permissions, meta.requiredPermissions)) {
+  // 1. Strict Isolation: DevOps cannot access electoral pages
+  if (isDevOps && route !== 'kernel-monitor' && route !== 'my-scope') {
+    return <AccessDenied requiredPermission={['infrastructure.monitor']} currentUserRole="DevOps Administrator (No Electoral Rights)" />;
+  }
+
+  // 2. Permission Guard
+  if (meta?.requiredPermissions && !hasPermission(session.permissions, meta.requiredPermissions, session.role, session.username)) {
     return <AccessDenied requiredPermission={meta.requiredPermissions} currentUserRole={session.roleTitle} />;
   }
 
-  // 2. Scope Guard Evaluation for specific routes
+  // 3. Scope Guard Evaluation for specific routes
   if (session.scope) {
     if (!hasScope(session.scope, { electionId: 'e1' })) {
       return <ScopeDenied userScope={session.scope} targetElection="Élections Générales 2026" />;
@@ -147,11 +153,21 @@ function renderPage(route: AdminRoute, session: UserAccount, onLogout: () => voi
       return <PermissionsManage currentUser={session} />;
     case 'settings':
       return <Settings />;
-    case 'kernel-monitor':
+    case 'kernel-monitor': {
+      const isDevOps = session.role === 'SUPERADMIN_DEVOPS' || session.username === 'devops.admin' || hasPermission(session.permissions, 'infrastructure.monitor', session.role, session.username);
+      if (!isDevOps) {
+        return <AccessDenied />;
+      }
       return <KernelMonitor />;
+    }
     case 'dashboard':
-    default:
+    default: {
+      const isDevOps = session.role === 'SUPERADMIN_DEVOPS' || session.username === 'devops.admin';
+      if (isDevOps) {
+        return <KernelMonitor />;
+      }
       return <Dashboard user={session} />;
+    }
   }
 }
 

@@ -15,8 +15,9 @@ from django.db import models
 
 
 class Role(models.TextChoices):
-    SUPERADMIN = "SUPERADMIN", "SUPERADMIN"
-    DEV = "DEV", "DEV"
+    SUPERADMIN_DEVOPS = "SUPERADMIN_DEVOPS", "Superadmin DevOps"
+    SUPERADMIN = "SUPERADMIN", "Superadmin Électoral"
+    DEV = "DEV", "Ingénieur DevOps"
     ADMIN_CEP = "ADMIN_CEP", "ADMIN CEP"
     MEMBER_CEP = "MEMBER_CEP", "Membre CEP"
     ELECTORAL_MANAGER = "ELECTORAL_MANAGER", "Responsable électoral"
@@ -50,11 +51,19 @@ class User(AbstractUser):
         verbose_name_plural = "Utilisateurs"
 
     def has_perm_code(self, perm_code: str) -> bool:
-        """Vérifie si l'utilisateur possède une permission explicite ou superadmin."""
+        """Vérifie si l'utilisateur possède une permission explicite.
+        RÈGLE STRICTE : Le rôle SUPERADMIN_DEVOPS / DEV n'a AUCUN privilège électoral.
+        """
         if not self.is_active:
             return False
+
+        # DEVOPS / DEV has ZERO electoral permissions
+        if self.role in [Role.SUPERADMIN_DEVOPS, Role.DEV] or self.username == "devops.admin":
+            if not perm_code.startswith("infrastructure."):
+                return False
+
         user_perms = self.permissions or []
-        if "system.superadmin" in user_perms:
+        if "system.superadmin" in user_perms and self.role != Role.SUPERADMIN_DEVOPS:
             return True
         if perm_code in user_perms or "*.*" in user_perms or "*" in user_perms:
             return True

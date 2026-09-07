@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 
 from apps.accounts.models import User
 from apps.accounts.rbac import HasGranularPermissionAndScope, make_permission_class
+from apps.accounts.permissions import IsElectoralAdminOnly
 from apps.accounts.serializers import ProfileSerializer
 
 from apps.elections.models import Election, TerritoryRule
@@ -28,7 +29,7 @@ from apps.audit.services import log_audit_event
 # ---------------------------------------------------------------------------
 class ElectionViewSet(viewsets.ModelViewSet):
     queryset = Election.objects.all().order_by("-start_date")
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsElectoralAdminOnly]
 
     def get_serializer_class(self):
         from rest_framework import serializers

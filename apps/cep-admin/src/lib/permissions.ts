@@ -83,6 +83,13 @@ export type PermissionCode =
   | 'user.update'
   | 'user.suspend'
   | 'user.permissions.manage'
+  // Infrastructure & DevOps Only (Strictly Isolated from Electoral Process)
+  | 'infrastructure.view'
+  | 'infrastructure.monitor'
+  | 'infrastructure.logs'
+  | 'infrastructure.metrics'
+  | 'infrastructure.alerts'
+  | 'infrastructure.purge'
   // Superadmin Emergency Bypass
   | 'system.superadmin';
 
@@ -187,23 +194,52 @@ export const PERMISSION_REGISTRY: PermissionDefinition[] = [
   { code: 'user.suspend', domain: 'ADMINISTRATION', label: 'Suspendre un Utilisateur', description: 'Verrouillage immédiat d\'un compte' },
   { code: 'user.permissions.manage', domain: 'ADMINISTRATION', label: 'Gérer les Permissions & Scopes', description: 'Attribution fine des rôles, perms et scopes' },
 
+  // Infrastructure & DevOps
+  { code: 'infrastructure.view', domain: 'INFRASTRUCTURE DEVOPS', label: 'Consulter l\'Infrastructure', description: 'Supervision serveurs et conteneurs' },
+  { code: 'infrastructure.monitor', domain: 'INFRASTRUCTURE DEVOPS', label: 'Kernel Monitor System', description: 'Accès au tableau de bord DevOps Kernel' },
+  { code: 'infrastructure.logs', domain: 'INFRASTRUCTURE DEVOPS', label: 'Crash Logs & StackTraces', description: 'Consultation des logs d\'erreurs système' },
+  { code: 'infrastructure.metrics', domain: 'INFRASTRUCTURE DEVOPS', label: 'Métriques RAM / CPU / RPS', description: 'Accès aux métriques de charge système' },
+  { code: 'infrastructure.alerts', domain: 'INFRASTRUCTURE DEVOPS', label: 'Alertes de Sécurité DevOps', description: 'Surveillance des tentatives de brute force' },
+  { code: 'infrastructure.purge', domain: 'INFRASTRUCTURE DEVOPS', label: 'Purge des Données de Test', description: 'Remise à zéro sécurisée de l\'environnement de staging' },
+
   // Superadmin
   { code: 'system.superadmin', domain: 'SYSTÈME', label: 'Superadministration Système', description: 'Autorisation de niveau administrateur système' },
 ];
 
 /**
  * Checks if a user possesses the requested permission(s).
+ * Enforces strict separation between DevOps and Electoral processes.
  */
 export function hasPermission(
   userPermissions: string[] | undefined,
-  requiredPermissions?: PermissionCode | PermissionCode[]
+  requiredPermissions?: PermissionCode | PermissionCode[],
+  userRole?: string,
+  username?: string
 ): boolean {
   if (!requiredPermissions) return true;
   if (!userPermissions || userPermissions.length === 0) return false;
 
-  // Superadmin emergency permission check
-  if (userPermissions.includes('system.superadmin')) return true;
-
+  const isDevOpsUser = userRole === 'SUPERADMIN_DEVOPS' || username === 'devops.admin';
   const required = Array.isArray(requiredPermissions) ? requiredPermissions : [requiredPermissions];
+
+  // 1. DEVOPS HAS ZERO ELECTORAL PERMISSIONS
+  if (isDevOpsUser) {
+    const isRequestingInfrastructure = required.some((perm) => perm.startsWith('infrastructure.'));
+    if (!isRequestingInfrastructure) {
+      return false; // Deny all electoral permissions for DevOps
+    }
+  }
+
+  // 2. CEP MEMBERS & ELECTORAL USERS HAVE ZERO DEVOPS PERMISSIONS
+  if (!isDevOpsUser) {
+    const isRequestingInfrastructure = required.some((perm) => perm.startsWith('infrastructure.'));
+    if (isRequestingInfrastructure) {
+      return false; // Deny all DevOps permissions for CEP members & electoral users
+    }
+  }
+
+  // Superadmin emergency permission check (for non-devops)
+  if (userPermissions.includes('system.superadmin') && !isDevOpsUser) return true;
+
   return required.some((perm) => userPermissions.includes(perm));
 }

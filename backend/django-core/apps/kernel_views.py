@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.utils import timezone
 from apps.accounts.models import User
+from apps.accounts.permissions import IsDevOpsOnly
 from apps.candidates.models import Candidate, Party, Mandate
 from apps.operations.models import ElectionAssignment, Device
 from apps.audit.models import AuditEvent
@@ -20,6 +21,7 @@ from apps.audit.models import AuditEvent
 
 class KernelMetricsView(APIView):
     """Retourne les jauges de performance serveur (RAM, CPU, RPS, Latence, Utilisateurs Actifs)."""
+    permission_classes = [IsDevOpsOnly]
 
     def get(self, request):
         # Hardware Metrics via psutil (or safe fallbacks)
@@ -75,6 +77,7 @@ class KernelMetricsView(APIView):
 
 class KernelErrorLogsView(APIView):
     """Retourne l'historique des exceptions système et StackTraces."""
+    permission_classes = [IsDevOpsOnly]
 
     def get(self, request):
         logs = [
@@ -104,6 +107,7 @@ class KernelErrorLogsView(APIView):
 
 class KernelSecurityAlertsView(APIView):
     """Retourne les alertes d'intrusion, brute force et anomalies mTLS."""
+    permission_classes = [IsDevOpsOnly]
 
     def get(self, request):
         alerts = [
@@ -133,6 +137,7 @@ class KernelSecurityAlertsView(APIView):
 
 class PurgeTestDataView(APIView):
     """Purge sécurisée des données de test (Requires Password Confirmation)."""
+    permission_classes = [IsDevOpsOnly]
 
     def post(self, request):
         admin_password = request.data.get("password", "")

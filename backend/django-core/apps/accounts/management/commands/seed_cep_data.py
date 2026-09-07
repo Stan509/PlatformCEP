@@ -81,10 +81,10 @@ class Command(BaseCommand):
         personas = [
             {
                 "username": "devops.admin",
-                "role": Role.ADMIN_CEP,
+                "role": Role.SUPERADMIN_DEVOPS,
                 "first_name": "Ing. Superadmin",
                 "last_name": "DevOps",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["infrastructure.*", "infrastructure.monitor", "infrastructure.logs", "infrastructure.metrics", "infrastructure.alerts", "infrastructure.purge"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -92,7 +92,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Jacques",
                 "last_name": "Desrosiers",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -100,7 +100,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Patrick",
                 "last_name": "Saint-Hilaire",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Rose Magalie Thérèse",
                 "last_name": "Georges",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -116,7 +116,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Marie Florence",
                 "last_name": "Mathieu",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -124,7 +124,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Yves Marie",
                 "last_name": "Édouard",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -132,7 +132,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Schnaida",
                 "last_name": "Adely",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
@@ -140,7 +140,7 @@ class Command(BaseCommand):
                 "role": Role.ADMIN_CEP,
                 "first_name": "Jacques",
                 "last_name": "Desrosiers",
-                "perms": ["*.*", "system.superadmin"],
+                "perms": ["elections.*", "candidates.*", "parties.*", "pv.*", "results.*", "dashboard.view"],
                 "scope": {"isGlobal": True}
             },
             {
