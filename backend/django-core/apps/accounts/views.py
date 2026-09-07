@@ -61,3 +61,65 @@ class ProfileView(APIView):
 
     def get(self, request):
         return Response(ProfileSerializer(request.user).data, status=status.HTTP_200_OK)
+
+
+from .rbac import validate_user_provisioning
+from apps.audit.services import log_audit_event
+
+
+class UserProvisionView(APIView):
+    """API de création/provisionnement de sous-comptes institutionnels protégée contre l'escalade de privilèges."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        username = request.data.get("username", "").strip().lower()
+        role = request.data.get("role", "")
+        first_name = request.data.get("first_name", "")
+        last_name = request.data.get("last_name", "")
+        password = request.data.get("password", "CepPassword2026!")
+        scope = request.data.get("scope", {})
+
+        if not username or not role:
+            return Response({"error": "Les champs 'username' et 'role' sont obligatoires."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Lock 2: Privilege Escalation & Scope Containment Guards
+        validate_user_provisioning(request.user, role, scope)
+
+        if User.objects.filter(username=username).exists():
+            return Response({"error": f"L'utilisateur '{username}' existe déjà."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set provisionedBy in scope
+        updated_scope = dict(scope)
+        updated_scope["provisionedBy"] = request.user.username
+
+        new_user = User.objects.create(
+            username=username,
+            role=role,
+            first_name=first_name,
+            last_name=last_name,
+            scope=updated_scope,
+            is_staff=True
+        )
+        new_user.set_password(password)
+        new_user.save()
+
+        # Audit Log Entry
+        try:
+            log_audit_event(
+                actor_ref=request.user.username,
+                actor_role=getattr(request.user, "role", ""),
+                action="USER_ACCOUNT_PROVISIONED",
+                object_ref=username,
+                new_value={"role": role, "scope": updated_scope}
+            )
+        except Exception:
+            pass
+
+        return Response({
+            "success": True,
+            "username": new_user.username,
+            "role": new_user.role,
+            "scope": new_user.scope,
+            "message": f"Compte '{username}' provisionné avec succès avec le rôle '{role}'."
+        }, status=status.HTTP_201_CREATED)
+

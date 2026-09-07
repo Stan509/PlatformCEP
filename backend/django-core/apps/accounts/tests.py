@@ -224,3 +224,61 @@ class VotingCoreTestCase(TestCase):
         res_invalid = validate_nomadic_geofence(18.5450, -72.3000, zone)
         self.assertFalse(res_invalid["valid"])
         self.assertEqual(res_invalid["status"], "INVALID")
+
+
+from rest_framework.exceptions import PermissionDenied
+from apps.accounts.rbac import validate_user_provisioning
+
+
+class PrivilegeEscalationAndScopeContainmentTestCase(TestCase):
+    def setUp(self):
+        self.president = User.objects.create(
+            username="president.test2",
+            role=Role.ADMIN_CEP,
+            scope={"isGlobal": True}
+        )
+        self.bed_ouest = User.objects.create(
+            username="bed.ouest.test",
+            role=Role.BED,
+            scope={"departments": ["Ouest"]}
+        )
+        self.supervisor_ouest = User.objects.create(
+            username="sup.ouest.test",
+            role=Role.SUPERVISOR,
+            scope={"departments": ["Ouest"], "communes": ["Port-au-Prince"]}
+        )
+        self.devops = User.objects.create(
+            username="devops.test2",
+            role=Role.SUPERADMIN_DEVOPS,
+            scope={"isGlobal": True}
+        )
+
+    def test_president_can_provision_bed(self):
+        # President (Rank 1) can provision BED (Rank 3)
+        validate_user_provisioning(self.president, Role.BED, {"departments": ["Ouest"]})
+
+    def test_bed_cannot_provision_equal_or_higher_role(self):
+        # BED (Rank 3) CANNOT provision another BED (Rank 3) or ADMIN_CEP (Rank 1)
+        with self.assertRaises(PermissionDenied):
+            validate_user_provisioning(self.bed_ouest, Role.BED, {"departments": ["Ouest"]})
+
+        with self.assertRaises(PermissionDenied):
+            validate_user_provisioning(self.bed_ouest, Role.ADMIN_CEP, {"isGlobal": True})
+
+    def test_bed_cannot_provision_devops_account(self):
+        # Electoral user CANNOT provision SUPERADMIN_DEVOPS
+        with self.assertRaises(PermissionDenied):
+            validate_user_provisioning(self.president, Role.SUPERADMIN_DEVOPS, {"isGlobal": True})
+
+    def test_scope_containment_breach_prevention(self):
+        # BED Ouest (scoped to Ouest) CANNOT provision a user scoped to Nord
+        with self.assertRaises(PermissionDenied):
+            validate_user_provisioning(self.bed_ouest, Role.SUPERVISOR, {"departments": ["Nord"]})
+
+        # BED Ouest CANNOT provision a global user
+        with self.assertRaises(PermissionDenied):
+            validate_user_provisioning(self.bed_ouest, Role.SUPERVISOR, {"isGlobal": True})
+
+        # BED Ouest CAN provision a supervisor scoped strictly to Ouest
+        validate_user_provisioning(self.bed_ouest, Role.SUPERVISOR, {"departments": ["Ouest"]})
+
